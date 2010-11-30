@@ -1,0 +1,9 @@
+Init 10
+TakeCard 7c
+TakeCard 9c
+LongestStraightWithJoker
+TakeCard 1h
+TakeCard 2h
+TakeCard 4h
+LongestStraightWithJoker
+Quit
