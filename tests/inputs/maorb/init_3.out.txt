@@ -1,0 +1,5 @@
+Init done.
+TakeCard: Success
+TakeCard: Invalid_input
+HandValue: Success 49244
+Quit done.

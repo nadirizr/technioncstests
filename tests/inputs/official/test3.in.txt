@@ -1,0 +1,17 @@
+Init 20
+TakeCard 3h
+TakeCard 3d
+TakeCard 3s
+TakeCard 3c
+TakeCard 4h
+TakeCard 4s
+MostValuableSeries
+TakeCard 4d
+MostValuableSeries
+DropCard 4d
+MostValuableSeries
+TakeCard 15c
+MostValuableSeries
+TakeCard 15d
+MostValuableSeries
+Quit

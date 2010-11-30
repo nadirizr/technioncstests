@@ -1,0 +1,8 @@
+HandValue: Invalid_input
+Init done.
+HandValue: Success 0
+TakeCard: Success
+HandValue: Success 33
+DropCard: Success
+HandValue: Success 0
+Quit done.

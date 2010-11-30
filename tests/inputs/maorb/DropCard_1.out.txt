@@ -1,0 +1,5 @@
+Init done.
+DropCard: Failure
+TakeCard: Success
+DropCard: Success
+Quit done.

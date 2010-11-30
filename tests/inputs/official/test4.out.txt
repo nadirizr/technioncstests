@@ -1,0 +1,13 @@
+Init done.
+TakeCard: Success
+TakeCard: Success
+DropCard: Success
+TakeCard: Failure
+TakeCard: Success
+MostValuableSeries: Success, Card: 20, Total Value: 40
+TakeCard: Success
+MostValuableSeries: Success, Card: 50, Total Value: 50
+LongestStraightWithoutJoker: Success, 50s-50s
+NumCardsOfSuite: Success 1
+NumCardsOfSuite: Success 1
+Quit done.

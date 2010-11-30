@@ -1,0 +1,16 @@
+Init 10
+TakeCard 7h
+TakeCard 8h
+TakeCard 9c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 10h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 8h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 9h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+Quit

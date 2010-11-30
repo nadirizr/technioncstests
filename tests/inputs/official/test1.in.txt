@@ -1,0 +1,14 @@
+Init 100
+TakeCard 7h
+TakeCard 8h
+TakeCard 9c
+HandValue
+NumCardsOfSuite h
+DropCard 8h
+NumCardsOfSuite h
+HandValue
+DropCard 8h
+DropCard 9h
+DropCard 8c
+HandValue
+Quit
