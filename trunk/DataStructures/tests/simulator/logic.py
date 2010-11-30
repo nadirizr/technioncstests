@@ -117,13 +117,7 @@ class YanivLogic:
     return (best_straight, best_straight_suite)
 
   def _sumList(self, l):
-    sum = 0
-    for i in range(len(l)):
-      n = l[i]
-      if n == 0:
-        n = l[i-1]+1
-      sum += n
-    return sum
+    return reduce(lambda x,y:x+y, l, 0)
 
   def _compareStraights(self, s1, s1_suite, s2, s2_suite):
     if len(s1) < len(s2):
