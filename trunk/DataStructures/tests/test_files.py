@@ -119,7 +119,7 @@ class TestValgrindRun(unittest.TestCase):
                  "ERROR SUMMARY: 0 errors from 0 contexts", val_res), None,
                  "errors found by valgrind:\n%s" % val_res)
         self.assertNotEquals(re.search(
-                 "in use at exit: 0 bytes in 0 blocks", val_res),
+                 "malloc/free: in use at exit: 0 bytes in 0 blocks.", val_res),
                  None, "memory leaks found by valgrind:\n%s" % val_res)
 
 
