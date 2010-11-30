@@ -1,0 +1,11 @@
+Init 50
+TakeCard 51c
+TakeCard 2f
+DropCard 9C
+LongestStraightWithJoker
+HandValue
+NumCardsOfSuite c
+NumCardsOfSuite d
+NumCardsOfSuite e
+TakeCard 0h
+Quit

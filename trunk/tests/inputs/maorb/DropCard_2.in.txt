@@ -1,0 +1,10 @@
+Init 50
+TakeCard 2h
+DropCard 2m
+DropCard 51d
+DropCard -2s
+DropCard 2s
+TakeCard 3h
+DropCard 3h
+DropCard 3h
+Quit

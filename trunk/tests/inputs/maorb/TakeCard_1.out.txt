@@ -1,0 +1,8 @@
+Init done.
+TakeCard: Success
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+TakeCard: Success
+TakeCard: Invalid_input
+TakeCard: Failure
+Quit done.

@@ -1,0 +1,8 @@
+Init 50
+TakeCard 2h
+TakeCard 2m
+TakeCard -2h
+TakeCard 50s
+TakeCard 51s
+TakeCard 2h
+Quit

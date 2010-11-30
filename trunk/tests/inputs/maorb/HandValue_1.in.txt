@@ -1,0 +1,8 @@
+HandValue
+Init 50
+HandValue
+TakeCard 33d
+HandValue
+DropCard 33d
+HandValue
+Quit

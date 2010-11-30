@@ -1,0 +1,11 @@
+Init done.
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+DropCard: Failure
+LongestStraightWithJoker: Failure
+HandValue: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Invalid_input
+TakeCard: Invalid_input
+Quit done.

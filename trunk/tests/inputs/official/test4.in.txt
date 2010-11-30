@@ -1,0 +1,13 @@
+Init 50
+TakeCard 20h
+TakeCard 20d
+DropCard 20h
+TakeCard 20d
+TakeCard 20h
+MostValuableSeries
+TakeCard 50s
+MostValuableSeries
+LongestStraightWithoutJoker
+NumCardsOfSuite d
+NumCardsOfSuite h
+Quit

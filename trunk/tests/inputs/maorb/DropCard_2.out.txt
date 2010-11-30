@@ -1,0 +1,10 @@
+Init done.
+TakeCard: Success
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Failure
+TakeCard: Success
+DropCard: Success
+DropCard: Failure
+Quit done.

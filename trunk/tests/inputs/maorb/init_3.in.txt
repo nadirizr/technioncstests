@@ -1,0 +1,5 @@
+Init 50000
+TakeCard 49244h
+TakeCard 59244h
+HandValue
+Quit
