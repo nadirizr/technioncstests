@@ -96,8 +96,6 @@ class YanivLogic:
         if curr_straight and (0 not in curr_straight) and (c-2) == curr_straight[-1]:
           curr_straight.append(0)
         elif curr_straight and (c-1) != curr_straight[-1]:
-          if 0 not in curr_straight:
-            curr_straight.append(0)
           if self._compareStraights(
               best_straight, best_straight_suite, curr_straight, s):
             best_straight = curr_straight
@@ -110,8 +108,6 @@ class YanivLogic:
         curr_straight.append(c)
         ic += 1
         #print "best_straight = %s(%s), curr_straight = %s(%s)" % (best_straight, best_straight_suite, curr_straight, s)
-      if 0 not in curr_straight:
-        curr_straight.append(0)
       if self._compareStraights(
           best_straight, best_straight_suite, curr_straight, s):
         best_straight = curr_straight
