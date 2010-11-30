@@ -1,0 +1,8 @@
+Init done.
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 1h-3h
+Quit done.
