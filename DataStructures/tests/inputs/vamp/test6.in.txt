@@ -1,0 +1,127 @@
+# check return values:
+Init 100
+Init -5
+Init 0.3
+#
+Init 100
+#
+TakeCard 0h
+TakeCard -5c
+TakeCard 101h
+TakeCard 5p
+TakeCard 6!
+TakeCard 10(,)
+#
+TakeCard 5c
+#
+DropCard 0h
+DropCard 5z
+DropCard 1234h
+DropCard -1s
+DropCard 6h
+DropCard 6c
+DropCard 6s
+DropCard 6d
+#
+DropCard 5c
+DropCard 5c
+#
+TakeCard 6c
+#
+NumCardsOfSuite q
+NumCardsOfSuite +
+NumCardsOfSuite z
+NumCardsOfSuite @%@
+NumCardsOfSuite s
+NumCardsOfSuite d
+NumCardsOfSuite c
+NumCardsOfSuite h
+#
+MostValuableSeries
+#
+DropCard 6c
+#
+MostValuableSeries
+#
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+#
+TakeCard 50h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+#
+# strat testing
+#
+TakeCard 20h
+TakeCard 21h
+TakeCard 22h
+TakeCard 23h
+TakeCard 24h
+MostValuableSeries
+LongestStraightWithoutJoker
+NumCardsOfSuite h
+TakeCard 26h
+TakeCard 27h
+TakeCard 28h
+TakeCard 29h
+TakeCard 30h
+MostValuableSeries
+LongestStraightWithoutJoker
+NumCardsOfSuite h
+LongestStraightWithJoker
+TakeCard 25h
+LongestStraightWithoutJoker
+# check split:
+DropCard 25h
+LongestStraightWithoutJoker
+DropCard 27h
+LongestStraightWithoutJoker
+NumCardsOfSuite h
+# check series:
+TakeCard 30s
+MostValuableSeries
+TakeCard 30d
+MostValuableSeries
+TakeCard 30c
+MostValuableSeries
+# check split:
+DropCard 30d
+MostValuableSeries
+TakeCard 29d
+TakeCard 29s
+TakeCard 29c
+MostValuableSeries
+TakeCard 30c
+TakeCard 29c
+TakeCard 28c
+TakeCard 27c
+TakeCard 26c
+TakeCard 25c
+LongestStraightWithoutJoker
+TakeCard 30d
+TakeCard 29d
+TakeCard 28d
+TakeCard 27d
+TakeCard 26d
+TakeCard 25d
+LongestStraightWithoutJoker
+TakeCard 24d
+TakeCard 31c
+TakeCard 32c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+MostValuableSeries
+TakeCard 34c
+TakeCard 32d
+TakeCard 33d
+TakeCard 34d
+TakeCard 35d
+TakeCard 36d
+TakeCard 37d
+TakeCard 38d
+TakeCard 39d
+TakeCard 40d
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 31c
+Quit

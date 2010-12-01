@@ -1,0 +1,236 @@
+Init done.
+LongestStraightWithJoker: Failure
+HandValue: Success 0
+TakeCard: Success
+TakeCard: Invalid_input
+DropCard: Failure
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 51c-51c
+TakeCard: Success
+HandValue: Success 107
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Success
+DropCard: Failure
+DropCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+HandValue: Success 294
+LongestStraightWithJoker: Success, 95h-95h
+TakeCard: Success
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Success
+DropCard: Success
+TakeCard: Success
+HandValue: Success 492
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 95h-95h
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 95, Total Value: 190
+TakeCard: Success
+MostValuableSeries: Success, Card: 95, Total Value: 190
+TakeCard: Success
+DropCard: Failure
+TakeCard: Success
+DropCard: Success
+TakeCard: Invalid_input
+TakeCard: Success
+TakeCard: Failure
+HandValue: Success 1120
+TakeCard: Invalid_input
+DropCard: Success
+LongestStraightWithJoker: Success, 32h-33h
+TakeCard: Success
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Success
+DropCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 95, Total Value: 190
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Success
+TakeCard: Success
+DropCard: Failure
+HandValue: Success 1334
+TakeCard: Success
+TakeCard: Success
+TakeCard: Failure
+MostValuableSeries: Success, Card: 95, Total Value: 285
+LongestStraightWithJoker: Success, 32h-35h
+LongestStraightWithoutJoker: Success, 32h-33h
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+DropCard: Success
+DropCard: Success
+DropCard: Success
+MostValuableSeries: Success, Card: 95, Total Value: 285
+TakeCard: Success
+TakeCard: Success
+TakeCard: Invalid_input
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 147, Total Value: 294
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 81s-87s
+LongestStraightWithoutJoker: Success, 83s-87s
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 147, Total Value: 294
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 83s-92s
+LongestStraightWithoutJoker: Success, 83s-87s
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Failure
+DropCard: Success
+DropCard: Success
+MostValuableSeries: Success, Card: 95, Total Value: 285
+LongestStraightWithJoker: Success, 81s-87s
+LongestStraightWithoutJoker: Success, 83s-87s
+HandValue: Success 1983
+NumCardsOfSuite: Success 5
+NumCardsOfSuite: Success 7
+NumCardsOfSuite: Invalid_input
+TakeCard: Invalid_input
+LongestStraightWithJoker: Success, 81s-87s
+HandValue: Success 1983
+TakeCard: Success
+TakeCard: Invalid_input
+DropCard: Failure
+TakeCard: Failure
+TakeCard: Success
+LongestStraightWithJoker: Success, 81s-87s
+TakeCard: Success
+HandValue: Success 2199
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Success
+DropCard: Failure
+DropCard: Failure
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+HandValue: Success 2610
+LongestStraightWithJoker: Success, 81s-87s
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Failure
+DropCard: Failure
+TakeCard: Success
+HandValue: Success 2889
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 81s-87s
+TakeCard: Failure
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 133, Total Value: 399
+TakeCard: Success
+MostValuableSeries: Success, Card: 133, Total Value: 532
+TakeCard: Success
+DropCard: Failure
+TakeCard: Success
+DropCard: Success
+TakeCard: Invalid_input
+TakeCard: Success
+TakeCard: Failure
+HandValue: Success 3767
+TakeCard: Invalid_input
+DropCard: Success
+LongestStraightWithJoker: Success, 81s-87s
+TakeCard: Failure
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Failure
+DropCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 133, Total Value: 532
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+DropCard: Failure
+HandValue: Success 3767
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+MostValuableSeries: Success, Card: 133, Total Value: 532
+LongestStraightWithJoker: Success, 81s-87s
+LongestStraightWithoutJoker: Success, 83s-87s
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Failure
+DropCard: Success
+DropCard: Success
+DropCard: Success
+MostValuableSeries: Success, Card: 123, Total Value: 369
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Invalid_input
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 123, Total Value: 369
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 81s-87s
+LongestStraightWithoutJoker: Success, 113s-117s
+TakeCard: Success
+TakeCard: Failure
+MostValuableSeries: Success, Card: 123, Total Value: 369
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithJoker: Success, 113s-120s
+LongestStraightWithoutJoker: Success, 113s-117s
+DropCard: Failure
+DropCard: Failure
+DropCard: Success
+DropCard: Failure
+DropCard: Failure
+DropCard: Failure
+MostValuableSeries: Success, Card: 123, Total Value: 369
+LongestStraightWithJoker: Success, 113s-120s
+LongestStraightWithoutJoker: Success, 113s-117s
+HandValue: Success 4398
+NumCardsOfSuite: Success 11
+NumCardsOfSuite: Success 11
+NumCardsOfSuite: Invalid_input
+TakeCard: Invalid_input
+Quit done.
