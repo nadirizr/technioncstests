@@ -1,0 +1,127 @@
+# check return values:
+Init done.
+Init was already called.
+Init was already called.
+#
+Init was already called.
+#
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+#
+TakeCard: Success
+#
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Failure
+DropCard: Failure
+DropCard: Failure
+DropCard: Failure
+#
+DropCard: Success
+DropCard: Failure
+#
+TakeCard: Success
+#
+NumCardsOfSuite: Invalid_input
+NumCardsOfSuite: Invalid_input
+NumCardsOfSuite: Invalid_input
+NumCardsOfSuite: Invalid_input
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 1
+NumCardsOfSuite: Success 0
+#
+MostValuableSeries: Success, Card: 6, Total Value: 6
+#
+DropCard: Success
+#
+MostValuableSeries: Failure
+#
+LongestStraightWithoutJoker: Failure
+LongestStraightWithJoker: Failure
+#
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 50h-50h
+LongestStraightWithJoker: Success, 50h-50h
+#
+# strat testing
+#
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 50, Total Value: 50
+LongestStraightWithoutJoker: Success, 20h-24h
+NumCardsOfSuite: Success 6
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 50, Total Value: 50
+LongestStraightWithoutJoker: Success, 26h-30h
+NumCardsOfSuite: Success 11
+LongestStraightWithJoker: Success, 20h-30h
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 20h-30h
+# check split:
+DropCard: Success
+LongestStraightWithoutJoker: Success, 26h-30h
+DropCard: Success
+LongestStraightWithoutJoker: Success, 20h-24h
+NumCardsOfSuite: Success 10
+# check series:
+TakeCard: Success
+MostValuableSeries: Success, Card: 30, Total Value: 60
+TakeCard: Success
+MostValuableSeries: Success, Card: 30, Total Value: 90
+TakeCard: Success
+MostValuableSeries: Success, Card: 30, Total Value: 120
+# check split:
+DropCard: Success
+MostValuableSeries: Success, Card: 30, Total Value: 90
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 29, Total Value: 116
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 25c-30c
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 25d-30d
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 25c-32c
+LongestStraightWithJoker: Success, 25c-32c
+MostValuableSeries: Success, Card: 30, Total Value: 120
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 32d-40d
+LongestStraightWithJoker: Success, 24d-40d
+TakeCard: Failure
+Quit done.

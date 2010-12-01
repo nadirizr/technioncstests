@@ -1,4 +1,5 @@
 Init done.
+Init was already called.
 HandValue: Success 0
 LongestStraightWithoutJoker: Failure
 LongestStraightWithJoker: Failure

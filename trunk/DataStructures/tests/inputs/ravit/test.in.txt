@@ -1,4 +1,5 @@
 Init 100
+Init 0
 HandValue
 LongestStraightWithoutJoker
 LongestStraightWithJoker

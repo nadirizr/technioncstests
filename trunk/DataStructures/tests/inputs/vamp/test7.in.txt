@@ -1,0 +1,236 @@
+Init 150
+LongestStraightWithJoker
+HandValue
+TakeCard 51c
+TakeCard 2f
+DropCard 9C
+TakeCard 35h
+TakeCard 9c
+LongestStraightWithJoker
+TakeCard 12s
+HandValue
+TakeCard 6d
+TakeCard 6d
+TakeCard 6h
+DropCard 6c
+DropCard 6d
+TakeCard 6s
+TakeCard 15s
+TakeCard 65c
+TakeCard 95h
+HandValue
+LongestStraightWithJoker
+TakeCard 45h
+TakeCard 54c
+TakeCard 54c
+TakeCard 56d
+DropCard 35h
+TakeCard 78d
+HandValue
+TakeCard 95d
+TakeCard 12d 
+LongestStraightWithJoker
+TakeCard 123d
+TakeCard 32h
+TakeCard 33h 
+TakeCard 33d 
+TakeCard 33s
+MostValuableSeries
+TakeCard 33c
+MostValuableSeries
+TakeCard 147h
+DropCard 96c
+TakeCard 96c
+DropCard 96c
+TakeCard 87p
+TakeCard 87s
+TakeCard 51c
+HandValue
+TakeCard 2f
+DropCard 9C
+LongestStraightWithJoker
+TakeCard 35h
+TakeCard 9c
+TakeCard 12s
+TakeCard 6d
+DropCard 6d
+TakeCard 6d
+MostValuableSeries
+TakeCard 6h
+TakeCard 6s
+TakeCard 15s
+TakeCard 65c
+TakeCard 95h
+TakeCard 45h
+TakeCard 54c
+TakeCard 54c
+TakeCard 56d
+TakeCard 78c
+TakeCard 95s
+DropCard 95c
+HandValue
+TakeCard 12h 
+TakeCard 123s
+TakeCard 32h
+MostValuableSeries
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+TakeCard 33c 
+TakeCard 33h 
+TakeCard 33d
+TakeCard 33h
+DropCard 33c
+DropCard 33d
+DropCard 33h
+MostValuableSeries
+TakeCard 147c
+TakeCard 96d
+TakeCard 87p
+TakeCard 86s
+TakeCard 85s
+TakeCard 84s
+MostValuableSeries
+TakeCard 83s
+TakeCard 81s
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+TakeCard 89s
+TakeCard 90s
+MostValuableSeries
+TakeCard 91s
+TakeCard 92s
+TakeCard 98s
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+DropCard 92s
+DropCard 90s
+DropCard 89s
+DropCard 33d
+DropCard 91s
+DropCard 147c
+MostValuableSeries
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+HandValue
+NumCardsOfSuite c
+NumCardsOfSuite d
+NumCardsOfSuite e
+TakeCard 0h
+LongestStraightWithJoker
+HandValue
+TakeCard 5c
+TakeCard 22f
+DropCard 93C
+TakeCard 32h
+TakeCard 91c
+LongestStraightWithJoker
+TakeCard 120s
+HandValue
+TakeCard 60d
+TakeCard 60d
+TakeCard 60h
+DropCard 60c
+DropCard 69d
+TakeCard 60s
+TakeCard 150s
+TakeCard 6c
+TakeCard 75h
+HandValue
+LongestStraightWithJoker
+TakeCard 4h
+TakeCard 150c
+TakeCard 59c
+TakeCard 56d
+DropCard 13h
+TakeCard 66d
+HandValue
+TakeCard 76d
+TakeCard 92d 
+LongestStraightWithJoker
+TakeCard 123d
+TakeCard 123h
+TakeCard 133h 
+TakeCard 133d 
+TakeCard 133s
+MostValuableSeries
+TakeCard 133c
+MostValuableSeries
+TakeCard 47h
+DropCard 90c
+TakeCard 96c
+DropCard 96c
+TakeCard 87p
+TakeCard 8s
+TakeCard 54c
+HandValue
+TakeCard 2f
+DropCard 9C
+LongestStraightWithJoker
+TakeCard 35h
+TakeCard 9c
+TakeCard 12s
+TakeCard 6d
+DropCard 6d
+TakeCard 6d
+MostValuableSeries
+TakeCard 6h
+TakeCard 6s
+TakeCard 15s
+TakeCard 65c
+TakeCard 95h
+TakeCard 45h
+TakeCard 54c
+TakeCard 54c
+TakeCard 56d
+TakeCard 78c
+TakeCard 95s
+DropCard 95c
+HandValue
+TakeCard 12h 
+TakeCard 123s
+TakeCard 32h
+MostValuableSeries
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+TakeCard 133c 
+TakeCard 133h 
+TakeCard 133d
+TakeCard 133h
+DropCard 133c
+DropCard 133d
+DropCard 133h
+MostValuableSeries
+TakeCard 147c
+TakeCard 96d
+TakeCard 111p
+TakeCard 116s
+TakeCard 115s
+TakeCard 114s
+MostValuableSeries
+TakeCard 113s
+TakeCard 117s
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+TakeCard 119s
+TakeCard 120s
+MostValuableSeries
+TakeCard 19s
+TakeCard 126s
+TakeCard 142s
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+DropCard 109s
+DropCard 109s
+DropCard 98s
+DropCard 37d
+DropCard 48s
+DropCard 107c
+MostValuableSeries
+LongestStraightWithJoker
+LongestStraightWithoutJoker
+HandValue
+NumCardsOfSuite c
+NumCardsOfSuite d
+NumCardsOfSuite e
+TakeCard 0h
+Quit
