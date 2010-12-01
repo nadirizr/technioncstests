@@ -1,0 +1,84 @@
+Init done.
+HandValue: Success 0
+LongestStraightWithoutJoker: Failure
+LongestStraightWithJoker: Failure
+MostValuableSeries: Failure
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Invalid_input
+DropCard: Invalid_input
+HandValue: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+HandValue: Success 0
+LongestStraightWithoutJoker: Failure
+LongestStraightWithJoker: Failure
+MostValuableSeries: Failure
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+TakeCard: Invalid_input
+HandValue: Success 0
+LongestStraightWithoutJoker: Failure
+LongestStraightWithJoker: Failure
+MostValuableSeries: Failure
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+HandValue: Success 29
+DropCard: Success
+DropCard: Success
+DropCard: Success
+HandValue: Success 0
+LongestStraightWithoutJoker: Failure
+LongestStraightWithJoker: Failure
+MostValuableSeries: Failure
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+NumCardsOfSuite: Success 0
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 15h-17h
+LongestStraightWithJoker: Success, 5h-10h
+MostValuableSeries: Success, Card: 17, Total Value: 17
+NumCardsOfSuite: Success 9
+DropCard: Success
+LongestStraightWithoutJoker: Success, 15h-17h
+LongestStraightWithJoker: Success, 13h-17h
+MostValuableSeries: Success, Card: 17, Total Value: 17
+NumCardsOfSuite: Success 8
+DropCard: Success
+DropCard: Success
+DropCard: Success
+LongestStraightWithoutJoker: Success, 15h-16h
+LongestStraightWithJoker: Success, 13h-16h
+MostValuableSeries: Success, Card: 16, Total Value: 16
+NumCardsOfSuite: Success 5
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 10, Total Value: 20
+TakeCard: Success
+MostValuableSeries: Success, Card: 10, Total Value: 20
+TakeCard: Success
+MostValuableSeries: Success, Card: 9, Total Value: 27
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 4h-10h
+DropCard: Success
+LongestStraightWithoutJoker: Success, 13h-16h
+Quit done.
