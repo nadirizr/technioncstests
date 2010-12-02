@@ -1,0 +1,74 @@
+Init done.
+#Base
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 38h-38h
+LongestStraightWithJoker: Success, 36h-38h
+#MakeStraights
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 1h-2h
+LongestStraightWithJoker: Success, 1h-4h
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 6h-8h
+LongestStraightWithJoker: Success, 6h-10h
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 10h-12h
+LongestStraightWithJoker: Success, 6h-12h
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 14h-16h
+LongestStraightWithJoker: Success, 10h-16h
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 38h-40h
+LongestStraightWithJoker: Success, 10h-16h
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 38h-40h
+LongestStraightWithJoker: Success, 10h-16h
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 24h-40h
+LongestStraightWithJoker: Success, 20h-40h
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 20h-40h
+LongestStraightWithJoker: Success, 18h-40h
+#Back to Base
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+DropCard: Success
+LongestStraightWithoutJoker: Success, 38h-38h
+LongestStraightWithJoker: Success, 36h-38h
+Quit done.
