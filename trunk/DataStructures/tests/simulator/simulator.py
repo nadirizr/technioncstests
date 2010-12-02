@@ -42,6 +42,10 @@ class YanivParser:
   def parseLine(self, line):
     args = line.split()
     cmd = args[0]
+
+    if not cmd or cmd[0] == "#":
+      print line,
+      return STATUS_SUCCESS
     
     if cmd != "Init" and self.logic is None:
         print "%s: Invalid_input" % cmd
