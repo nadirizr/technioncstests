@@ -1,0 +1,74 @@
+Init 149
+#Base
+TakeCard 20h
+TakeCard 10h
+TakeCard 4h
+TakeCard 2h
+TakeCard 8h
+TakeCard 6h
+TakeCard 16h
+TakeCard 14h
+TakeCard 12h
+TakeCard 18h
+TakeCard 30h
+TakeCard 36h
+TakeCard 38h
+TakeCard 24h
+TakeCard 22h
+TakeCard 28h
+TakeCard 26h
+TakeCard 32h
+TakeCard 34h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+#MakeStraights
+TakeCard 1h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 7h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 11h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 15h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 39h
+TakeCard 40h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 21h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 25h
+TakeCard 27h
+TakeCard 29h
+TakeCard 31h
+TakeCard 33h
+TakeCard 35h
+TakeCard 37h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 23h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+#Back to Base
+DropCard 23h
+DropCard 37h
+DropCard 35h
+DropCard 33h
+DropCard 31h
+DropCard 29h
+DropCard 27h
+DropCard 25h
+DropCard 21h
+DropCard 39h
+DropCard 40h
+DropCard 15h
+DropCard 11h
+DropCard 7h
+DropCard 1h
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+Quit
