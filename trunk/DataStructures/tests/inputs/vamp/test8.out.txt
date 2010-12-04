@@ -1,0 +1,116 @@
+Init done.
+HandValue: Success 0
+#check straight union
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 17s-17s
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 15s-17s
+TakeCard: Success
+#check split:
+LongestStraightWithoutJoker: Success, 15s-18s
+DropCard: Success
+LongestStraightWithoutJoker: Success, 17s-18s
+DropCard: Success
+LongestStraightWithoutJoker: Success, 17s-17s
+DropCard: Success
+LongestStraightWithoutJoker: Success, 15s-15s
+DropCard: Success
+HandValue: Success 0
+TakeCard: Success
+TakeCard: Failure
+TakeCard: Failure
+TakeCard: Success
+#should be 22d
+LongestStraightWithoutJoker: Success, 22d-22d
+#should be 20d-22d
+LongestStraightWithJoker: Success, 20d-22d
+HandValue: Success 42
+TakeCard: Success
+TakeCard: Success
+#should be 20h-22h
+LongestStraightWithJoker: Success, 20h-22h
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+LongestStraightWithoutJoker: Success, 20h-27h
+#should be 20h-29h
+LongestStraightWithJoker: Success, 20h-29h
+#now try same length but higher value:
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+#still the h straight
+LongestStraightWithJoker: Success, 20h-29h
+TakeCard: Success
+#now the c straight 
+LongestStraightWithJoker: Success, 24c-33c
+NumCardsOfSuite: Success 2
+NumCardsOfSuite: Success 9
+NumCardsOfSuite: Success 10
+NumCardsOfSuite: Success 0
+LongestStraightWithoutJoker: Success, 24c-33c
+#add longer
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+#should be the s straight
+LongestStraightWithoutJoker: Success, 24c-33c
+LongestStraightWithJoker: Success, 1s-11s
+DropCard: Success
+LongestStraightWithoutJoker: Success, 24c-33c
+LongestStraightWithJoker: Success, 24c-33c
+DropCard: Success
+LongestStraightWithoutJoker: Success, 24c-32c
+LongestStraightWithJoker: Success, 20h-29h
+HandValue: Success 564
+DropCard: Success
+HandValue: Success 540
+LongestStraightWithoutJoker: Success, 24c-32c
+LongestStraightWithJoker: Success, 24c-32c
+MostValuableSeries: Success, Card: 29, Total Value: 58
+#try series:
+MostValuableSeries: Success, Card: 29, Total Value: 58
+TakeCard: Success
+MostValuableSeries: Success, Card: 29, Total Value: 58
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 50, Total Value: 100
+DropCard: Success
+MostValuableSeries: Success, Card: 29, Total Value: 58
+HandValue: Success 623
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 29, Total Value: 58
+TakeCard: Success
+TakeCard: Success
+TakeCard: Success
+MostValuableSeries: Success, Card: 31, Total Value: 93
+TakeCard: Success
+MostValuableSeries: Success, Card: 31, Total Value: 93
+TakeCard: Failure
+LongestStraightWithoutJoker: Success, 24c-32c
+NumCardsOfSuite: Success 5
+NumCardsOfSuite: Success 13
+HandValue: Success 803
+Quit done.

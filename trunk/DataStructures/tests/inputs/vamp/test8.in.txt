@@ -1,0 +1,116 @@
+Init 50
+HandValue
+#check straight union
+TakeCard 15s
+TakeCard 17s
+LongestStraightWithoutJoker
+TakeCard 16s
+LongestStraightWithoutJoker
+TakeCard 18s
+#check split:
+LongestStraightWithoutJoker
+DropCard 16s
+LongestStraightWithoutJoker
+DropCard 18s
+LongestStraightWithoutJoker
+DropCard 17s
+LongestStraightWithoutJoker
+DropCard 15s
+HandValue
+TakeCard 20d
+TakeCard 20d
+TakeCard 20d
+TakeCard 22d
+#should be 22d
+LongestStraightWithoutJoker
+#should be 20d-22d
+LongestStraightWithJoker
+HandValue
+TakeCard 20h
+TakeCard 22h
+#should be 20h-22h
+LongestStraightWithJoker
+TakeCard 21h
+TakeCard 23h
+TakeCard 24h
+TakeCard 25h
+TakeCard 26h
+TakeCard 27h
+TakeCard 29h
+LongestStraightWithoutJoker
+#should be 20h-29h
+LongestStraightWithJoker
+#now try same length but higher value:
+TakeCard 27c
+TakeCard 28c
+TakeCard 29c
+TakeCard 30c
+TakeCard 31c
+TakeCard 32c
+TakeCard 33c
+TakeCard 26c
+TakeCard 25c
+#still the h straight
+LongestStraightWithJoker
+TakeCard 24c
+#now the c straight 
+LongestStraightWithJoker
+NumCardsOfSuite d
+NumCardsOfSuite h
+NumCardsOfSuite c
+NumCardsOfSuite s
+LongestStraightWithoutJoker
+#add longer
+TakeCard 1s
+TakeCard 2s
+TakeCard 3s
+TakeCard 4s
+TakeCard 5s
+TakeCard 6s
+TakeCard 8s
+TakeCard 9s
+TakeCard 10s
+TakeCard 11s
+#should be the s straight
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 6s
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 33c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+HandValue
+DropCard 24h
+HandValue
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+MostValuableSeries
+#try series:
+MostValuableSeries
+TakeCard 50h
+MostValuableSeries
+TakeCard 50c
+TakeCard 11c
+TakeCard 11d
+TakeCard 11h
+MostValuableSeries
+DropCard 50h
+MostValuableSeries
+HandValue
+TakeCard 12c
+TakeCard 12d
+TakeCard 12h
+MostValuableSeries
+TakeCard 33h
+TakeCard 31h
+TakeCard 31d
+MostValuableSeries
+TakeCard 49h
+MostValuableSeries
+TakeCard 49h
+LongestStraightWithoutJoker
+NumCardsOfSuite d
+NumCardsOfSuite h
+HandValue
+Quit
