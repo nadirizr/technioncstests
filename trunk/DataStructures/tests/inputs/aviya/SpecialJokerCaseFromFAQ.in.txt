@@ -1,0 +1,13 @@
+Init 50
+TakeCard 18h
+TakeCard 17h
+TakeCard 23h
+TakeCard 25h
+TakeCard 19h
+TakeCard 20h
+TakeCard 26h
+TakeCard 23d
+TakeCard 25d
+TakeCard 26d
+LongestStraightWithJoker
+Quit
