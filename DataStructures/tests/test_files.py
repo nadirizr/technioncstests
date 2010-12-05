@@ -32,27 +32,36 @@ def run_program(name):
         pass
     
     # set up all file names for run
-    test_in = TESTS_DIR + os.path.sep + name + TESTS_INPUT_SUFFIX
-    test_out = TEMP_DIR + os.path.sep + name + TESTS_OUTPUT_SUFFIX
-    expected_out = TESTS_DIR + os.path.sep + name + TESTS_OUTPUT_SUFFIX
-    test_command = PROGRAM_PATH + " " + test_in + " > " + test_out
+    test_in_file = TESTS_DIR + os.path.sep + name + TESTS_INPUT_SUFFIX
+    test_out_file = TEMP_DIR + os.path.sep + name + TESTS_OUTPUT_SUFFIX
+    expected_out_file = TESTS_DIR + os.path.sep + name + TESTS_OUTPUT_SUFFIX
+    test_command = PROGRAM_PATH + " " + test_in_file + " > " + test_out_file
     
     # run the actual program
     os.system(test_command)
     
     # compare the output
-    real_out = file(test_out, "r").read()
-    expected_out = file(expected_out, "r").read()
+    try:
+      real_out = file(test_out_file, "r").read()
+    except:
+      raise RuntimeError(
+          ("Output file from your code ('%s') does not exist!\n" +
+           "Possible reasons:\n" +
+           "1) SEGMENTATION FAULT in your code prevented output\n" +
+           "2) No more free space on hard drive (especially on T2)\n" +
+           "   You could try deleting tests/random and tests/tmp directories") %
+          (test_out_file))
+    expected_out = file(expected_out_file, "r").read()
     
     # delete temp files if there was no error
     try:
         if real_out == expected_out:
-            os.remove(test_out)
+            os.remove(test_out_file)
             os.rmdir(TEMP_DIR)
     except:
         pass
     
-    return (real_out, expected_out)
+    return (test_out_file, real_out, expected_out_file, expected_out)
 
 def run_valgrind(name):
     """
@@ -84,7 +93,8 @@ class TestProgramRun(unittest.TestCase):
     def testRun(self):
         print "(%s) ... " % self.name,
         sys.stdout.flush()
-        real_out, expected_out = run_program(self.name)
+        real_out_file, real_out, expected_out_file, expected_out = \
+            run_program(self.name)
         real_out = real_out.split("\n")
         expected_out = expected_out.split("\n")
         for i in range(0, len(expected_out)):
@@ -92,8 +102,10 @@ class TestProgramRun(unittest.TestCase):
                 " ".join(real_out[i].split()),
                 " ".join(expected_out[i].split()),
                 self.name + (": line %d differs in output:\n" +
-                    "real_out: '%s'\n!=\nexpected: '%s'") % (
-                    (i+1), real_out[i], expected_out[i]))
+                    "real_out (file:'%s')\t: '%s'\n!=\n" +
+                    "expected (file:'%s')\t: '%s'") % (
+                    (i+1), real_out_file, real_out[i],
+                    expected_out_file, expected_out[i]))
         self.assertEquals(len(expected_out), len(real_out),
             self.name + ": length of expected output and actual output differ")
 
