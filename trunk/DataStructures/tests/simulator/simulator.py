@@ -41,8 +41,10 @@ class YanivParser:
 
   def parseLine(self, line):
     args = line.split()
-    cmd = args[0]
+    if not args:
+      return
 
+    cmd = args[0]
     if not cmd or cmd[0] == "#":
       print line,
       return STATUS_SUCCESS
