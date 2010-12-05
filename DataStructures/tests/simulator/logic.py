@@ -132,4 +132,9 @@ class YanivLogic:
        Suites.get(s1_suite, -1) < Suites.get(s2_suite, -1):
       return True
 
+    if len(s1) == len(s2) and sum1 == sum2 and \
+       Suites.get(s1_suite, -1) == Suites.get(s2_suite, -1) and \
+       (s1 and s2 and s1[-1] < s2[-1]):
+      return True
+
     return False
