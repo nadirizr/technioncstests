@@ -1,0 +1,156 @@
+Init 10000
+TakeCard 1c
+TakeCard 2c
+TakeCard 3c
+TakeCard 4c
+TakeCard 5c
+TakeCard 6c
+TakeCard 7c
+TakeCard 8c
+TakeCard 9c
+TakeCard 10c
+TakeCard 11c
+TakeCard 500c
+TakeCard 501c
+TakeCard 502c
+TakeCard 503c
+TakeCard 504c
+TakeCard 505c
+HandValue	
+NumCardsOfSuite c
+MostValuableSeries
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 6c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 505d
+TakeCard 505s
+TakeCard 505h
+TakeCard 1d
+TakeCard 2d
+TakeCard 3d
+TakeCard 4d
+TakeCard 5d
+TakeCard 6d
+TakeCard 7d
+TakeCard 8d
+TakeCard 9d
+TakeCard 10d
+TakeCard 11d
+HandValue	
+NumCardsOfSuite d
+MostValuableSeries
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 600s
+TakeCard 601s
+TakeCard 602s
+TakeCard 603s
+TakeCard 604s
+TakeCard 605s
+TakeCard 606s
+TakeCard 607s
+TakeCard 608s
+TakeCard 609s
+TakeCard 610s
+HandValue	
+NumCardsOfSuite s
+MostValuableSeries
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 605s
+HandValue	
+NumCardsOfSuite s
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 610c
+TakeCard 610d
+TakeCard 610h
+MostValuableSeries
+TakeCard 705h
+TakeCard 704h
+TakeCard 707h
+TakeCard 708h
+TakeCard 701h
+TakeCard 710h
+TakeCard 700h
+TakeCard 706h
+TakeCard 702h
+TakeCard 703h
+TakeCard 709h
+HandValue	
+NumCardsOfSuite h
+MostValuableSeries
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 704h
+HandValue	
+NumCardsOfSuite s
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 610h
+MostValuableSeries
+TakeCard 705d
+TakeCard 705s
+TakeCard 705c
+MostValuableSeries
+DropCard 705h
+DropCard 705c
+MostValuableSeries
+TakeCard 705h
+TakeCard 705c
+MostValuableSeries
+TakeCard 704d
+TakeCard 707d
+TakeCard 708d
+TakeCard 710d
+TakeCard 706d
+TakeCard 709d
+TakeCard 711d
+TakeCard 716d
+TakeCard 713d
+TakeCard 712d
+TakeCard 719d
+TakeCard 714d
+TakeCard 715d
+TakeCard 718d
+TakeCard 719d
+TakeCard 717d
+TakeCard 720d
+TakeCard 722d
+TakeCard 721d
+TakeCard 725d
+TakeCard 724d
+TakeCard 723d
+TakeCard 722d
+TakeCard 726d
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 711d
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 715d
+DropCard 718d
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+TakeCard 9999c
+TakeCard 10000c
+TakeCard 9990c
+TakeCard 9998c
+TakeCard 9991c
+TakeCard 9997c
+TakeCard 9992c
+TakeCard 9996c
+TakeCard 9993c
+TakeCard 9995c
+TakeCard 9994c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 9999c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+DropCard 10000c
+LongestStraightWithoutJoker
+LongestStraightWithJoker
+Quit
