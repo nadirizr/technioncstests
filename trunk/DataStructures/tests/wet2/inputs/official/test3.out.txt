@@ -1,0 +1,14 @@
+Init done.
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+GetRequestPriority: Success 1
+GetHighestPriorityRequest: Success 4
+Dequeue Request: Success
+GetHighestPriorityRequest: Success 3
+Dequeue Request: Success
+Enqueue Request: Success
+GetRequestPriority: Success 10
+GetHighestPriorityRequest: Success 2
