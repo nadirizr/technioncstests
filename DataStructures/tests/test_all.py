@@ -12,4 +12,4 @@ ERROR: Couldn't find your program!
 It should be named '%s' and in your main program dir (one above tests)""" % (
     USER_PROGRAM)
 
-os.system("python %s/test_all.py %s" % (TEST_DIR, " ".join(sys.argv[1:])))
+os.system("cd %s && python test_all.py %s" % (TEST_DIR, " ".join(sys.argv[1:])))
