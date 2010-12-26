@@ -29,8 +29,9 @@ USER_PROGRAM = TEST_PACKAGES[chosen_package]
 if os.system("cp -f ../%s ." % (USER_PROGRAM)) != 0:
   print """
 ERROR: Couldn't find your program!
-It should be named '%s' and in your main program dir (one above tests)""" % (
+It should be named '%s' and in your main program dir (one above tests).""" % (
     USER_PROGRAM)
+  sys.exit(1)
 
 # Run the tests.
 os.system("cd %s && python test_all.py %s" % (TEST_DIR, " ".join(args)))
