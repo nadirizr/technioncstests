@@ -1,0 +1,17 @@
+Init 5
+EnqueueRequest 0,0,1
+EnqueueRequest 1,1,1
+EnqueueRequest 2,2,1
+EnqueueRequest 3,3,1
+EnqueueRequest 4,4,1
+GetRequestPriority 0
+GetHighestPriorityRequest
+DequeueRequest 4
+GetHighestPriorityRequest
+DequeueRequest 2
+EnqueueRequest 2,4,10
+GetRequestPriority 2
+GetHighestPriorityRequest
+
+
+

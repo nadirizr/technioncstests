@@ -1,0 +1,24 @@
+Init done.
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+GetHandlingServerId: Success, 0
+KillServer: Success
+GetHandlingServerId: Success, 1
+KillServer: Success
+GetHandlingServerId: Success, 2
+KillServer: Success
+GetHandlingServerId: Success, 3
+KillServer: Success
+GetHandlingServerId: Success, 4
+Enqueue Request: Failure
+Enqueue Request: Failure
+Enqueue Request: Failure
+Enqueue Request: Failure
+GetHandlingServerId: Success, 4
+GetHandlingServerId: Success, 4
+GetHandlingServerId: Success, 4
+GetHandlingServerId: Success, 4
+GetHandlingServerId: Success, 4
