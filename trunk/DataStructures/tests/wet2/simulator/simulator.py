@@ -170,9 +170,19 @@ class ServersParser:
       return STATUS_SUCCESS
   
   def printTasks(self):
-    print "[ ",
-    for t in self.logic.tasks.values():
-      print "{reqID=%d,serverID=%d,priority=%d}, " % (t.reqID, t.serverID, t.priority),
+    if self.logic is None:
+      return
+
+    for s in range(self.logic.K):
+      print "%d:" % s,
+      if s in self.logic.deadServers:
+        print "DEAD,",
+        continue
+      print "[",
+      for t in self.logic.tasks.values():
+        if t.serverID == s:
+          print "{reqID=%d,priority=%d}, " % (t.reqID, t.priority),
+      print "],",
     print
 
 file_stream = sys.stdin
