@@ -2,6 +2,7 @@ import sys
 import os
 import os.path
 import random
+from logic import Task
 
 TEST_DIR = ".." + os.path.sep + "random"
 TEST_FILE_PATTERN = "test%d"
@@ -11,21 +12,19 @@ TEST_INPUT_SUFFIX = ".in.txt"
 TEST_OUTPUT_SUFFIX = ".out.txt"
 TEST_ERROR_SUFFIX = ".err.txt"
 
-MIN_COMMANDS = 300
-MAX_COMMANDS = 500
+MIN_COMMANDS = 500
+MAX_COMMANDS = 2000
 ERROR_CHANCE = 0.05
 
 
-# these are all the cards that we currently have in hand
-suites = ["CLUB", "DIAMOND", "SPADE", "HEART"]
-cards_per_suite = {
-  "CLUB": [],
-  "DIAMOND": [],
-  "SPADE": [],
-  "HEART": [],
-}
-# and this is the largest card number we can have
-N = 0
+# This is the initial amount of servers.
+K = 0
+# These are all the tasks that we currently have.
+tasks = {}
+# This is the last reqID that was used.
+last_reqID = 0
+# These are the dead servers.
+dead_servers = []
 
 
 # seed the random number generator
@@ -36,210 +35,234 @@ random.seed()
 # Utility Functions          #
 ##############################
 
-def getRandomHighestCard():
-  return random.randint(5, 500)
+def getRandomServerCount():
+  return random.randint(1,10000)
 
-def getRandomSuite():
-  return suites[random.randrange(len(suites))]
+def getNewReqID():
+  global last_reqID
+  return last_reqID + random.randint(0,100)
 
-def getRandomInvalidSuite():
-  return chr(random.randrange(ord("a"),ord("z")))
+def getExistingReqID():
+  if not tasks:
+    return random.randrange(0,2*K)
+  return tasks.keys()[random.randrange(len(tasks.keys()))]
 
-def getSuiteLetter(suite):
-  return suite[0].lower()
+def getRandomPriority():
+  return random.randint(0,2*K)
 
-def getRandomInvalidCard():
-  suite = getRandomInvalidSuite()
-  number = random.randrange(0, 2*N)
-  return (number, suite)
+def getRandomExistingPriority():
+  if not tasks:
+    return getRandomPriority()
+  return tasks.values()[random.randrange(len(tasks.values()))].priority
 
-def getRandomExistingCard():
-  suite = getRandomSuite()
-  cards = cards_per_suite[suite]
-  if not cards:
-    for s in suites:
-      if cards_per_suite[s]:
-        cards = cards_per_suite[s]
-  if not cards:
-    return None
+def getRandomServer():
+  return random.randrange(K)
 
-  return (cards[random.randrange(len(cards))], suite)
+def getDeadServer():
+  if not dead_servers:
+    return getRandomServer()
+  return dead_servers[random.randrange(len(dead_servers))]
 
-def getCardSuiteCount(number):
-  return len([s for s in suites if number in cards_per_suite[s]])
+def getLiveServer():
+  if len(dead_servers) == K:
+    return getDeadServer()
+  s = random.randrange(K)
+  while s in dead_servers:
+    s = random.randrange(K)
+  return s
 
-def getRandomExistingStraight():
-  suite = getRandomSuite()
-  cards = cards_per_suite[suite]
-  if not cards:
-    for s in suites:
-      if cards_per_suite[s]:
-        cards = cards_per_suite[s]
-  if not cards:
-    return None
+def getNumTasksForServer(serverID):
+  return len([t for t in tasks.values() if t.serverID == serverID])
 
-  ic = random.randrange(len(cards))
-  straight = [cards[ic]]
-  ic += 1
-  while (ic < len(cards)) and (cards[ic] == straight[-1] + 1):
-    straight += [cards[ic]]
-    ic += 1
-  return (straight, suite)
+def getEmptyServer():
+  s = getLiveServer()
+  if s in dead_servers:
+    return s
+  if getNumTasksForServer(s) < 3:
+    return s
+  for i in range(3):
+    s = getLiveServer()
+    if getNumTasksForServer(s) < 3:
+      return s
+  return s
 
+def getBusyServer():
+  s = getLiveServer()
+  if s in dead_servers:
+    return s
+  if getNumTasksForServer(s) >= 3:
+    return s
+  for i in range(3):
+    s = getLiveServer()
+    if getNumTasksForServer(s) >= 3:
+      return s
+  return s
+
+def generateErrorRequest():
+  reqID = 0
+  serverID = 0
+  priority = 0
+  if random.random() < 0.3:
+    reqID = random.randint(-10000,-1)
+  else:
+    reqID = getNewReqID()
+  if random.random() < 0.3:
+    serverID = random.randint(-2*K,2*K)
+  else:
+    serverID = getDeadServer()
+    if serverID not in dead_servers:
+      serverID = -1
+  if random.random() < 0.3:
+    priority = random.randint(-10000,-1)
+  else:
+    priority = random.randint(0,100)
+    
+  return "EnqueueRequest %d,%d,%d" % (reqID,serverID,priority)
 
 ##############################
 # Command Creation Functions #
 ##############################
 
 def createInit():
-  global N
-  N = getRandomHighestCard()
-  return "Init %d" % N
+  global K
+  K = getRandomServerCount()
+  return "Init %d" % K
 
-def createTakeCardForStraightWithJoker():
-  straight_tuple = getRandomExistingStraight()
-  if straight_tuple is None:
-    return createTakeCardRandom()
-  (straight, suite) = straight_tuple
-
-  if random.random() < 0.5 and (straight[-1]+2 <= N):
-    card_number = straight[-1]+2
-  elif straight[0]-2 > 0:
-    card_number = straight[0]-2
-  else:
-    return None
-
-  if card_number not in cards_per_suite[suite]:
-    cards_per_suite[suite].append(card_number)
-    cards_per_suite[suite].sort()
-
-  return "TakeCard %d%s" % (card_number, getSuiteLetter(suite))
-
-def createTakeCardForStraight():
-  straight_tuple = getRandomExistingStraight()
-  if straight_tuple is None:
-    return createTakeCardRandom()
-  (straight, suite) = straight_tuple
-
-  if random.random() < 0.5 and (straight[-1]+1 <= N):
-    card_number = straight[-1]+1
-  elif straight[0]-1 > 0:
-    card_number = straight[0]-1
-  else:
-    return None
-
-  if card_number not in cards_per_suite[suite]:
-    cards_per_suite[suite].append(card_number)
-    cards_per_suite[suite].sort()
-
-  return "TakeCard %d%s" % (card_number, getSuiteLetter(suite))
-
-def createTakeCardForSeries():
-  card_tuple = getRandomExistingCard()
-  if card_tuple is None:
-    return createTakeCardRandom()
-  (number, suite) = card_tuple
-
-  for i in range(3):
-    if getCardSuiteCount(number) < len(suites):
-      break
-    (number, suite) = getRandomExistingCard()
-
-  for s in suites:
-    if number not in cards_per_suite[s]:
-      return "TakeCard %d%s" % (number, getSuiteLetter(s))
-  return createTakeCardRandom()
-
-def createTakeCardRandom():
-  number = None
-  suite = None
-  if random.random() < ERROR_CHANCE/2:
-    number = 0
-  elif random.random() < ERROR_CHANCE/2:
-    suite = getRandomInvalidSuite()
+def createEnqueueRequestForBusyServer():
+  if random.random() < ERROR_CHANCE:
+    return generateErrorRequest()
   
-  if number is None:
-    number = random.randrange(1,N+1)
-  if suite is None:
-    suite = getRandomSuite()
-  return "TakeCard %d%s" % (number, getSuiteLetter(suite))
-
-def createDropCardGood():
-  if random.random() < ERROR_CHANCE:
-    (card_number, card_suite) = getRandomInvalidCard()
+  reqID = getNewReqID()
+  global last_reqID
+  last_reqID = reqID + 1
+  serverID = getBusyServer()
+  if random.random() < 0.5:
+    priority = getRandomExistingPriority()
   else:
-    card_tuple = getRandomExistingCard()
-    if card_tuple is None:
-      return createDropCardMissing()
-    (card_number, card_suite) = getRandomExistingCard()
-  return "DropCard %d%s" % (card_number, getSuiteLetter(card_suite))
+    priority = getRandomPriority()
 
-def createDropCardMissing():
+  global tasks
+  tasks[reqID] = Task(reqID,serverID,priority)
+  
+  return "EnqueueRequest %d,%d,%d" % (reqID,serverID,priority)
+
+def createEnqueueRequestForNewServer():
   if random.random() < ERROR_CHANCE:
-    (card_number, card_suite) = getRandomInvalidCard()
+    return generateErrorRequest()
+  
+  reqID = getNewReqID()
+  global last_reqID
+  last_reqID = reqID + 1
+  serverID = getEmptyServer()
+  if random.random() < 0.5:
+    priority = getRandomExistingPriority()
   else:
-    card_suite = getRandomSuite()
-    card_number = random.randrange(1,N+1)
-  return "DropCard %d%s" % (card_number, getSuiteLetter(card_suite))
+    priority = getRandomPriority()
 
-def createHandValue():
-  return "HandValue"
+  global tasks
+  tasks[reqID] = Task(reqID,serverID,priority)
+  
+  return "EnqueueRequest %d,%d,%d" % (reqID,serverID,priority)
 
-def createNumCardsOfSuite():
+def createDequeueRequest():
+  reqID = getExistingReqID()
   if random.random() < ERROR_CHANCE:
-    suite = getRandomInvalidSuite()
-  else:
-    suite = getRandomSuite()
+    reqID = random.randint(-2*last_reqID,2*last_reqID)
+  if reqID in tasks.keys():
+    del tasks[reqID]
 
-  return "NumCardsOfSuite %s" % getSuiteLetter(suite)
+  return "DequeueRequest %d" % reqID
 
-def createMostValuableSeries():
-  return "MostValuableSeries"
+def createGetRequestPriority():
+  reqID = getExistingReqID()
+  if random.random() < ERROR_CHANCE:
+    reqID = random.randint(-2*last_reqID,2*last_reqID)
 
-def createLongestStraightWithoutJoker():
-  return "LongestStraightWithoutJoker"
+  return "GetRequestPriority %d" % reqID
 
-def createLongestStraightWithJoker():
-  return "LongestStraightWithJoker"
+def createGetHighestPriorityRequest():
+  return "GetHighestPriorityRequest"
+
+def createLowerOldRequestsPriority():
+  reqID = random.randint(0,last_reqID)
+  if random.random() < ERROR_CHANCE:
+    reqID = random.randint(-2*last_reqID,2*last_reqID)
+  delta = getRandomExistingPriority()
+  if random.random() < ERROR_CHANCE:
+    delta = getRandomPriority()
+  elif random.random() < ERROR_CHANCE:
+    delta = random.randint(-2*K,2*K)
+
+  if delta >= 0:
+    global tasks
+    for t in tasks.values():
+      if t.reqID <= reqID:
+        t.priority -= delta
+        if t.priority < 0: t.priority = 0
+
+  return "LowerOldRequestsPriority %d,%d" % (reqID,delta)
+
+def createGetHandlingServerID():
+  reqID = getExistingReqID()
+  if random.random() < ERROR_CHANCE:
+    reqID = random.randint(-2*last_reqID,2*last_reqID)
+
+  return "GetHandlingServerId %d" % reqID
+
+def createKillServerBusy():
+  serverID = getBusyServer()
+  if random.random() < ERROR_CHANCE:
+    serverID = random.randint(-2*K,2*K)
+  global dead_servers
+  if serverID >= 0 and serverID < K and serverID not in dead_servers:
+    dead_servers += [serverID]
+  return "KillServer %d" % serverID
+
+def createKillServerEmpty():
+  serverID = getEmptyServer()
+  if random.random() < ERROR_CHANCE:
+    serverID = random.randint(-2*K,2*K)
+  global dead_servers
+  if serverID >= 0 and serverID < K and serverID not in dead_servers:
+    dead_servers += [serverID]
+  return "KillServer %d" % serverID
 
 def createQuit():
   return "Quit"
 
-# this dictionary holds all available commands to create as keys, and the
+# This dictionary holds all available commands to create as keys, and the
 # values are the associated creation functions for those commands and their
-# probability of appearing
+# probability of appearing (before normalization).
 commands = { }
-commands["yaniv"] = [
-    (createTakeCardForStraightWithJoker, 0.3),
-    (createTakeCardForStraight, 0.5),
-    (createTakeCardForSeries, 0.5),
-    (createTakeCardRandom, 0.5),
-    (createDropCardGood, 0.5),
-    (createDropCardMissing, 0.5),
-    (createHandValue, 0.2),
-    (createNumCardsOfSuite, 0.2),
-    (createMostValuableSeries, 0.2),
-    (createLongestStraightWithoutJoker, 0.2),
-    (createLongestStraightWithJoker, 0.2),
+commands["servers"] = [
+    (createEnqueueRequestForBusyServer, 0.5),
+    (createEnqueueRequestForNewServer, 0.5),
+    (createDequeueRequest, 0.5),
+    (createGetRequestPriority, 0.3),
+    (createGetHighestPriorityRequest, 0.3),
+    (createLowerOldRequestsPriority, 0.3),
+    (createGetHandlingServerID, 0.3),
+    (createKillServerBusy, 0.3),
+    (createKillServerEmpty, 0.3),
 ]
 
-# sum all of the chances together for each set of commands
+# Sum all of the chances together for each set of commands.
 sumChances = { }
-sumChances["yaniv"] = reduce(lambda s,c:s+c[1], commands["yaniv"], 0.0)
+sumChances["servers"] = reduce(lambda s,c:s+c[1], commands["servers"], 0.0)
 
-# the initial commands to put at the head of the input file
+# The initial commands to put at the head of the input file.
 INITIAL_COMMANDS = { }
-INITIAL_COMMANDS["yaniv"] = [createInit()]
-# the final commands to put at the end of the input file
+INITIAL_COMMANDS["servers"] = [createInit()]
+# The final commands to put at the end of the input file.
 FINAL_COMMANDS = { }
-FINAL_COMMANDS["yaniv"] = [createQuit()]
+FINAL_COMMANDS["servers"] = [createQuit()]
 
 ##############################
 # Logic Functions            #
 ##############################
 
 
-# creates a new random command
+# Creates a new random command.
 def createNewCommand(cmd_list, cmd_sum):
     chance = random.random() * cmd_sum
     sum = 0.0
@@ -248,35 +271,35 @@ def createNewCommand(cmd_list, cmd_sum):
         if chance < sum:
             return c[0]()
 
-# creates a new random set of commands for a file
+# Creates a new random set of commands for a file.
 def createNewCommandSet(cmd_list, cmd_sum, init_commands, fin_commands):
     num_lines = random.randint(MIN_COMMANDS, MAX_COMMANDS) - 2
     return init_commands + \
         [createNewCommand(cmd_list, cmd_sum) for i in range(num_lines)] + \
         fin_commands
     
-# creates a new random file from a given command mode
+# Creates a new random file from a given command mode.
 def createNewFile(i, mode):
-    # create the .in file
+    # Create the .in file.
     filepath = TEST_DIR + os.path.sep + (TEST_FILE_PATTERN % i) + TEST_INPUT_SUFFIX
     f = file(filepath, "w")
     
-    # create the lines
+    # Create the lines.
     in_cmds = createNewCommandSet(commands[mode], sumChances[mode],
                                   INITIAL_COMMANDS[mode], FINAL_COMMANDS[mode])
     for c in in_cmds:
         f.write(c + "\n")
     f.close()
     
-    # run the simulator to get the outputs
+    # Run the simulator to get the outputs.
     outpath = TEST_DIR + os.path.sep + (TEST_FILE_PATTERN % i) + TEST_OUTPUT_SUFFIX
     runSimulator(filepath, outpath)
 
-# runs the simulator for the given input file, creating error and output files
+# Runs the simulator for the given input file, creating error and output files.
 def runSimulator(inpath, outpath):
     os.system(SIMULATOR_PATH + " " + inpath + " > " + outpath)
 
-# creates the simulated output and error for each of the files in input_dir
+# Creates the simulated output and error for each of the files in input_dir.
 def createOutputs(input_dir):
     from glob import glob
     inputs = glob(input_dir + os.path.sep + "*" + TEST_INPUT_SUFFIX)
@@ -284,7 +307,7 @@ def createOutputs(input_dir):
     for i in range(len(inputs)):
         runSimulator(inputs[i], outputs[i])
 
-# determine amount of files to create
+# Determine amount of files to create.
 num_files = 1
 modes = []
 input_dir = ""
@@ -309,20 +332,20 @@ def parseArgs():
                     modes += [arg]                    
         if fail:
             print "Usage: create_tests.py [-i<dir>] [<mode>] [<num of files>]"
-            print "       Possible modes: yaniv"
+            print "       Possible modes: servers"
             sys.exit(1)
 parseArgs()
 if not modes:
-    modes = ["yaniv"]
+    modes = ["servers"]
 
 if not input_dir:
-    # make sure test dir exists
+    # Make sure test dir exists.
     try:
         os.makedirs(TEST_DIR)
     except:
         pass
 
-    # create the files
+    # Create the files.
     for i in range(num_files):
         createNewFile(i, modes[0])
 else:
