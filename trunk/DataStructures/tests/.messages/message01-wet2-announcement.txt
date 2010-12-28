@@ -1,0 +1,19 @@
+The new tests are here (for wet2), and they use the same test.sh.
+Until now you would have done:
+./test.sh <...params...>
+From now on, if you want to use the previous tests, you can do:
+./test.sh wet1 <...params...>
+And to use the new tests:
+./test.sh wet2 <...params...>
+For now the default is still wet1 because people are still using it, but in a few days I will change it.
+
+For information on what <...params...> could be, just do:
+./test.sh wet2 help
+Also, all the information in the previous mail for the first exercise are still correct and usefull.
+
+As always, if you find any problem you think exists in the tests, you can contact me at: nadir.izr@gmail.com.
+All tests that we put here are checked in some way - we don't just throw stuff in.
+So if you find a problem with a test, you should send me a mail about it since many people are using this, and
+it could just as well be a problem in your code (or many others would have the same problem...).
+
+I hope this helps you in your debugging efforts.

@@ -2,12 +2,31 @@
 
 import sys
 import os
+from glob import glob
 
 TEST_PACKAGES = {
   "wet1": "yaniv",
   "wet2": "servers",
 }
 DEFAULT_PACKAGE = "wet1"
+
+# Check for messages.
+if os.path.isdir(".messages"):
+  messages = glob(".messages/*.txt")
+  read_already = []
+  if os.path.isfile(".messages/read"):
+    read_already = file(".messages/read","r").readlines()
+    read_already = [s.strip() for s in read_already]
+  for m in messages:
+    if m not in read_already:
+      message_text = open(m,"r").read()
+      print "=== Message '%s' ===" % m
+      print message_text
+      print "=== Message '%s' ===" % m
+      raw_input("Press any key to continue...")
+  out_file = file(".messages/read","w")
+  out_file.write("\n".join(messages) + "\n")
+  out_file.close()
 
 # Select test package and handle command line arguments.
 args = sys.argv[1:]
