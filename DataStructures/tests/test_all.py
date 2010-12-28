@@ -10,6 +10,9 @@ TEST_PACKAGES = {
 }
 DEFAULT_PACKAGE = "wet1"
 
+# Update usage
+os.system("touch /var/tmp/ds_wet_users/$USER")
+
 # Check for messages.
 if os.path.isdir(".messages"):
   messages = glob(".messages/*.txt")
