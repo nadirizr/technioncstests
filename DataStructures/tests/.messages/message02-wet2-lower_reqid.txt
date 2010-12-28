@@ -1,0 +1,2 @@
+The tests can now create situations with a small chance in which a lower request ID is given after a higher request ID.
+This is in response to the note in the FAQ about that.
