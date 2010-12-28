@@ -226,7 +226,8 @@ def createKillServerEmpty():
   global dead_servers
   if serverID >= 0 and serverID < K and serverID not in dead_servers:
     dead_servers += [serverID]
-  return "KillServer %d" % serverID
+  newServerID = getRandomServer()
+  return "KillServer %d,%d" % (serverID,newServerID)
 
 def createQuit():
   return "Quit"
