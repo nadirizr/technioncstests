@@ -40,11 +40,13 @@ def getRandomServerCount():
 
 def getNewReqID():
   global last_reqID
+  if random.random() < 0.1:
+    return random.randint(0,last_reqID)
   return last_reqID + random.randint(0,100)
 
 def getExistingReqID():
   if not tasks:
-    return random.randrange(0,2*K)
+    return getNewReqID()
   return tasks.keys()[random.randrange(len(tasks.keys()))]
 
 def getRandomPriority():
