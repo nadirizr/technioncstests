@@ -20,9 +20,11 @@ if os.path.isdir(".messages"):
   for m in messages:
     if m not in read_already:
       message_text = open(m,"r").read()
+      print
       print "=== Message '%s' ===" % m
+      print
       print message_text
-      print "=== Message '%s' ===" % m
+      print "=== End of Message '%s' ===" % m
       raw_input("Press any key to continue...")
   out_file = file(".messages/read","w")
   out_file.write("\n".join(messages) + "\n")
