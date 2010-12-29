@@ -59,7 +59,7 @@ class ServersLogic:
     return self.tasks[reqID].serverID
 
   def killServer(self, serverID, newServerID):
-    if serverID in self.deadServers:
+    if serverID in self.deadServers or newServerID in self.deadServers:
       return STATUS_FAILURE
 
     for t in self.tasks.values():
