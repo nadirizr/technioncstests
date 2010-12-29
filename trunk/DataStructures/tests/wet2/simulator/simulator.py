@@ -151,7 +151,8 @@ class ServersParser:
       except:
         print "KillServer: Invalid_input"
         return STATUS_INVALID_INPUT
-      if serverID < 0 or newServerID < 0 or serverID >= self.logic.K or newServerID >= self.logic.K:
+      if serverID < 0 or newServerID < 0 or serverID >= self.logic.K or \
+         newServerID >= self.logic.K or serverID == newServerID:
         print "KillServer: Invalid_input"
         return STATUS_INVALID_INPUT
 
