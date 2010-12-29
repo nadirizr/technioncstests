@@ -1,0 +1,7 @@
+Dequeue Request: Invalid_input
+Init done.
+Enqueue Request: Success
+Dequeue Request: Success
+Dequeue Request: Invalid_input
+Dequeue Request: Failure
+Quit done.

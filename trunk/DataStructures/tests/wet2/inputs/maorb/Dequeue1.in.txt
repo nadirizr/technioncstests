@@ -1,0 +1,7 @@
+DequeueRequest 1
+Init 27
+EnqueueRequest 1,0,10
+DequeueRequest 1
+DequeueRequest -1
+DequeueRequest 1
+Quit
