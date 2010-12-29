@@ -376,6 +376,65 @@ bool testRandomInsertions() {
   return true;
 }
 
+bool testPath(const AVLTree<int> &tree, AVLTree<int>::Iterator pathIter, const int *path,  int n) {
+  // use the iterator and check the path
+  for (int i = 0; i < n; ++i) {
+    ASSERT_TRUE(pathIter != tree.end());
+    ASSERT_EQUALS(path[i], pathIter.value());
+    ++pathIter;
+  }
+  // check that there are no more elements in the tree
+  ASSERT_TRUE(pathIter == tree.end());
+  
+  return true;
+}
+
+/**
+ *       ___8___
+ *      /       \
+ *     5        10
+ *    / \      /  \
+ *   3   6    9   12
+ *  / \   \       /
+ * 2   4   7     11
+ */
+bool testPathIterator() {
+  AVLTree<int> tree;
+  ASSERT_TRUE(tree.insert(5));
+  ASSERT_TRUE(tree.insert(2));
+  ASSERT_TRUE(tree.insert(8));
+  ASSERT_TRUE(tree.insert(1));
+  ASSERT_TRUE(tree.insert(4));
+  ASSERT_TRUE(tree.insert(6));
+  ASSERT_TRUE(tree.insert(10));
+  ASSERT_TRUE(tree.insert(3));
+  ASSERT_TRUE(tree.insert(7));
+  ASSERT_TRUE(tree.insert(9));
+  ASSERT_TRUE(tree.insert(12));
+  ASSERT_TRUE(tree.insert(11));
+  ASSERT_TRUE(tree.remove(1));
+  int pathFor2[]  = {8, 5, 3, 2};
+  int pathFor4[]  = {8, 5, 3, 4};
+  int pathFor7[]  = {8, 5, 6, 7};
+  int pathFor9[]  = {8,10, 9   };
+  int pathFor11[] = {8,10,12,11};
+
+  int i = 2;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor2,  4)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor2,  3)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor4,  4)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor4,  2)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor7,  3)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor7,  4)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor7,  1)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor9,  3)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor9,  2)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor11, 4)); i++;
+  ASSERT_TRUE(testPath(tree, tree.findPath(&i), pathFor11, 3)); i++;
+
+  return true;
+}
+
 int main(int argc, char **argv) {
 	// initialize random number generator
 	srand( time(NULL) );
@@ -389,4 +448,5 @@ int main(int argc, char **argv) {
   RUN_TEST(testRemoveRoot);
   RUN_TEST(testTreeBalance3Bug);
   RUN_TEST_N_TIMES(testRandomInsertions,random_tests);
+  RUN_TEST(testPathIterator);
 }
