@@ -37,11 +37,15 @@ class ServersParser:
       return STATUS_SUCCESS
     
     if cmd != "Init" and self.logic is None:
-        print "%s: Invalid_input" % cmd
-        return STATUS_INVALID_INPUT
+      if cmd == "EnqueueRequest":
+        cmd = "Enqueue Request"
+      if cmd == "DequeueRequest":
+        cmd = "Dequeue Request"
+      print "%s: Invalid_input" % cmd
+      return STATUS_INVALID_INPUT
     if cmd == "Init" and self.logic is not None:
-        print "Init was already called."
-        return STATUS_FAILURE
+      print "Init was already called."
+      return STATUS_FAILURE
 
     if cmd == "Init":
       K = int(args[1])

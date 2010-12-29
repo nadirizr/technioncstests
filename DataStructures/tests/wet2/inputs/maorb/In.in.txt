@@ -1,0 +1,10 @@
+Init 3846
+EnqueueRequest 2,0,20
+EnqueueRequest 1,0,10
+EnqueueRequest 4,0,40
+LowerOldRequestsPriority 5,5
+EnqueueRequest 3,0,30
+GetRequestPriority 3
+DequeueRequest 2
+GetRequestPriority 3
+Quit

@@ -1,0 +1,18 @@
+Init 27
+EnqueueRequest 0,0,0
+EnqueueRequest 1,0,1
+EnqueueRequest 2,0,2
+EnqueueRequest 4,0,4
+EnqueueRequest 5,0,5
+EnqueueRequest 6,0,6
+EnqueueRequest 7,0,7
+EnqueueRequest 8,0,8
+EnqueueRequest 9,0,9
+LowerOldRequestsPriority 6,1
+EnqueueRequest 3,0,3
+GetRequestPriority 2
+GetRequestPriority 3
+GetRequestPriority 6
+GetRequestPriority 7
+GetRequestPriority 0
+Quit

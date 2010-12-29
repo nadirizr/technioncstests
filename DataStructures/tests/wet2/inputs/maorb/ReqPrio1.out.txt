@@ -1,0 +1,14 @@
+GetRequestPriority: Invalid_input
+Init done.
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+Enqueue Request: Success
+GetRequestPriority: Success 10
+GetRequestPriority: Invalid_input
+GetRequestPriority: Failure
+Dequeue Request: Success
+GetRequestPriority: Failure
+Quit done.
