@@ -388,5 +388,5 @@ int main(int argc, char **argv) {
   RUN_TEST(testRemoveWithDoubleRotation);
   RUN_TEST(testRemoveRoot);
   RUN_TEST(testTreeBalance3Bug);
-  //RUN_TEST_N_TIMES(testRandomInsertions,random_tests);
+  RUN_TEST_N_TIMES(testRandomInsertions,random_tests);
 }
