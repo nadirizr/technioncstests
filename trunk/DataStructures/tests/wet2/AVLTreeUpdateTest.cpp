@@ -257,10 +257,10 @@ bool testUpdateRemoveRotations() {
   ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 5));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(5, 0)));
-  int sorted2[]  = {1,2, 3,4};
-  int heights2[] = {0,2, 0,1};
-  int deltas2[]  = {1,2,12,9};
-  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 4, true));
+  int sorted2[]  = {1, 2,3,4};
+  int heights2[] = {0, 2,0,1};
+  int deltas2[]  = {1,14,3,9};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 4));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(1, 0)));
   int sorted3[]  = {2, 3,4};
@@ -280,7 +280,7 @@ bool testUpdateRemoveRotations() {
   ASSERT_TRUE(tree.remove(IdWithDelta(2, 0)));
   int sorted5[]  = {3,4,5,6};
   int heights5[] = {1,0,2,0};
-  int deltas5[]  = {3,9,5,6};
+  int deltas5[]  = {7,4,5,6};
   ASSERT_TRUE(testUpdateRotation(tree, sorted5, heights5, deltas5, 4));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(6, 0)));
