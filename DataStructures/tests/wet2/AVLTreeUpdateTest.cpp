@@ -7,12 +7,10 @@
 const int items_in_random_test = 100;
 const int random_tests = 500;
 
-class IdWithDelta {
-public:
+struct IdWithDelta {
   int id;
   int delta;
   IdWithDelta(int id_, int delta_) : id(id_), delta(delta_) {}
-  IdWithDelta(const IdWithDelta& o) : id(o.id), delta(o.delta) {}
   bool operator<(const IdWithDelta& o) { return id < o.id; }
 };
 
