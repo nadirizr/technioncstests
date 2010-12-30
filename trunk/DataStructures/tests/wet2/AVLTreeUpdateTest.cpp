@@ -11,7 +11,7 @@ struct IdWithDelta {
   int id;
   int delta;
   IdWithDelta(int id_, int delta_) : id(id_), delta(delta_) {}
-  bool operator<(const IdWithDelta& o) { return id < o.id; }
+  bool operator<(const IdWithDelta& o) const { return id < o.id; }
 };
 
 /*
@@ -25,7 +25,7 @@ struct IdWithDelta {
  * @param n the size of the arrays
  * @return true if the test succeeded, false otherwise
  */
-bool testRotation(const AVLTree<IdWithDelta>& tree,
+bool testUpdateRotation(const AVLTree<IdWithDelta>& tree,
                   int *sorted,  int *heights, int *deltas, int n) {
   // go over the tree and check the heights
   AVLTree<IdWithDelta>::Iterator iter = tree.begin();
@@ -52,7 +52,7 @@ bool testRotation(const AVLTree<IdWithDelta>& tree,
  *
  * By forcing 2 LL rotations to occur.
  */
-bool testInsertRotationLL() {
+bool testUpdateInsertRotationLL() {
   AVLTree<IdWithDelta> tree;
   ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
   ASSERT_TRUE(tree.insert(IdWithDelta(4, 4)));
@@ -63,7 +63,7 @@ bool testInsertRotationLL() {
   int sorted[]  = { 1, 2, 3,4,5};
   int heights[] = { 0, 1, 0,2,0};
   int deltas[]  = {-1,-2,-1,4,5}; 
-  return testRotation(tree, sorted, heights, deltas, 5);
+  return testUpdateRotation(tree, sorted, heights, deltas, 5);
 }
 
 /*
@@ -77,7 +77,7 @@ bool testInsertRotationLL() {
  *
  * By forcing 2 LR rotations to occur.
  */
-bool testInsertRotationLR() {
+bool testUpdateInsertRotationLR() {
   AVLTree<IdWithDelta> tree;
   ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
   ASSERT_TRUE(tree.insert(IdWithDelta(3, 3)));
@@ -88,7 +88,7 @@ bool testInsertRotationLR() {
   int sorted[]  = { 1 ,2, 3,4,5};
   int heights[] = { 0 ,1, 0,2,0};
   int deltas[]  = {-1,-2,-1,4,5}; 
-  return testRotation(tree, sorted, heights, deltas, 5);
+  return testUpdateRotation(tree, sorted, heights, deltas, 5);
 }
 
 /*
@@ -102,7 +102,7 @@ bool testInsertRotationLR() {
  *
  * By forcing 2 RR rotations to occur.
  */
-bool testInsertRotationRR() {
+bool testUpdateInsertRotationRR() {
   AVLTree<IdWithDelta> tree;
   ASSERT_TRUE(tree.insert(IdWithDelta(1, 1)));
   ASSERT_TRUE(tree.insert(IdWithDelta(2, 2)));
@@ -113,7 +113,7 @@ bool testInsertRotationRR() {
   int sorted[]  = { 1,2, 3,4,5};
   int heights[] = { 0,2, 0,1,0};
   int deltas[]  = {-1,2,-1,4,5};
-  return testRotation(tree, sorted, heights, deltas, 5);
+  return testUpdateRotation(tree, sorted, heights, deltas, 5);
 }
 
 /*
@@ -127,7 +127,7 @@ bool testInsertRotationRR() {
  *
  * By forcing 2 RL rotations to occur.
  */
-bool testInsertRotationRL() {
+bool testUpdateInsertRotationRL() {
   AVLTree<IdWithDelta> tree;
   ASSERT_TRUE(tree.insert(IdWithDelta(1, 1)));
   ASSERT_TRUE(tree.insert(IdWithDelta(3, 3)));
@@ -138,7 +138,7 @@ bool testInsertRotationRL() {
   int sorted[]  = { 1,2, 3,4,5};
   int heights[] = { 0,2, 0,1,0};
   int deltas[]  = {-1,2,-1,4,5};
-  return testRotation(tree, sorted, heights, deltas, 5);
+  return testUpdateRotation(tree, sorted, heights, deltas, 5);
 }
 
 /*
@@ -185,7 +185,7 @@ bool testInsertRotationRL() {
  *  \
  *   4
  */
-bool testRemoveRotations() {
+bool testUpdateRemoveRotations() {
   AVLTree<IdWithDelta> tree;
   ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
   ASSERT_TRUE(tree.insert(IdWithDelta(4, 4)));
@@ -195,19 +195,19 @@ bool testRemoveRotations() {
   int sorted[]  = { 1, 2, 3,4,5};
   int heights[] = { 0, 1, 0,2,0};
   int deltas[]  = {-1,-2,-1,4,5};
-  ASSERT_TRUE(testRotation(tree, sorted, heights, deltas, 5));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 5));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(5, 0)));
   int sorted2[]  = { 1, 2,3,4};
   int heights2[] = { 0, 2,0,1};
   int deltas2[]  = {-1,-1,3,4};
-  ASSERT_TRUE(testRotation(tree, sorted2, heights2, deltas2, 4));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 4));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(1, 0)));
   int sorted3[]  = { 2,3,4};
   int heights3[] = { 0,1,0};
   int deltas3[]  = {-1,3,4};
-  ASSERT_TRUE(testRotation(tree, sorted3, heights3, deltas3, 3));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted3, heights3, deltas3, 3));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(4, 0)));
   ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
@@ -216,19 +216,19 @@ bool testRemoveRotations() {
   int sorted4[]  = { 2,3, 4,5,6};
   int heights4[] = { 0,2, 0,1,0};
   int deltas4[]  = {-1,3,-1,5,6};
-  ASSERT_TRUE(testRotation(tree, sorted4, heights4, deltas4, 5));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted4, heights4, deltas4, 5));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(2, 0)));
   int sorted5[]  = { 3,4,5,6};
   int heights5[] = { 1,0,2,0};
   int deltas5[]  = {-1,4,5,6};
-  ASSERT_TRUE(testRotation(tree, sorted5, heights5, deltas5, 4));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted5, heights5, deltas5, 4));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(6, 0)));
   int sorted6[]  = { 3,4,5};
   int heights6[] = { 0,1,0};
   int deltas6[]  = {-1,4,5};
-  ASSERT_TRUE(testRotation(tree, sorted6, heights6, deltas6, 3));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted6, heights6, deltas6, 3));
 
   return true;
 }
@@ -267,7 +267,7 @@ bool testRemoveRotations() {
  *  / \   \       /
  * 2   4   7     11
  */
-bool testRemoveWithDoubleRotation() {
+bool testUpdateRemoveWithDoubleRotation() {
   AVLTree<IdWithDelta> tree;
   ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
   ASSERT_TRUE(tree.insert(IdWithDelta(2, 2)));
@@ -284,25 +284,27 @@ bool testRemoveWithDoubleRotation() {
   int sorted[]  = { 1, 2, 3, 4,5, 6, 7,8, 9,10,11,12};
   int heights[] = { 0, 2, 0, 1,4, 1, 0,3, 0, 2, 0, 1};
   int deltas[]  = {-1,-3,-1,-1,5,-2,-1,8,-1,10,-1,12};
-  ASSERT_TRUE(testRotation(tree, sorted, heights, deltas, 12));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 12));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(1, 0)));
   int sorted2[]  = { 2, 3, 4, 5, 6, 7,8, 9,10,11,12};
   int heights2[] = { 0, 1, 0, 2, 1, 0,3, 0, 2, 0, 1};
   int deltas2[]  = {-1,-2,-1,-3,-2,-1,8,-1,10,-1,12};
-  ASSERT_TRUE(testRotation(tree, sorted2, heights2, deltas2, 11));
+  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 11));
 
   return true;
 }
 
-int main(int argc, char **argv) {
+bool runAVLTreeUpdateTests() {
 	// initialize random number generator
 	srand( time(NULL) );
 
-  RUN_TEST(testInsertRotationLL);
-  RUN_TEST(testInsertRotationLR);
-  RUN_TEST(testInsertRotationRR);
-  RUN_TEST(testInsertRotationRL);
-  RUN_TEST(testRemoveRotations);
-  RUN_TEST(testRemoveWithDoubleRotation);
+  RUN_TEST(testUpdateInsertRotationLL);
+  RUN_TEST(testUpdateInsertRotationLR);
+  RUN_TEST(testUpdateInsertRotationRR);
+  RUN_TEST(testUpdateInsertRotationRL);
+  RUN_TEST(testUpdateRemoveRotations);
+  RUN_TEST(testUpdateRemoveWithDoubleRotation);
+
+  return true;
 }

@@ -3,6 +3,7 @@
 #include "test.h"
 #include "util.h"
 #include "../AVLTree.h"
+#include "AVLTreeUpdateTest.h"
 
 const int items_in_random_test = 100;
 const int random_tests = 500;
@@ -449,4 +450,6 @@ int main(int argc, char **argv) {
   RUN_TEST(testTreeBalance3Bug);
   RUN_TEST_N_TIMES(testRandomInsertions,random_tests);
   RUN_TEST(testPathIterator);
+
+  ASSERT_TRUE(runAVLTreeUpdateTests());
 }
