@@ -48,7 +48,9 @@ public:
 
     // If the substitute is bigger than the node to remove, then just replace
     // the delta.
+    int temp = to_substitute->delta;
     to_substitute->delta = to_remove->delta;
+    to_remove->delta = temp;
   }
 
 private:
