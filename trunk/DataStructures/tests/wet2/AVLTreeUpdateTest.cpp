@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdlib.h>
 
 #include "test.h"
@@ -63,14 +64,20 @@ private:
  * @param heights the array of heights to compare result to (size=n)
  * @param deltas the array of expected deltas to compare to (size=n)
  * @param n the size of the arrays
+ * @param printDebugInfo whether to print the info of each node
  * @return true if the test succeeded, false otherwise
  */
 bool testUpdateRotation(const AVLTree<IdWithDelta>& tree,
-                  int *sorted,  int *heights, int *deltas, int n) {
+                  int *sorted,  int *heights, int *deltas, int n,
+                  int printDebugInfo=false) {
   // go over the tree and check the heights
   AVLTree<IdWithDelta>::Iterator iter = tree.begin();
   for (int i = 0; i < n; ++i) {
     ASSERT_TRUE(iter != tree.end());
+    if (printDebugInfo) {
+      std::cout << "node[" << i << "]: id=" << iter->id << "; height="
+                << iter.height() << "; delta=" << iter->delta << std::endl;
+    }
     ASSERT_EQUALS(sorted[i], iter->id);
     ASSERT_EQUALS(heights[i], iter.height());
     ASSERT_EQUALS(deltas[i], iter->delta);
@@ -242,42 +249,42 @@ bool testUpdateRemoveRotations() {
   ASSERT_TRUE(tree.insert(IdWithDelta(3, 3)));
   ASSERT_TRUE(tree.insert(IdWithDelta(2, 2)));
   ASSERT_TRUE(tree.insert(IdWithDelta(1, 1)));
-  int sorted[]  = { 1, 2, 3,4,5};
-  int heights[] = { 0, 1, 0,2,0};
-  int deltas[]  = { 1, 5, 3,9,5}; 
+  int sorted[]  = {1,2,3,4,5};
+  int heights[] = {0,1,0,2,0};
+  int deltas[]  = {1,5,3,9,5}; 
   ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 5));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(5, 0)));
-  int sorted2[]  = { 1, 2,3,4};
-  int heights2[] = { 0, 2,0,1};
-  int deltas2[]  = { 1, 5,3,9};
-  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 4));
+  int sorted2[]  = {1,2, 3,4};
+  int heights2[] = {0,2, 0,1};
+  int deltas2[]  = {1,2,12,9};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 4, true));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(1, 0)));
-  int sorted3[]  = { 2,3,4};
-  int heights3[] = { 0,1,0};
-  int deltas3[]  = {-1,3,4};
+  int sorted3[]  = {2, 3,4};
+  int heights3[] = {0, 1,0};
+  int deltas3[]  = {2,12,9};
   ASSERT_TRUE(testUpdateRotation(tree, sorted3, heights3, deltas3, 3));
   
   ASSERT_TRUE(tree.remove(IdWithDelta(4, 0)));
   ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
   ASSERT_TRUE(tree.insert(IdWithDelta(4, 4)));
   ASSERT_TRUE(tree.insert(IdWithDelta(6, 6)));
-  int sorted4[]  = { 2,3, 4,5,6};
-  int heights4[] = { 0,2, 0,1,0};
-  int deltas4[]  = {-1,3,-1,5,6};
+  int sorted4[]  = {2, 3,4,5,6};
+  int heights4[] = {0, 2,0,1,0};
+  int deltas4[]  = {2,12,4,5,6};
   ASSERT_TRUE(testUpdateRotation(tree, sorted4, heights4, deltas4, 5));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(2, 0)));
-  int sorted5[]  = { 3,4,5,6};
-  int heights5[] = { 1,0,2,0};
-  int deltas5[]  = {-1,4,5,6};
+  int sorted5[]  = {3,4,5,6};
+  int heights5[] = {1,0,2,0};
+  int deltas5[]  = {3,9,5,6};
   ASSERT_TRUE(testUpdateRotation(tree, sorted5, heights5, deltas5, 4));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(6, 0)));
-  int sorted6[]  = { 3,4,5};
-  int heights6[] = { 0,1,0};
-  int deltas6[]  = {-1,4,5};
+  int sorted6[]  = {3,4,5};
+  int heights6[] = {0,1,0};
+  int deltas6[]  = {3,9,5};
   ASSERT_TRUE(testUpdateRotation(tree, sorted6, heights6, deltas6, 3));
 
   return true;
@@ -333,15 +340,15 @@ bool testUpdateRemoveWithDoubleRotation() {
   ASSERT_TRUE(tree.insert(IdWithDelta(9, 9)));
   ASSERT_TRUE(tree.insert(IdWithDelta(12, 12)));
   ASSERT_TRUE(tree.insert(IdWithDelta(11, 11)));
-  int sorted[]  = { 1, 2, 3, 4,5, 6, 7,8, 9,10,11,12};
-  int heights[] = { 0, 2, 0, 1,4, 1, 0,3, 0, 2, 0, 1};
-  int deltas[]  = {-1,-3,-1,-1,5,-2,-1,8,-1,10,-1,12};
+  int sorted[]  = {1,2,3,4,5,6,7,8,9,10,11,12};
+  int heights[] = {0,2,0,1,4,1,0,3,0, 2, 0, 1};
+  int deltas[]  = {1,2,3,4,5,6,7,8,9,10,11,12};
   ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 12));
 
   ASSERT_TRUE(tree.remove(IdWithDelta(1, 0)));
-  int sorted2[]  = { 2, 3, 4, 5, 6, 7,8, 9,10,11,12};
-  int heights2[] = { 0, 1, 0, 2, 1, 0,3, 0, 2, 0, 1};
-  int deltas2[]  = {-1,-2,-1,-3,-2,-1,8,-1,10,-1,12};
+  int sorted2[]  = { 2,3,4, 5,6,7,8,9,10,11,12};
+  int heights2[] = { 0,1,0, 2,1,0,3,0, 2, 0, 1};
+  int deltas2[]  = {-5,7,4,-3,6,7,8,9,10,11,12};
   ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 11));
 
   return true;
