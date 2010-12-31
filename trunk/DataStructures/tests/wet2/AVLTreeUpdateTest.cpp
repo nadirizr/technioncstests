@@ -21,21 +21,19 @@ public:
   IdWithDeltaUpdater(AVLTree<IdWithDelta>* tree_) : tree(tree_) {}
 
   virtual void updateOnLeftRotation(
-      IdWithDelta* value_father, IdWithDelta* value_left,
-      IdWithDelta* value_right) {
-    value_father->delta += value_right->delta;
+      Iterator father, Iterator left, Iterator right) {
+    father->delta += right->delta;
   }
 
   virtual void updateOnRightRotation(
-      IdWithDelta* value_father, IdWithDelta* value_left,
-      IdWithDelta* value_right) {
-    value_left->delta -= value_father->delta;
+      Iterator father, Iterator left, Iterator right) {
+    left->delta -= father->delta;
   }
 
   virtual void updateOnSubstitute(
-      IdWithDelta* to_remove, IdWithDelta* to_substitute) {
+      Iterator to_remove, Iterator to_substitute) {
     // If this was a leaf, do nothing.
-    if (to_substitute == NULL) {
+    if (!to_substitute) {
       return;
     }
 
@@ -48,8 +46,7 @@ public:
 
     // If the node to remove has no left child, then the substitute node should
     // just take the place of the node to remove, with no change required.
-    AVLTree<IdWithDelta>::Iterator i_remove = tree->find(*to_remove);
-    if (!i_remove.canMoveLeft()) {
+    if (!to_remove.canMoveLeft()) {
       return;
     }
 
