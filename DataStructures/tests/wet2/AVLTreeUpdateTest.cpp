@@ -46,6 +46,13 @@ public:
       return;
     }
 
+    // If the node to remove has no left child, then the substitute node should
+    // just take the place of the node to remove, with no change required.
+    AVLTree<IdWithDelta>::Iterator i_remove = tree->find(*to_remove);
+    if (!i_remove.canMoveLeft()) {
+      return;
+    }
+
     // If the substitute is bigger than the node to remove, then just replace
     // the delta.
     int temp = to_substitute->delta;
@@ -356,6 +363,116 @@ bool testUpdateRemoveWithDoubleRotation() {
   return true;
 }
 
+/*
+ * Verify that the tree looks like:
+ * insert 4,2,7,1,3,5,8,6:
+ *       4
+ *    /     \
+ *   2       7
+ *  / \     / \
+ * 1   3   5   8
+ *          \
+ *           6
+ *
+ * remove 4:
+ *       5
+ *    /     \
+ *   2       7
+ *  / \     / \
+ * 1   3   6   8
+ *
+ * remove 7:
+ *       5
+ *    /     \
+ *   2       8
+ *  / \     /
+ * 1   3   6
+ */
+bool testUpdateRemoveRootAndSwapSuccessor() {
+  AVLTree<IdWithDelta> tree;
+  IdWithDeltaUpdater updater(&tree);
+  tree.setUpdater(&updater);
+  ASSERT_TRUE(tree.insert(IdWithDelta(4, 4)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(2, 2)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(7, 7)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(1, 1)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(3, 3)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(5, 5)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(8, 8)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(6, 6)));
+  int sorted[]  = {1,2,3,4,5,6,7,8};
+  int heights[] = {0,1,0,3,1,0,2,0};
+  int deltas[]  = {1,2,3,4,5,6,7,8};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 8));
+
+  ASSERT_TRUE(tree.remove(IdWithDelta(4, 0)));
+  int sorted2[]  = {1,2,3,5,6,7,8};
+  int heights2[] = {0,1,0,2,0,1,0};
+  int deltas2[]  = {1,2,3,4,6,7,8};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 7));
+
+  ASSERT_TRUE(tree.remove(IdWithDelta(7, 0)));
+  int sorted3[]  = {1,2,3,5,6,8};
+  int heights3[] = {0,1,0,2,0,1};
+  int deltas3[]  = {1,2,3,4,6,7};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted3, heights3, deltas3, 6));
+
+  return true;
+}
+
+/*
+ * Verify that the tree looks like:
+ * insert 2,3:
+ *    2
+ *     \
+ *      3
+ *
+ * remove 2:
+ *    3
+ *
+ * insert 1,4:
+ *    3
+ *   / \
+ *  1   4
+ *
+ * remove 3:
+ *    4
+ *   /
+ *  1
+ */
+bool testUpdateRemoveRootWithRightChildAndWithout() {
+  AVLTree<IdWithDelta> tree;
+  IdWithDeltaUpdater updater(&tree);
+  tree.setUpdater(&updater);
+  ASSERT_TRUE(tree.insert(IdWithDelta(2, 2)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(3, 3)));
+  int sorted[]  = {2,3};
+  int heights[] = {1,0};
+  int deltas[]  = {2,3};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted, heights, deltas, 2));
+
+  ASSERT_TRUE(tree.remove(IdWithDelta(2, 0)));
+  int sorted2[]  = {3};
+  int heights2[] = {0};
+  int deltas2[]  = {3};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted2, heights2, deltas2, 1));
+
+  ASSERT_TRUE(tree.insert(IdWithDelta(1, 1)));
+  ASSERT_TRUE(tree.insert(IdWithDelta(4, 4)));
+  int sorted3[]  = {1,3,4};
+  int heights3[] = {0,1,0};
+  int deltas3[]  = {1,3,4};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted3, heights3, deltas3, 3));
+
+  ASSERT_TRUE(tree.remove(IdWithDelta(3, 0)));
+  int sorted4[]  = {1,4};
+  int heights4[] = {0,1};
+  int deltas4[]  = {1,3};
+  ASSERT_TRUE(testUpdateRotation(tree, sorted4, heights4, deltas4, 2));
+
+  return true;
+}
+
 bool runAVLTreeUpdateTests() {
 	// initialize random number generator
 	srand( time(NULL) );
@@ -366,6 +483,8 @@ bool runAVLTreeUpdateTests() {
   RUN_TEST(testUpdateInsertRotationRL);
   RUN_TEST(testUpdateRemoveRotations);
   RUN_TEST(testUpdateRemoveWithDoubleRotation);
+  RUN_TEST(testUpdateRemoveRootAndSwapSuccessor);
+  RUN_TEST(testUpdateRemoveRootWithRightChildAndWithout);
 
   return true;
 }
