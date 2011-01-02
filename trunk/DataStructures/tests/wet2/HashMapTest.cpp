@@ -2,6 +2,9 @@
 #include "LinkedListTest.h"
 #include "../HashMap.h"
 
+#include <iostream>
+using namespace std;
+
 class IdentityHasher : public Hasher<int> {
 public:
   virtual int hashCode(const int& num) {
@@ -36,9 +39,16 @@ bool testIllegalOperations() {
   return true;
 }
 
-int expectedCapacity(int size) {
+int expectedCapacityOnIncrease(int size) {
   if (size <= 4)  return  4;
   if (size <= 8)  return  8;
+  if (size <= 16) return 16;
+  return -1;
+}
+
+int expectedCapacityOnDecrease(int size) {
+  if (size <= 2)  return  4;
+  if (size <= 4)  return  8;
   if (size <= 16) return 16;
   return -1;
 }
@@ -63,7 +73,7 @@ bool testRehashing() {
     ASSERT_TRUE(map.exists(i));
     ASSERT_EQUALS((*map.get(i)), i*10);
     ASSERT_EQUALS(map.size(), i+1);
-    ASSERT_EQUALS(map.capacity(), expectedCapacity(i+1));
+    ASSERT_EQUALS(map.capacity(), expectedCapacityOnIncrease(i+1));
   }
   // now remove the elements and check the capacity
   for (int i = 15; i >= 0; --i) {
@@ -71,7 +81,7 @@ bool testRehashing() {
     ASSERT_FALSE(map.exists(i));
     ASSERT_EQUALS((map.get(i)), NULL);
     ASSERT_EQUALS(map.size(), i);
-    ASSERT_EQUALS(map.capacity(), expectedCapacity(i));
+    ASSERT_EQUALS(map.capacity(), expectedCapacityOnDecrease(i));
   }
 
   return true;
@@ -133,5 +143,6 @@ int main(int argc, char **argv) {
   testLinkedList();
 
   RUN_TEST(testIllegalOperations);
+  RUN_TEST(testRehashing);
   RUN_TEST(testOverwrite);
 }
