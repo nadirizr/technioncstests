@@ -1,0 +1,15 @@
+YOU CAN NOW CONTROL THE SIZE OF YOUR TESTS!
+If you run:
+./test.sh size=small  - it runs tests with 20-100 lines
+./test.sh size=medium - it runs tests with 100-500 lines (default)
+./test.sh size=big    - it runs tests with 500-2000 lines
+./test.sh size=M-N    - it runs tests with M-N lines
+
+Now you can control the size of your tests.
+I recommend running at the end at least one set of tests with 'size=big', since
+it really tests the hell out of your code.
+
+Also, 'wet2' is now the default and if you want to run 'wet1' you need to do:
+./test.sh wet1 ...
+
+Have fun...
