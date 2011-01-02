@@ -8,7 +8,7 @@ TEST_PACKAGES = {
   "wet1": "yaniv",
   "wet2": "servers",
 }
-DEFAULT_PACKAGE = "wet1"
+DEFAULT_PACKAGE = "wet2"
 
 # Update usage
 os.system("touch /var/tmp/ds_wet_users/$USER")
