@@ -357,7 +357,7 @@ bool testTreeBalance3Bug() {
 bool testRandomInsertions() {
   AVLTree<int> tree;
 
-  SortedSet set;
+  TestSortedSet set;
   int num;
   for (int i = 0; i < items_in_random_test; ++i) {
     num = rand() % 1000;
@@ -365,7 +365,7 @@ bool testRandomInsertions() {
     ASSERT_EQUALS(added, tree.insert(num));
   }
   
-  LinkedList* curr = set.getRoot()->next;
+  TestLinkedList* curr = set.getRoot()->next;
   for (AVLTree<int>::Iterator i = tree.begin(); i != tree.end(); ++i, curr = curr->next) {
     ASSERT_TRUE(curr);
     ASSERT_EQUALS(curr->value, i.value());
