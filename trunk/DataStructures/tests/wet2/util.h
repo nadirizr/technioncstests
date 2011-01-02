@@ -4,24 +4,24 @@
 /*
  * This is a simple linked list implementation used for testing.
  */
-class LinkedList {
+class TestLinkedList {
 public:
-  LinkedList(int value_, LinkedList* next_);
-  ~LinkedList();
+  TestLinkedList(int value_, TestLinkedList* next_);
+  ~TestLinkedList();
 
   int value;
-  LinkedList* next;
+  TestLinkedList* next;
 };
 
 /*
  * This is a simple sorted set implementation used for testing.
  */
-class SortedSet {
+class TestSortedSet {
 public:
-  SortedSet();
-  ~SortedSet();
+  TestSortedSet();
+  ~TestSortedSet();
 
-  LinkedList* getRoot();
+  TestLinkedList* getRoot();
   
   /*
    * Adds the number to the set in a sorted order, with no repeats.
@@ -30,9 +30,9 @@ public:
   bool add(int num);
 
 private:
-  bool add(int num, LinkedList* curr);
+  bool add(int num, TestLinkedList* curr);
 
-  LinkedList* root;
+  TestLinkedList* root;
 };
 
 #endif
