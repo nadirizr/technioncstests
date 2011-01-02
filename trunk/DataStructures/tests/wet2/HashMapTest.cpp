@@ -2,22 +2,35 @@
 #include "LinkedListTest.h"
 #include "../HashMap.h"
 
-class IdentityHasher : Hasher<int> {
-
+class IdentityHasher : public Hasher<int> {
+public:
   virtual int hashCode(const int& num) {
     return num;
   }
-
-}
+};
 
 /*
  * Tests several invalid operations, making sure that the correct exception is
  * thrown for each one.
  */
 bool testIllegalOperations() {
-  ASSERT_THROW(HashMapInvalidSizeException, HashMap(-1));
-  ASSERT_THROW(HashMapInvalidSizeException, HashMap(0));
-  ASSERT_THROW(HashMapInvalidSizeException, HashMap(-1000));
+  IdentityHasher* hasher = new IdentityHasher();
+  
+  // Invalid hasher.
+  ASSERT_THROW(HashMapInvalidHasherException, (HashMap<int,int>(NULL)));
+
+  // Invalid capacities.
+  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, -1)));
+  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 0)));
+  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, -1000)));
+
+  // Invalid load factors.
+  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 100, -1)));
+  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 100, 0)));
+  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 100, -1000)));
+
+  // And one good one.
+  ASSERT_NO_THROW((HashMap<int,int>(hasher, 100, 4)));
 
   return true;
 }
@@ -33,7 +46,7 @@ int expectedCapacity(int size) {
  * Tests rehashing happens by inserting and deleting elements.
  */
 bool testRehashing() {
-  HashMap<int,int> map(IdentityHasher(), 4, 1);
+  HashMap<int,int> map(new IdentityHasher(), 4, 1);
 
   // check the the value is not found in the map
   for (int i = 0; i < 16; ++i) {
@@ -52,9 +65,9 @@ bool testRehashing() {
   }
   // now remove the elements and check the capacity
   for (int i = 15; i >= 0; --i) {
-    ASSERT_TRUE(map.remove(i, i*10));
+    ASSERT_TRUE(map.remove(i));
     ASSERT_FALSE(map.exists(i));
-    ASSERT_EQUALS((*map.get(i)), NULL);
+    ASSERT_EQUALS((map.get(i)), NULL);
     ASSERT_EQUALS(map.size(), i);
     ASSERT_EQUALS(map.capacity(), expectedCapacity(i));
   }
@@ -65,7 +78,7 @@ bool testRehashing() {
  * Tests overwrite happens when a key is reinserted into the map.
  */
 bool testOverwrite() {
-  HashMap<int,int> map(IdentityHasher());
+  HashMap<int,int> map(new IdentityHasher());
 
   // check the the value is not found in the map
   ASSERT_FALSE(map.exists(1));
@@ -111,7 +124,7 @@ bool testOverwrite() {
 }
 
 int main(int argc, char **argv) {
-  ASSERT_TRUE(testLinkedList);
+  testLinkedList();
 
   RUN_TEST(testIllegalOperations);
   RUN_TEST(testOverwrite);
