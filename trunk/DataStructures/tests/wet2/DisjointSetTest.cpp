@@ -1,5 +1,4 @@
 #include "test.h"
-#include "util.h"
 #include "../DisjointSet.h"
 
 /*
