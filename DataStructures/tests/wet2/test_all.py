@@ -7,7 +7,8 @@ import glob
 
 
 def usage_and_exit():
-    print "Usage: python test_all.py [num of files] [random|input|valgrind] [help]"
+    print "Usage: python test_all.py [num of files] [size=small|medium|big|low-high]"
+    print "                          [random|input|valgrind] [help]"
     print
     print "       help         - Displays this usage and exits"
     print "       random       - Run random tests"
@@ -15,8 +16,14 @@ def usage_and_exit():
     print "       valgrind     - Run tests with valgrind as well"
     print "                     (warning - this could take a while)"
     print "       num of files - Designate number of random test files to test"
+    print "       size         - The size of each test. It can be one of these:"
+    print "                      size=small : 20-100 lines in each test"
+    print "                      size=medium: 100-500 lines in each test"
+    print "                      size=big   : 500-2000 lines in each test"
+    print "                      size=M-N   : M-N lines in each test"
     print
-    print "       DEFAULT: Run random and input tests, no valgrind on 500 files."
+    print "       DEFAULT: Run medium size random tests and input tests, no valgrind,"
+    print "                on 500 files."
     print
     print "       NOTES  : Assumes that this is the project directory, and that"
     print "                the executable name is 'servers'."
@@ -28,15 +35,35 @@ NUM_OF_FILES = 500
 VALGRIND = False
 RANDOM = False
 INPUT = False
+MIN_COMMANDS = 100
+MAX_COMMANDS = 500
 for arg in sys.argv[1:]:
     if arg == "help":
         usage_and_exit()
     if arg == "valgrind":
-	VALGRIND = True
+        VALGRIND = True
     elif arg == "random":
         RANDOM = True
     elif arg == "input":
         INPUT = True
+    elif arg[:len("size=")] == "size=":
+        size = arg[len("size="):]
+        if size == "small":
+            MIN_COMMANDS = 20
+            MAX_COMMANDS = 100
+        elif size == "medium":
+            MIN_COMMANDS = 100
+            MAX_COMMANDS = 500
+        elif size == "big":
+            MIN_COMMANDS = 500
+            MAX_COMMANDS = 2000
+        else:
+            try:
+                dash = size.index("-")
+                MIN_COMMANDS = int(size[:dash])
+                MAX_COMMANDS = int(size[dash+1:])
+            except:
+                usage_and_exit()
     else:
         try:
             NUM_OF_FILES = int(arg)
@@ -79,5 +106,7 @@ if RANDOM:
     print "========================"
     print "Random Tests"
     print "========================"
+    os.environ["SERVERS_MIN_COMMANDS"] = str(MIN_COMMANDS)
+    os.environ["SERVERS_MAX_COMMANDS"] = str(MAX_COMMANDS)
     os.system(TEST_RANDOM_CMD)
 
