@@ -2,8 +2,10 @@
 #include "LinkedListTest.h"
 #include "../HashMap.h"
 
-#include <iostream>
-using namespace std;
+#include <map>
+
+const int NUM_ITEMS_IN_RANDOM_TEST = 1000;
+const int NUM_RANDOM_TESTS = 500;
 
 class IdentityHasher : public Hasher<int> {
 public:
@@ -139,10 +141,100 @@ bool testOverwrite() {
   return true;
 }
 
+struct DataType {
+  int a;
+  double b;
+  const char* c;
+
+  bool operator<(const DataType& other) const {
+    return (a < other.a);
+  }
+};
+
+class DataTypeHasher : public Hasher<DataType> {
+public:
+  virtual int hashCode(const DataType& data) {
+    return (data.a + (int)(data.b * 10.0));
+  }
+};
+
+/*
+ * Tests the hash map with a custom data type.
+ * This is mainly to make sure the template code doesn't only work for
+ * integers.
+ */
+bool testDataTypeAsKey() {
+  HashMap<DataType,double> map(new DataTypeHasher());
+
+  // Insert a bunch of DataTypes.
+  for (int i = 0; i < 20; ++i) {
+    DataType data = { i, double(i)/20.0, "hello" };
+    ASSERT_FALSE(map.insert(data, i * 100.0));
+    ASSERT_EQUALS(map.size(), (i+1));
+  }
+
+  // Now remove those DataTypes.
+  for (int i = 19; i >= 0; --i) {
+    DataType data = { i, double(i)/20.0, "hello" };
+    ASSERT_TRUE(map.exists(data));
+    ASSERT_EQUALS((*map.get(data)), (i * 100.0));
+    ASSERT_TRUE(map.remove(data));
+    ASSERT_EQUALS(map.size(), i);
+  }
+
+  return true;
+}
+
+/*
+ * Tests a bunch of random insertions and removals of elements into the
+ * HashMap, while comparing those with insertions and removals from an
+ * stl::map.
+ */
+bool testRandomInsertionsAndRemovals() {
+  HashMap<int,int> map(new IdentityHasher());
+  std::map<int,int> real_map;
+
+  // First perform the insertions.
+  int num_unique = 0;
+  for (int i = 0; i < NUM_ITEMS_IN_RANDOM_TEST; ++i) {
+    int num = rand() % 1000;
+    bool exists = (real_map.find(num) != real_map.end());
+
+    real_map[num] = i;
+    ASSERT_EQUALS(exists, map.insert(num, i));
+
+    if (!exists) {
+      ++num_unique;
+    }
+    ASSERT_EQUALS(map.size(), num_unique);
+  }
+
+  // Now compare values.
+  std::map<int,int>::iterator i;
+  for (i = real_map.begin(); i != real_map.end(); ++i) {
+    ASSERT_TRUE(map.exists(i->first));
+    ASSERT_EQUALS((i->second), (*(map.get(i->first))));
+  }
+
+  // Now remove all values.
+  for (i = real_map.begin(); i != real_map.end(); ++i) {
+    ASSERT_TRUE(map.remove(i->first));
+    --num_unique;
+    ASSERT_EQUALS(map.size(), num_unique);
+  }
+
+  return true;
+}
+
 int main(int argc, char **argv) {
-  testLinkedList();
+  ASSERT_TRUE(testLinkedList());
+
+	// initialize random number generator
+	srand( time(NULL) );
 
   RUN_TEST(testIllegalOperations);
   RUN_TEST(testRehashing);
   RUN_TEST(testOverwrite);
+  RUN_TEST(testDataTypeAsKey);
+  RUN_TEST_N_TIMES(testRandomInsertionsAndRemovals, NUM_RANDOM_TESTS);
 }
