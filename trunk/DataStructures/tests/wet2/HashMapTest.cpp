@@ -15,19 +15,20 @@ public:
  */
 bool testIllegalOperations() {
   IdentityHasher* hasher = new IdentityHasher();
-  
+ 
   // Invalid hasher.
   ASSERT_THROW(HashMapInvalidHasherException, (HashMap<int,int>(NULL)));
 
+
   // Invalid capacities.
-  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, -1)));
-  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 0)));
-  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, -1000)));
+  ASSERT_THROW(HashMapInvalidCapacityException, (HashMap<int,int>(hasher, -1)));
+  ASSERT_THROW(HashMapInvalidCapacityException, (HashMap<int,int>(hasher, 0)));
+  ASSERT_THROW(HashMapInvalidCapacityException, (HashMap<int,int>(hasher, -1000)));
 
   // Invalid load factors.
-  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 100, -1)));
-  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 100, 0)));
-  ASSERT_THROW(HashMapInvalidSizeException, (HashMap<int,int>(hasher, 100, -1000)));
+  ASSERT_THROW(HashMapInvalidLoadFactorException, (HashMap<int,int>(hasher, 100, -1)));
+  ASSERT_THROW(HashMapInvalidLoadFactorException, (HashMap<int,int>(hasher, 100, 0)));
+  ASSERT_THROW(HashMapInvalidLoadFactorException, (HashMap<int,int>(hasher, 100, -1000)));
 
   // And one good one.
   ASSERT_NO_THROW((HashMap<int,int>(hasher, 100, 4)));
@@ -57,7 +58,8 @@ bool testRehashing() {
 
   // reach the hash map's full capacity
   for (int i = 0; i < 16; ++i) {
-    ASSERT_FALSE(map.insert(i, i*10));
+    int j = i*10;
+    ASSERT_FALSE(map.insert(i, j));
     ASSERT_TRUE(map.exists(i));
     ASSERT_EQUALS((*map.get(i)), i*10);
     ASSERT_EQUALS(map.size(), i+1);
@@ -86,14 +88,16 @@ bool testOverwrite() {
   ASSERT_EQUALS(map.capacity(), 16);
 
   // insert the value for the first time
-  ASSERT_FALSE(map.insert(1, 10));
+  int i = 10;
+  ASSERT_FALSE(map.insert(1, i));
   ASSERT_TRUE(map.exists(1));
   ASSERT_EQUALS((*map.get(1)), 10);
   ASSERT_EQUALS(map.size(),1);
   ASSERT_EQUALS(map.capacity(), 16);
 
   // overwrite the value
-  ASSERT_TRUE(map.insert(1, 20));
+  i = 20;
+  ASSERT_TRUE(map.insert(1, i));
   ASSERT_TRUE(map.exists(1));
   ASSERT_EQUALS((*map.get(1)), 20);
   ASSERT_EQUALS(map.size(), 1);
@@ -107,14 +111,16 @@ bool testOverwrite() {
   ASSERT_EQUALS(map.capacity(), 16);
 
   // reinsert the value
-  ASSERT_FALSE(map.insert(1, 30));
+  i = 30;
+  ASSERT_FALSE(map.insert(1, i));
   ASSERT_TRUE(map.exists(1));
   ASSERT_EQUALS((*map.get(1)), 30);
   ASSERT_EQUALS(map.size(), 1);
   ASSERT_EQUALS(map.capacity(), 16);
 
   // overwrite the value again
-  ASSERT_TRUE(map.insert(1, 10));
+  i = 10;
+  ASSERT_TRUE(map.insert(1, i));
   ASSERT_TRUE(map.exists(1));
   ASSERT_EQUALS((*map.get(1)), 10);
   ASSERT_EQUALS(map.size(), 1);
