@@ -1,4 +1,5 @@
 #include "test.h"
+#include "LinkedListTest.h"
 #include "../HashMap.h"
 
 class IdentityHasher : Hasher<int> {
@@ -110,6 +111,8 @@ bool testOverwrite() {
 }
 
 int main(int argc, char **argv) {
+  ASSERT_TRUE(testLinkedList);
+
   RUN_TEST(testIllegalOperations);
   RUN_TEST(testOverwrite);
 }

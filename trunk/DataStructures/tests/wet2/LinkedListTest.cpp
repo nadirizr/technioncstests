@@ -1,3 +1,5 @@
+#include "LinkedListTest.h"
+
 #include "test.h"
 #include "util.h"
 #include "../LinkedList.h"
@@ -27,6 +29,8 @@ bool testListInsertionAndRemoval() {
   return true;
 }
 
-int main(int argc, char **argv) {
+bool testLinkedList() {
   RUN_TEST(testListInsertionAndRemoval);
+
+  return true;
 }
