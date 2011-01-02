@@ -6,10 +6,10 @@
 
 // --- LinkedList Methods ---
 
-LinkedList::LinkedList(int value_, LinkedList* next_) :
+TestLinkedList::TestLinkedList(int value_, TestLinkedList* next_) :
   value(value_), next(next_) {}
 
-LinkedList::~LinkedList() {
+TestLinkedList::~TestLinkedList() {
   if (next) {
     delete next;
   }
@@ -17,36 +17,36 @@ LinkedList::~LinkedList() {
 
 // --- SortedSet Methods ---
 
-SortedSet::SortedSet() :
-  root(new LinkedList(-1, NULL)) {}
+TestSortedSet::TestSortedSet() :
+  root(new TestLinkedList(-1, NULL)) {}
 
-SortedSet::~SortedSet() {
+TestSortedSet::~TestSortedSet() {
   if (root) {
     delete root;
   }
 }
 
-LinkedList* SortedSet::getRoot() {
+TestLinkedList* TestSortedSet::getRoot() {
   return root;
 }
 
-bool SortedSet::add(int num) {
+bool TestSortedSet::add(int num) {
   if (num < 0) {
     FAIL("No negative numbers!!");
   }
   return add(num, root);
 }
 
-bool SortedSet::add(int num, LinkedList* curr) {
+bool TestSortedSet::add(int num, TestLinkedList* curr) {
   if (curr->next == NULL) {
-    curr->next = new LinkedList(num, NULL);
+    curr->next = new TestLinkedList(num, NULL);
     return true;
   }
   if (curr->next->value == num) {
     return false;
   }
   if (curr->next->value > num) {
-    curr->next = new LinkedList(num, curr->next);
+    curr->next = new TestLinkedList(num, curr->next);
     return true;
   }
   // curr->next->value > num
