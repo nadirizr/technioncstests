@@ -3,6 +3,7 @@
 #include "../HashMap.h"
 
 #include <map>
+#include <stdlib.h>
 
 const int NUM_ITEMS_IN_RANDOM_TEST = 1000;
 const int NUM_RANDOM_TESTS = 500;
