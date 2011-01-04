@@ -8,7 +8,7 @@
  * Performs a sequential insertion of several elements, followed by their
  * removal.
  */
-bool testListInsertionAndRemoval() {
+bool testListInsertFirstAndRemove() {
   LinkedList<int> list;
 
   for (int i = 0; i < 10; ++i) {
@@ -19,6 +19,31 @@ bool testListInsertionAndRemoval() {
   for (LinkedList<int>::Iterator it = list.begin(); it != list.end(); ++it) {
     ASSERT_EQUALS((*it), j);
     --j;
+  }
+  for (int i = 9; i >= 0; --i) {
+    list.remove(i);
+    ASSERT_EQUALS(list.size(), i);
+  }
+  ASSERT_EQUALS(list.begin(), list.end());
+
+  return true;
+}
+
+/*
+ * Performs a sequential insertion of several elements, followed by their
+ * removal.
+ */
+bool testListInsertLastAndRemove() {
+  LinkedList<int> list;
+
+  for (int i = 0; i < 10; ++i) {
+    list.insertLast(i);
+    ASSERT_EQUALS(list.size(), i+1);
+  }
+  int j = 0;
+  for (LinkedList<int>::Iterator it = list.begin(); it != list.end(); ++it) {
+    ASSERT_EQUALS((*it), j);
+    ++j;
   }
   for (int i = 9; i >= 0; --i) {
     list.remove(i);
@@ -111,7 +136,8 @@ bool testMergingLists() {
 }
 
 bool testLinkedList() {
-  RUN_TEST(testListInsertionAndRemoval);
+  RUN_TEST(testListInsertFirstAndRemove);
+  RUN_TEST(testListInsertLastAndRemove);
   RUN_TEST(testInsertingSameElementAndRemoving);
   RUN_TEST(testFindingValues);
   RUN_TEST(testMergingLists);
