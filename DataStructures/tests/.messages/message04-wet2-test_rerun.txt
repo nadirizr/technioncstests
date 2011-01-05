@@ -1,0 +1,4 @@
+NEW FLAG: rerun
+If you run:
+./test.sh rerun
+It will rerun all of the failed tests from last time, without regenerating random tests.
