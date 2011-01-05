@@ -8,13 +8,14 @@ import glob
 
 def usage_and_exit():
     print "Usage: python test_all.py [num of files] [size=small|medium|big|low-high]"
-    print "                          [random|input|valgrind] [help]"
+    print "                          [rerun|random|input|valgrind] [help]"
     print
     print "       help         - Displays this usage and exits"
     print "       random       - Run random tests"
     print "       input        - Run input tests"
     print "       valgrind     - Run tests with valgrind as well"
-    print "                     (warning - this could take a while)"
+    print "                      (warning - this could take a while)"
+    print "       rerun        - Does not generate new random tests, only reruns failed ones"
     print "       num of files - Designate number of random test files to test"
     print "       size         - The size of each test. It can be one of these:"
     print "                      size=small : 20-100 lines in each test"
@@ -35,6 +36,7 @@ NUM_OF_FILES = 500
 VALGRIND = False
 RANDOM = False
 INPUT = False
+RERUN = False
 MIN_COMMANDS = 100
 MAX_COMMANDS = 500
 for arg in sys.argv[1:]:
@@ -46,6 +48,8 @@ for arg in sys.argv[1:]:
         RANDOM = True
     elif arg == "input":
         INPUT = True
+    elif arg == "rerun":
+        RERUN = True
     elif arg[:len("size=")] == "size=":
         size = arg[len("size="):]
         if size == "small":
@@ -73,6 +77,11 @@ for arg in sys.argv[1:]:
 # if no flags were given on input or random, do both by default
 if not INPUT and not RANDOM:
     INPUT = RANDOM = True
+
+# if rerun is on, set NUM_OF_FILES to be zero
+if RERUN:
+    RANDOM = True
+    NUM_OF_FILES = 0
 
 # path constants
 TEST_RANDOM_CMD = "python test_random.py " + str(NUM_OF_FILES)
