@@ -22,3 +22,4 @@ GetHandlingServerId 1
 GetHandlingServerId 2
 GetHandlingServerId 3
 GetHandlingServerId 4
+Quit

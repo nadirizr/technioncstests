@@ -27,3 +27,4 @@ DequeueRequest 0
 EnqueueRequest 0,4,10
 GetHighestPriorityRequest
 GetRequestPriority 0
+Quit
