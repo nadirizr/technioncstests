@@ -51,7 +51,7 @@ class ServersParser:
       K = int(args[1])
       if K <= 0:
         print "Init failed."
-        return STATUS_FAILURE
+        sys.exit(1)
       self.logic = ServersLogic(K)
       print "Init done."
       return STATUS_SUCCESS
