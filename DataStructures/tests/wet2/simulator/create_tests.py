@@ -3,6 +3,7 @@ import os
 import os.path
 import random
 from logic import Task
+from progressbar import *
 
 TEST_DIR = ".." + os.path.sep + "random"
 TEST_FILE_PATTERN = "test%d"
@@ -308,8 +309,14 @@ def createOutputs(input_dir):
     from glob import glob
     inputs = glob(input_dir + os.path.sep + "*" + TEST_INPUT_SUFFIX)
     outputs = [f[:-3]+TEST_OUTPUT_SUFFIX for f in inputs]
+    widgets = ['Creating Outputs: ', Percentage(), ' (', ETA(), ') ', Bar(),
+               ' ', FileTransferSpeed()]
+    pbar = ProgressBar(widgets=widgets, maxval=len(inputs)).start()
     for i in range(len(inputs)):
         runSimulator(inputs[i], outputs[i])
+        pbar.update(i+1)
+    pbar.finish()
+    print
 
 # Determine amount of files to create.
 num_files = 1
@@ -350,7 +357,12 @@ if not input_dir:
         pass
 
     # Create the files.
+    widgets = ['Creating Tests: ', Percentage(), ' (', ETA(), ') ', Bar(), ' ',
+               FileTransferSpeed()]
+    pbar = ProgressBar(widgets=widgets, maxval=num_files).start()
     for i in range(num_files):
         createNewFile(i, modes[0])
+        pbar.update(i+1)
+    pbar.finish()
 else:
     createOutputs(input_dir)
