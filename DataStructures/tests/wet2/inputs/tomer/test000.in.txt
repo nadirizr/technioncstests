@@ -1,0 +1,91 @@
+Init 1
+EnqueueRequest 20,0,130
+EnqueueRequest 22,0,110
+EnqueueRequest 18,0,100
+EnqueueRequest 26,0,120
+GetHighestPriorityRequest
+LowerOldRequestsPriority 24,25
+GetRequestPriority 20
+EnqueueRequest 24,0,106
+EnqueueRequest 12,0,98
+EnqueueRequest 21,0,110
+GetHighestPriorityRequest
+GetRequestPriority 21
+DequeueRequest 26
+GetHighestPriorityRequest
+GetRequestPriority 21
+LowerOldRequestsPriority 19,25
+EnqueueRequest 19,0,122
+GetHighestPriorityRequest
+GetRequestPriority 19
+EnqueueRequest 15,0,30
+EnqueueRequest 16,0,80
+GetHighestPriorityRequest
+LowerOldRequestsPriority 18,1
+GetRequestPriority 15
+GetRequestPriority 18
+EnqueueRequest 17,0,104
+GetHighestPriorityRequest
+GetRequestPriority 15
+GetRequestPriority 18
+LowerOldRequestsPriority 104,3
+DequeueRequest 24
+DequeueRequest 21
+GetHighestPriorityRequest
+GetRequestPriority 12
+GetRequestPriority 20
+GetRequestPriority 19
+DequeueRequest 17
+LowerOldRequestsPriority 15,34
+GetHighestPriorityRequest
+GetRequestPriority 12
+GetRequestPriority 15
+EnqueueRequest 17,0,84
+GetHighestPriorityRequest
+DequeueRequest 19
+LowerOldRequestsPriority 18,4
+GetHighestPriorityRequest
+GetRequestPriority 18
+DequeueRequest 22
+GetHighestPriorityRequest
+GetRequestPriority 18
+GetRequestPriority 15
+GetRequestPriority 16
+LowerOldRequestsPriority 19,4
+EnqueueRequest 19,0,34
+GetRequestPriority 19
+GetRequestPriority 19
+GetRequestPriority 16
+GetHighestPriorityRequest
+LowerOldRequestsPriority 16,4
+LowerOldRequestsPriority 15,3
+LowerOldRequestsPriority 12,2
+GetHighestPriorityRequest
+GetRequestPriority 15
+GetRequestPriority 12
+DequeueRequest 17
+GetRequestPriority 15
+GetRequestPriority 12
+EnqueueRequest 13,0,121
+LowerOldRequestsPriority 15,3
+GetRequestPriority 13
+EnqueueRequest 14,0,3
+GetRequestPriority 14
+GetRequestPriority 13
+LowerOldRequestsPriority 20,1337
+GetHighestPriorityRequest
+DequeueRequest 19
+GetHighestPriorityRequest
+DequeueRequest 18
+GetHighestPriorityRequest
+DequeueRequest 13
+DequeueRequest 14
+GetRequestPriority 12
+GetRequestPriority 15
+DequeueRequest 12
+GetHighestPriorityRequest
+EnqueueRequest 1,0,1
+GetHighestPriorityRequest
+DequeueRequest 15
+DequeueRequest 1
+Quit
