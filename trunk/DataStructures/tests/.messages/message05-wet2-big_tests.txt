@@ -1,0 +1,5 @@
+RECOMMEDATION - do at least once:
+./test.sh size=10000-20000 100
+
+This will take a while, but will completely abuse your program and will better make sure it is ready.
+Good Luck!
