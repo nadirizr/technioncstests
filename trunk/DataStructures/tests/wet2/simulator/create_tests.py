@@ -309,6 +309,9 @@ def createOutputs(input_dir):
     from glob import glob
     inputs = glob(input_dir + os.path.sep + "*" + TEST_INPUT_SUFFIX)
     outputs = [f[:-3]+TEST_OUTPUT_SUFFIX for f in inputs]
+    if not inputs:
+      return
+
     widgets = ['Creating Outputs: ', Percentage(), ' (', ETA(), ') ', Bar(),
                ' ', FileTransferSpeed()]
     pbar = ProgressBar(widgets=widgets, maxval=len(inputs)).start()
@@ -355,6 +358,10 @@ if not input_dir:
         os.makedirs(TEST_DIR)
     except:
         pass
+
+    # If there are no files to be created, exit.
+    if num_files <= 0:
+      sys.exit(0)
 
     # Create the files.
     widgets = ['Creating Tests: ', Percentage(), ' (', ETA(), ') ', Bar(), ' ',
