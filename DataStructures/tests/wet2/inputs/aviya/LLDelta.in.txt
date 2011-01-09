@@ -1,0 +1,11 @@
+Init 10
+EnqueueRequest 2,0,1
+EnqueueRequest 1,0,5
+LowerOldRequestsPriority 2,1
+LowerOldRequestsPriority 1,1
+EnqueueRequest 0,0,2
+GetRequestPriority 0
+GetRequestPriority 1
+GetRequestPriority 2
+GetHighestPriorityRequest
+Quit
