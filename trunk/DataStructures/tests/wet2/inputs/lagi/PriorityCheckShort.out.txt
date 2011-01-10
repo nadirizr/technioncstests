@@ -1,0 +1,32 @@
+Init done.
+Enqueue Request: Success
+Enqueue Request: Success
+LowerOldRequestsPriority: Success
+GetRequestPriority: Success 30
+GetRequestPriority: Success 80
+GetHighestPriorityRequest: Success 3
+Enqueue Request: Success
+LowerOldRequestsPriority: Success
+GetRequestPriority: Success 10
+GetRequestPriority: Success 60
+GetRequestPriority: Success 180
+GetHighestPriorityRequest: Success 4
+Enqueue Request: Success
+LowerOldRequestsPriority: Success
+GetRequestPriority: Success 0
+GetRequestPriority: Success 10
+GetRequestPriority: Success 60
+GetRequestPriority: Success 180
+GetHighestPriorityRequest: Success 4
+LowerOldRequestsPriority: Success
+GetRequestPriority: Success 0
+GetRequestPriority: Success 0
+GetRequestPriority: Success 10
+GetRequestPriority: Success 130
+GetHighestPriorityRequest: Success 4
+Dequeue Request: Success
+GetRequestPriority: Success 0
+GetRequestPriority: Success 0
+GetRequestPriority: Success 10
+GetHighestPriorityRequest: Success 3
+Quit done.

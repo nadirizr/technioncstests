@@ -1,0 +1,32 @@
+Init 1
+EnqueueRequest 3,0,100
+EnqueueRequest 1,0,50
+LowerOldRequestsPriority 3,20
+GetRequestPriority 1
+GetRequestPriority 3
+GetHighestPriorityRequest
+EnqueueRequest 4,0,200
+LowerOldRequestsPriority 4,20
+GetRequestPriority 1
+GetRequestPriority 3
+GetRequestPriority 4
+GetHighestPriorityRequest
+EnqueueRequest 2,0,20
+LowerOldRequestsPriority 2,10
+GetRequestPriority 1
+GetRequestPriority 2
+GetRequestPriority 3
+GetRequestPriority 4
+GetHighestPriorityRequest
+LowerOldRequestsPriority 4,50
+GetRequestPriority 1
+GetRequestPriority 2
+GetRequestPriority 3
+GetRequestPriority 4
+GetHighestPriorityRequest
+DequeueRequest 4
+GetRequestPriority 1
+GetRequestPriority 2
+GetRequestPriority 3
+GetHighestPriorityRequest
+Quit
