@@ -129,6 +129,9 @@ def generateErrorRequest():
 def createInit():
   global K
   K = getRandomServerCount()
+  dead_servers = []
+  tasks = {}
+  last_reqID = 0
   return "Init %d" % K
 
 def createEnqueueRequestForBusyServer():
