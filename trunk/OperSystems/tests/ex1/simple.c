@@ -11,6 +11,8 @@ int main() {
   int array[20];
   int i;
 
+  printf("// PID: %d\n\n", pid);
+
   printf("// Calling: gettag ...\n");
   printf("// tag = %d\n\n", gettag(pid));
   printf("// Calling: settag(10) ...\n");
