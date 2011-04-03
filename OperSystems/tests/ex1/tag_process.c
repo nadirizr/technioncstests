@@ -21,13 +21,17 @@
 typedef struct {
   int index;
   int pid;
-  FILE* pipe;
+  FILE* out_pipe;
+  FILE* in_pipe;
 } ProcessChild;
 
 ProcessChild* children[MAX_CHILDREN];
 int num_children;
 
-int add_child_process(int pid, FILE* pipe) {
+FILE* out_pipe;
+FILE* in_pipe;
+
+int add_child_process(int pid, FILE* child_in_pipe, FILE* child_out_pipe) {
   if (num_children == MAX_CHILDREN) {
     return -1;
   }
@@ -35,7 +39,8 @@ int add_child_process(int pid, FILE* pipe) {
   children[num_children] = (ProcessChild*)malloc(sizeof(ProcessChild));
   children[num_children]->index = num_children;
   children[num_children]->pid = pid;
-  children[num_children]->pipe = pipe;
+  children[num_children]->in_pipe = child_in_pipe;
+  children[num_children]->out_pipe = child_out_pipe;
   num_children++;
   return num_children;
 }
@@ -52,7 +57,8 @@ int remove_child_process(int index) {
   for (i = num_children - 1; i > index; --i) {
     children[i-1] = children[i];
   }
-  pclose(to_delete->pipe);
+  pclose(to_delete->in_pipe);
+  pclose(to_delete->out_pipe);
   free(to_delete);
 
   num_children--;
@@ -65,18 +71,42 @@ int remove_child_process(int index) {
 
 int handle_create_child(char* arguments) {
   int pid = 0;
+  FILE* child_in_pipe = NULL;
+  FILE* child_out_pipe = NULL;
 
-  /* Create the new process. */
-  FILE* child_pipe = popen(CHILD_EXECUTABLE, "r+");
-  if (child_pipe == NULL) {
+  /* Create the child pipes. */
+  int in_pipe_fd[2];
+  int out_pipe_fd[2];
+  if (pipe(in_pipe_fd) < 0 || pipe(out_pipe_fd) < 0) {
     return -1;
   }
 
+  /* Create the new process. */
+  pid = fork();
+  if (pid < 0) {
+    return -1;
+  }
+  if (pid == 0) {
+    /* If this is the child process, set everything up and go to do_work. */
+    in_pipe = fdopen(in_pipe_fd[0], "r");
+    out_pipe = fdopen(out_pipe_fd[1], "w");
+    close(in_pipe_fd[1]);
+    close(out_pipe_fd[0]);
+    do_work();
+    /* This will block until we exit. */
+  }
+
+  /* Set up the child pipes. */
+  child_in_pipe = fdopen(out_pipe_fd[0], "r");
+  child_out_pipe = fdopen(in_pipe_fd[1], "w");
+  close(out_pipe_fd[1]);
+  close(in_pipe_fd[0]);
+  
   /* Get the child process's PID. */
-  fscanf(child_pipe, "PID %d", &pid);
+  fscanf(child_in_pipe, "PID %d", &pid);
   
   /* Add the new process to the list. */
-  add_child_process(pid, child_pipe);
+  add_child_process(pid, child_in_pipe, child_out_pipe);
 
   return pid;
 }
@@ -175,12 +205,12 @@ int hand_command_to_child(int index, char* line) {
     return -1;
   }
 
-  fprintf(children[index]->pipe, "%s", line);
-  if (fgets(buffer, MAX_STRING_INPUT_SIZE, children[index]->pipe) == NULL) {
+  fprintf(children[index]->out_pipe, "%s", line);
+  if (fgets(buffer, MAX_STRING_INPUT_SIZE, children[index]->in_pipe) == NULL) {
     return -1;
   }
-  printf("%s", buffer);
-  fflush(stdout);
+  fprintf(out_pipe, "%s", buffer);
+  fflush(out_pipe);
 
   if (strncmp(buffer, "CLOSED", 6) == 0) {
     remove_child_process(index);
@@ -215,12 +245,12 @@ int handle_command(char* line) {
   }
   if (strcmp(line, "CLOSE") == 0) {
     rc = handle_close(arguments);
-    printf("CLOSED %d\n", rc);
-    fflush(stdout);
+    fprintf(out_pipe, "CLOSED %d\n", rc);
+    fflush(out_pipe);
     exit(0);
   }
-  printf("DONE %d\n", rc);
-  fflush(stdout);
+  fprintf(out_pipe, "DONE %d\n", rc);
+  fflush(out_pipe);
 
   return rc;
 }
@@ -259,7 +289,7 @@ int parse(char* line) {
 
 /*** Main ***/
 
-int main() {
+int do_work() {
   char buffer[MAX_STRING_INPUT_SIZE];
   int i;
 
@@ -270,15 +300,22 @@ int main() {
   }
 
   /* Print our PID first. */
-  printf("PID %d\n", getpid());
-  fflush(stdout);
+  fprintf(out_pipe, "PID %d\n", getpid());
+  fflush(out_pipe);
 
   /* Start the command reading loop. */
-  while ( fgets(buffer, MAX_STRING_INPUT_SIZE, stdin) != NULL ) {
+  while ( fgets(buffer, MAX_STRING_INPUT_SIZE, in_pipe) != NULL ) {
     if (parse(buffer) < 0) {
       break;
     }
   }
 
   return 0;
+}
+
+int main() {
+  in_pipe = stdin;
+  out_pipe = stdout;
+
+  return do_work();
 }
