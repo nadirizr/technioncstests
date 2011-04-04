@@ -59,6 +59,7 @@ int remove_child_process(int index) {
   }
   pclose(to_delete->in_pipe);
   pclose(to_delete->out_pipe);
+  waitpid(to_delete->pid, NULL, 0);
   free(to_delete);
 
   num_children--;
@@ -70,6 +71,7 @@ int remove_child_process(int index) {
 /*** Handling Commands ***/
 
 int handle_create_child(char* arguments) {
+  char buffer[MAX_STRING_INPUT_SIZE];
   int pid = 0;
   FILE* child_in_pipe = NULL;
   FILE* child_out_pipe = NULL;
@@ -103,7 +105,10 @@ int handle_create_child(char* arguments) {
   close(in_pipe_fd[0]);
   
   /* Get the child process's PID. */
-  fscanf(child_in_pipe, "PID %d", &pid);
+  if (fgets(buffer, MAX_STRING_INPUT_SIZE, child_in_pipe) == NULL) {
+    return -1;
+  }
+  sscanf(buffer, "PID %d", &pid);
   
   /* Add the new process to the list. */
   add_child_process(pid, child_in_pipe, child_out_pipe);
@@ -157,6 +162,7 @@ int handle_get_good_processes(char* arguments) {
   int array[MAX_GOOD_PROCESSES] = {0};
   int arg = atoi(arguments);
   int rc = 0;
+  int i;
 
   if (arg < 1 || arg >= MAX_GOOD_PROCESSES) {
     return -1;
@@ -171,7 +177,16 @@ int handle_get_good_processes(char* arguments) {
     if (errno == EINVAL) {
       return -EINVAL;
     }
+    return rc;
   }
+
+  fprintf(out_pipe, "DONE %d", rc);
+  for (i = 0; i < rc; ++i) {
+    fprintf(out_pipe, " %d", array[i]);
+  }
+  fprintf(out_pipe, "\n");
+  fflush(out_pipe);
+  
   return rc;
 }
 
@@ -193,7 +208,6 @@ int handle_close(char* arguments) {
   int i;
   for (i = num_children - 1; i >= 0; --i) {
     hand_command_to_child(i, "CLOSE");
-    remove_child_process(i);
   }
   return 0;
 }
@@ -206,15 +220,18 @@ int hand_command_to_child(int index, char* line) {
   }
 
   fprintf(children[index]->out_pipe, "%s", line);
+  fflush(children[index]->out_pipe);
+  
+  if (strncmp(line, "CLOSE", 5) == 0) {
+    remove_child_process(index);
+    return 0;
+  }
+
   if (fgets(buffer, MAX_STRING_INPUT_SIZE, children[index]->in_pipe) == NULL) {
     return -1;
   }
   fprintf(out_pipe, "%s", buffer);
   fflush(out_pipe);
-
-  if (strncmp(buffer, "CLOSED", 6) == 0) {
-    remove_child_process(index);
-  }
 
   return 0;
 }
@@ -238,7 +255,7 @@ int handle_command(char* line) {
     rc = handle_set_tag(arguments);
   }
   if (strcmp(line, "GET_GOOD_PROCESSES") == 0) {
-    rc = handle_get_good_processes(arguments);
+    return handle_get_good_processes(arguments);
   }
   if (strcmp(line, "MAKE_GOOD_PROCESSES") == 0) {
     rc = handle_make_good_processes(arguments);
@@ -305,9 +322,7 @@ int do_work() {
 
   /* Start the command reading loop. */
   while ( fgets(buffer, MAX_STRING_INPUT_SIZE, in_pipe) != NULL ) {
-    if (parse(buffer) < 0) {
-      break;
-    }
+    parse(buffer);
   }
 
   return 0;
