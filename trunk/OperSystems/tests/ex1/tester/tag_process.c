@@ -342,7 +342,5 @@ int main(int argc, char* argv[]) {
     out_pipe = stdout;
   }
 
-  settag(getpid(), 0);
-
   return do_work();
 }

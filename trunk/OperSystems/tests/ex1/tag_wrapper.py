@@ -25,6 +25,7 @@ class TagsWrapperParser:
   def parse(self):
     line = self.input_stream.readline()
     while line:
+      print >> sys.stderr, "// Parsing Line: '%s'" % line.strip()
       self.parseLine(line)
       line = self.input_stream.readline()
 
@@ -46,7 +47,9 @@ class TagsWrapperParser:
       reply = self.__sendToTagProcess(line)
       reply_args = reply.split()
       try:
-        reply_args[-1] = str(self.pids.index(int(reply_args[-1])))
+        new_pid = int(reply_args[-1])
+        self.pids.append(new_pid)
+        reply_args[-1] = str(self.pids.index(new_pid))
         print >> self.output_stream, " ".join(reply_args)
         return 0
       except:
@@ -89,21 +92,27 @@ class TagsWrapperParser:
       return -1
 
     elif cmd == "CLOSE":
-      self.__sendToTagProcess(line, wait_for_input=False)
-      return 0
+      try:
+        # TODO(nadir): we need to remove the process and all of it's siblings
+        # from here... we need to redesign the whole tree...
+        self.__sendToTagProcess(line, wait_for_input=False)
+        return 0
+      return -1
 
   def __initializeTagProcess(self):
     if not (self.tag_process_write_pipe and self.tag_process_read_pipe):
       return
 
-    if os.fork() == 0:
+    child_pid = os.fork()
+    if child_pid == 0:
       os.execv(TAG_PROCESS_EXECUTABLE, [TAG_PROCESS_EXECUTABLE,
                                         self.tag_process_write_pipe,
                                         self.tag_process_read_pipe])
       sys.exit(0)
     else:
-      self.tag_process_read_pipe = open(self.tag_process_read_pipe, "r")
       self.tag_process_write_pipe = open(self.tag_process_write_pipe, "w")
+      self.tag_process_read_pipe = open(self.tag_process_read_pipe, "r")
+      self.pids.append(child_pid)
 
   def __sendToTagProcess(self, line, wait_for_input=True):
     if not (self.tag_process_write_pipe and self.tag_process_read_pipe):
