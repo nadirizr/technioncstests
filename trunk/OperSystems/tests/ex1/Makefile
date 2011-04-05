@@ -6,11 +6,12 @@ TEST_TARGETS = test_scenarios test_pitfalls
 
 # Compiler Flags
 CC = gcc
+CXX = g++
 CCFLAGS = -I.. -g
 
 # Source Files
-TAG_PROCESS_SRC = tag_process.c
-TAG_LAUNCHER_SRC = tag_launcher.c
+TAG_PROCESS_SRC = tester/tag_process.c
+TAG_LAUNCHER_SRC = tester/tag_launcher.c
 
 # Test Source Files
 SCENARIOS_TEST_SRC = test_scenarios.c
@@ -30,6 +31,9 @@ ALL_TEST_OBJ_FILES = $(SCENARIOS_TEST_OBJ_FILES) $(PITFALLS_TEST_OBJ_FILES) $(AL
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CCFLAGS) -c $< -o $@
 	
+$(OBJ_DIR)/%.o: %.cpp
+	$(CXX) $(CCFLAGS) -c $< -o $@
+	
 tag_process: $(TAG_PROCESS_OBJ_FILES)
 	$(CC) -o $@ $(TAG_PROCESS_OBJ_FILES) $(LDFLAGS)
 
@@ -38,10 +42,10 @@ tag_launcher: $(TAG_LAUNCHER_OBJ_FILES)
 
 # Test Target Definitions
 test_scenarios: $(SCENARIOS_TEST_OBJ_FILES)
-	$(CC) -o $@ $(SCENARIOS_TEST_OBJ_FILES) $(LDFLAGS)
+	$(CXX) -o $@ $(SCENARIOS_TEST_OBJ_FILES) $(LDFLAGS)
 	
 test_pitfalls: $(PITFALLS_TEST_OBJ_FILES)
-	$(CC) -o $@ $(PITFALLS_TEST_OBJ_FILES) $(LDFLAGS)
+	$(CXX) -o $@ $(PITFALLS_TEST_OBJ_FILES) $(LDFLAGS)
 
 # Build Targets
 all: make_dirs $(TARGET) $(TEST_TARGETS)
@@ -67,4 +71,5 @@ clean_test:
 
 make_dirs:
 	mkdir -p objects
+	mkdir -p objects/tester
 	mkdir -p tests/tmp

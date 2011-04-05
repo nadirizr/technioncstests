@@ -9,7 +9,8 @@ import re
 import unittest
 
 
-PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", "./tag_launcher python tag_wrapper.py")
+DEFAULT_PROGRAM_PATH = "./tester/tag_launcher python ./tester/tag_wrapper.py"
+PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", DEFAULT_PROGRAM_PATH)
 TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
 TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
 TESTS_INPUT_SUFFIX = ".in.txt"
