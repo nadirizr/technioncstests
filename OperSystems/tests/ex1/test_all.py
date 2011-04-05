@@ -8,7 +8,7 @@ import glob
 
 def usage_and_exit():
     print "Usage: python test_all.py [num of files] [size=small|medium|big|low-high]"
-    print "                          [rerun|random|input] [help]"
+    print "                          [rerun|random|input] [clean] [help]"
     print
     print "       help         - Displays this usage and exits"
     print "       random       - Run random tests"
@@ -20,6 +20,7 @@ def usage_and_exit():
     print "                      size=medium: 100-500 lines in each test"
     print "                      size=big   : 500-2000 lines in each test"
     print "                      size=M-N   : M-N lines in each test"
+    print "       clean        - Cleans all of the files from the previous run"
     print
     print "       DEFAULT: Run medium size random tests and input tests, on 500 files."
     print
@@ -33,6 +34,7 @@ NUM_OF_FILES = 500
 RANDOM = False
 INPUT = False
 RERUN = False
+CLEAN = False
 MIN_COMMANDS = 100
 MAX_COMMANDS = 500
 for arg in sys.argv[1:]:
@@ -44,6 +46,8 @@ for arg in sys.argv[1:]:
         INPUT = True
     elif arg == "rerun":
         RERUN = True
+    elif arg == "clean":
+        CLEAN = True
     elif arg[:len("size=")] == "size=":
         size = arg[len("size="):]
         if size == "small":
@@ -76,6 +80,11 @@ if not INPUT and not RANDOM:
 if RERUN:
     RANDOM = True
     NUM_OF_FILES = 0
+
+if CLEAN:
+    try:
+        os.system("rm -rf ./random")
+        os.system("rm -rf ./tmp")
 
 # path constants
 TEST_RANDOM_CMD = "python test_random.py " + str(NUM_OF_FILES)

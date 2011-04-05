@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
   settag(getpid(), 0);
 
   if (fork() == 0) {
-    rc = execv("./tag_looper", child_argv);
+    rc = execv(argv[1], child_argv);
   }
   free(child_argv);
 
