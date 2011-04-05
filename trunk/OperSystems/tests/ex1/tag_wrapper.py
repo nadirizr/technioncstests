@@ -14,6 +14,9 @@ class TagsWrapperParser:
 
     self.tester_pid = os.getpid()
     self.pids = []
+    self.children = {}
+    self.parent = {}
+
     self.__initializeTagProcess()
 
   def close(self):
@@ -40,7 +43,10 @@ class TagsWrapperParser:
       print line,
       return 0
 
+    process_indexes = []
     if ("/" in args[0]) or ('0' <= args[0][0] <= '9'):
+      process_indexes = args[0].split("/")
+      process_indexes = [int(a) for a in process_indexes]
       cmd = args[1]
 
     if cmd == "CREATE_CHILD":
@@ -49,6 +55,8 @@ class TagsWrapperParser:
       try:
         new_pid = int(reply_args[-1])
         self.pids.append(new_pid)
+        self.children[new_pid] = []
+        self.parent[new_pid] = self.__getPIDFromProcessIndexes(process_indexes)
         reply_args[-1] = str(self.pids.index(new_pid))
         print >> self.output_stream, " ".join(reply_args)
         return 0
@@ -93,11 +101,11 @@ class TagsWrapperParser:
 
     elif cmd == "CLOSE":
       try:
-        # TODO(nadir): we need to remove the process and all of it's siblings
-        # from here... we need to redesign the whole tree...
         self.__sendToTagProcess(line, wait_for_input=False)
+        self.__removePID(self.__getPIDFromProcessIndexes(process_indexes))
         return 0
-      return -1
+      except:
+        return -1
 
   def __initializeTagProcess(self):
     if not (self.tag_process_write_pipe and self.tag_process_read_pipe):
@@ -128,6 +136,25 @@ class TagsWrapperParser:
       return ""
 
     return self.tag_process_read_pipe.readline()
+
+  def __getPIDFromProcessIndexes(self, process_indexes):
+    p = self.pids[0]
+    for i in process_indexes:
+      p = self.children[p][i]
+    return p
+
+  def __removePID(self, pid):
+    children = self.children[pid][:]
+    for c in children:
+      self.__removePID(c)
+
+    if pid in self.parent:
+      self.children[self.parent[pid]].remove(pid)
+      del self.parent[pid]
+
+    del self.children[pid]
+    self.pids.remove(pid)
+
 
 file_input_stream = sys.stdin
 tag_process_read_pipe = ""
