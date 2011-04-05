@@ -87,7 +87,7 @@ INPUT_FILES_DIR = "inputs"
 print "========================"
 print "Input Tests"
 print "========================"
-input_dirs = glob.glob(INPUT_FILES_DIR + os.path.sep + "*")
+input_dirs = glob.glob(INPUT_FILES_DIR + os.sep + "*")
 for dir in input_dirs:
     print
     if INPUT:
