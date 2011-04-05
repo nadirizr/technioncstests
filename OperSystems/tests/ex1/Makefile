@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = tag_launcher
+TARGET = tag_process tag_launcher
 MODULES = MAIN
 
 TEST_TARGETS = test_scenarios test_pitfalls
@@ -9,28 +9,32 @@ CC = gcc
 CCFLAGS = -I.. -g
 
 # Source Files
-MAIN_SRC = tag_launcher.c
+TAG_PROCESS_SRC = tag_process.c
+TAG_LAUNCHER_SRC = tag_launcher.c
 
 # Test Source Files
 SCENARIOS_TEST_SRC = test_scenarios.c
 PITFALLS_TEST_SRC = test_pitfalls.c
-TEST_JUNK = tests/random tests/tmp
+TEST_JUNK = random tmp
 
 # Object Files
 OBJ_DIR = objects
-SRC_FILES = $(MAIN_SRC)
-OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(SRC_FILES)},$(OBJ_DIR)/$(f)}
-SCENARIOS_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(SCENARIOS_TEST_SRC)},$(OBJ_DIR_TEST)/$(f)}
-PITFALLS_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(PITFALLS_TEST_SRC)},$(OBJ_DIR_TEST)/$(f)}
-ALL_OBJ_FILES = $(OBJ_FILES)
+TAG_PROCESS_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(TAG_PROCESS_SRC)},$(OBJ_DIR)/$(f)}
+TAG_LAUNCHER_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(TAG_LAUNCHER_SRC)},$(OBJ_DIR)/$(f)}
+SCENARIOS_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(SCENARIOS_TEST_SRC)},$(OBJ_DIR)/$(f)}
+PITFALLS_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(PITFALLS_TEST_SRC)},$(OBJ_DIR)/$(f)}
+ALL_OBJ_FILES = $(TAG_PROCESS_OBJ_FILES) $(TAG_LAUNCHER_OBJ_FILES)
 ALL_TEST_OBJ_FILES = $(SCENARIOS_TEST_OBJ_FILES) $(PITFALLS_TEST_OBJ_FILES) $(ALL_OBJ_FILES)
 
 # Target Definitions
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CCFLAGS) -c $< -o $@
 	
-$(TARGET): $(OBJ_FILES)
-	$(CC) -o $@ $(ALL_OBJ_FILES) $(LDFLAGS)
+tag_process: $(TAG_PROCESS_OBJ_FILES)
+	$(CC) -o $@ $(TAG_PROCESS_OBJ_FILES) $(LDFLAGS)
+
+tag_launcher: $(TAG_LAUNCHER_OBJ_FILES)
+	$(CC) -o $@ $(TAG_LAUNCHER_OBJ_FILES) $(LDFLAGS)
 
 # Test Target Definitions
 test_scenarios: $(SCENARIOS_TEST_OBJ_FILES)
