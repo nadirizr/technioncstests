@@ -1,7 +1,10 @@
 #include <stdlib.h>
+#include <string>
 
 #include "test.h"
 #include "syscall_tags.h"
+
+std::string location;
 
 bool testMakeGoodProcessesFixSwapperTag() {
   int swapper_tag = gettag(0);
