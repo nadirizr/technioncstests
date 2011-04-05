@@ -2,14 +2,13 @@
 
 import sys
 import os
-import os.path
 import commands
 import glob
 import re
 import unittest
 
 
-DEFAULT_PROGRAM_PATH = "./tester/tag_launcher python ./tester/tag_wrapper.py"
+DEFAULT_PROGRAM_PATH = "./tag_launcher python ./tester/tag_wrapper.py"
 PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", DEFAULT_PROGRAM_PATH)
 TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
 TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
@@ -45,9 +44,9 @@ def run_program(name):
         pass
     
     # set up all file names for run
-    test_in_file = TESTS_DIR + os.path.sep + name + TESTS_INPUT_SUFFIX
-    test_out_file = TEMP_DIR + os.path.sep + name + TESTS_OUTPUT_SUFFIX
-    expected_out_file = TESTS_DIR + os.path.sep + name + TESTS_OUTPUT_SUFFIX
+    test_in_file = TESTS_DIR + os.sep + name + TESTS_INPUT_SUFFIX
+    test_out_file = TEMP_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
+    expected_out_file = TESTS_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
     test_command = "%s %s %s %s > %s" % (
         PROGRAM_PATH, test_in_file, TAG_PROCESS_READ_PIPE,
         TAG_PROCESS_WRITE_PIPE, test_out_file)
@@ -114,9 +113,10 @@ class TestProgramRun(unittest.TestCase):
         real_out = real_out.split("\n")
         expected_out = expected_out.split("\n")
         for i in range(0, len(expected_out)):
-            if "DONE" in real_out[i] and real_out[i].split() > 2:
+            if real_out[i].startswith("DONE") and real_out[i].split() > 2:
                 real_out[i], expected_out[i] = self.fixGetGoodProcessesOutput(
                     real_out[i], expected_out[i])
+
             self.assertEquals(
                 " ".join(real_out[i].split()),
                 " ".join(expected_out[i].split()),
@@ -133,8 +133,8 @@ class TestProgramRun(unittest.TestCase):
 create_pipes()
 
 # create all of the actual test suites
-test_files = glob.glob(TESTS_DIR + os.path.sep + "*.in.txt")
-test_files = [f[len(TESTS_DIR + os.path.sep):f.rindex(TESTS_INPUT_SUFFIX)] for f in test_files]
+test_files = glob.glob(TESTS_DIR + os.sep + "*.in.txt")
+test_files = [f[len(TESTS_DIR + os.sep):f.rindex(TESTS_INPUT_SUFFIX)] for f in test_files]
 test_cases = [TestProgramRun(f) for f in test_files]
 
 # create the suite and run them

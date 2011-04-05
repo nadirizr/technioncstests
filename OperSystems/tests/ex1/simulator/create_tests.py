@@ -1,10 +1,9 @@
 import sys
 import os
-import os.path
 import random
 from progressbar import *
 
-TEST_DIR = ".." + os.path.sep + "random"
+TEST_DIR = ".." + os.sep + "random"
 TEST_FILE_PATTERN = "test%d"
 
 SIMULATOR_PATH = "python simulator.py"
@@ -49,7 +48,7 @@ def getRandomPID():
   return random.randint(-1000, 100000)
 
 def getRandomProcess():
-  return random.sample(state.processes, 1)[0]
+  return random.choice(state.processes)
 
 def getProcessIndexAtParent(process):
   if process.parent is None:
@@ -57,7 +56,7 @@ def getProcessIndexAtParent(process):
   return process.parent.children.index(process)
 
 def getRandomChildOrProcess(process):
-  return random.sample([process] + process.children, 1)[0]
+  return random.choice([process] + process.children)
 
 def getProcessPID(process):
   return state.processes.index(process)
@@ -211,7 +210,7 @@ def createNewCommandSet(cmd_list, cmd_sum, init_commands, fin_commands):
 # Creates a new random file from a given command mode.
 def createNewFile(i, mode):
     # Create the .in file.
-    filepath = TEST_DIR + os.path.sep + (TEST_FILE_PATTERN % i) + TEST_INPUT_SUFFIX
+    filepath = TEST_DIR + os.sep + (TEST_FILE_PATTERN % i) + TEST_INPUT_SUFFIX
     f = file(filepath, "w")
     
     # Create the lines.
@@ -222,7 +221,7 @@ def createNewFile(i, mode):
     f.close()
     
     # Run the simulator to get the outputs.
-    outpath = TEST_DIR + os.path.sep + (TEST_FILE_PATTERN % i) + TEST_OUTPUT_SUFFIX
+    outpath = TEST_DIR + os.sep + (TEST_FILE_PATTERN % i) + TEST_OUTPUT_SUFFIX
     runSimulator(filepath, outpath)
 
 # Runs the simulator for the given input file, creating error and output files.
@@ -232,7 +231,7 @@ def runSimulator(inpath, outpath):
 # Creates the simulated output and error for each of the files in input_dir.
 def createOutputs(input_dir):
     from glob import glob
-    inputs = glob(input_dir + os.path.sep + "*" + TEST_INPUT_SUFFIX)
+    inputs = glob(input_dir + os.sep + "*" + TEST_INPUT_SUFFIX)
     outputs = [f[:-3]+TEST_OUTPUT_SUFFIX for f in inputs]
     if not inputs:
       return

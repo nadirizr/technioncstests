@@ -20,7 +20,6 @@ class TagsParser:
   def parse(self, input_stream):
     line = input_stream.readline()
     while line:
-      print >> sys.stderr, "// parsing line: '%s'" % line
       self.parseLine(line)
       line = input_stream.readline()
 

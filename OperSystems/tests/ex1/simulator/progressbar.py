@@ -244,7 +244,8 @@ class ProgressBar(object):
         hfill_inds = []
         num_hfill = 0
         currwidth = 0
-        for i, w in enumerate(self.widgets):
+        for i in xrange(len(self.widgets)):
+            w = self.widgets[i]
             if isinstance(w, ProgressBarWidgetHFill):
                 r.append(w)
                 hfill_inds.append(i)

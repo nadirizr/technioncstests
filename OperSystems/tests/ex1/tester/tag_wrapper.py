@@ -1,4 +1,5 @@
 import os
+import sys
 
 TAG_PROCESS_EXECUTABLE = "./tag_process"
 
@@ -93,6 +94,9 @@ class TagsWrapperParser:
       os.execv(TAG_PROCESS_EXECUTABLE, [TAG_PROCESS_EXECUTABLE,
                                         self.tag_process_write_pipe.name,
                                         self.tag_process_read_pipe.name])
+
+  def __sendToTagProcess(self, line, wait_for_input=True):
+    pass
 
 file_input_stream = sys.stdin
 tag_process_read_pipe = None
