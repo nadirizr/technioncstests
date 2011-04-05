@@ -16,6 +16,12 @@ class TagsWrapperParser:
     self.pids = []
     self.__initializeTagProcess()
 
+  def close(self):
+    if self.tag_process_write_pipe:
+      self.tag_process_write_pipe.close()
+    if self.tag_process_read_pipe:
+      self.tag_process_read_pipe.close()
+
   def parse(self):
     line = self.input_stream.readline()
     while line:
@@ -125,6 +131,7 @@ if sys.argv[2:] and sys.argv[3:]:
 
 parser = TagsWrapperParser()
 parser.parse(file_input_stream, sys.stdout, tag_process_read_pipe, tag_process_write_pipe)
+parser.close()
 
 if file_input_stream != sys.stdin:
   file_input_stream.close()

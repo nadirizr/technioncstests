@@ -95,7 +95,8 @@ int handle_create_child(char* arguments) {
     close(in_pipe_fd[1]);
     close(out_pipe_fd[0]);
     do_work();
-    /* This will block until we exit. */
+    /* This will block until we exit, but just in case... */
+    exit(0);
   }
 
   /* Set up the child pipes. */
@@ -324,6 +325,10 @@ int do_work() {
   while ( fgets(buffer, MAX_STRING_INPUT_SIZE, in_pipe) != NULL ) {
     parse(buffer);
   }
+
+  /* If we reach the end, close all the open streams. */
+  fclose(in_pipe);
+  fclose(out_pipe);
 
   return 0;
 }
