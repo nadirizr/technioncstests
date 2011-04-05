@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "syscall_tags.h"
+
 int main(int argc, char* argv[]) {
   char** child_argv;
   int i;
@@ -17,6 +19,8 @@ int main(int argc, char* argv[]) {
   for (i = 1; i < argc; ++i) {
     child_argv[i-1] = argv[i];
   }
+
+  settag(getpid(), 0);
 
   if (fork() == 0) {
     rc = execv("./tag_looper", child_argv);

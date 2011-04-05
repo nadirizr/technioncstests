@@ -328,9 +328,16 @@ int do_work() {
   return 0;
 }
 
-int main() {
-  in_pipe = stdin;
-  out_pipe = stdout;
+int main(int argc, char* argv[]) {
+  if (argc >= 3) {
+    in_pipe = fopen(argv[1], "r");
+    out_pipe = fopen(argv[2], "w");
+  } else {
+    in_pipe = stdin;
+    out_pipe = stdout;
+  }
+
+  settag(getpid(), 0);
 
   return do_work();
 }

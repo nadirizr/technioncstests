@@ -20,51 +20,54 @@ class TagsParser:
   def parse(self, input_stream):
     line = input_stream.readline()
     while line:
+      print >> sys.stderr, "// parsing line: '%s'" % line
       self.parseLine(line)
       line = input_stream.readline()
 
   def parseLine(self, line):
     args = line.split()
     if not args:
+      print
       return
 
-    process_indexes = []
-    if "/" in args[0]:
-      process_indexes = args[0].split("/")
-      process_indexes = [int(a) for a in process_indexes]
-      cmd = args[1]
-    else:
-      cmd = args[0]
-      
+    cmd = args[0]
     if not cmd or cmd[0] == "#":
       print line,
       return 0
 
+    process_indexes = []
+    if ("/" in args[0]) or ('0' <= args[0][0] <= '9'):
+      process_indexes = args[0].split("/")
+      process_indexes = [int(a) for a in process_indexes]
+      cmd = args[1]
+      
     if cmd == "CREATE_CHILD":
       rc = self.logic.createChild(process_indexes)
       print "DONE %d" % rc
       return rc
 
     elif cmd == "GET_TAG":
-      pid = args[-1]
+      pid = int(args[-1])
       rc = self.logic.getTag(process_indexes, pid)
       print "DONE %d" % rc
       return rc
 
     elif cmd == "SET_TAG":
-      tag = args[-1]
-      pid = args[-2]
+      tag = int(args[-1])
+      pid = int(args[-2])
       rc = self.logic.setTag(process_indexes, pid, tag)
       print "DONE %d" % rc
 
     elif cmd == "GET_GOOD_PROCESSES":
-      count = args[-1]
+      count = int(args[-1])
       pids = self.logic.getGoodProcesses(process_indexes, count)
       if type(pids) == int:
         print "DONE %d" % pids
         return pids
-      print "DONE %d %s" % (len(pids), " ".join(pids))
-      return 0
+      if type(pids) == list:
+        print "DONE %d %s" % (len(pids), " ".join([str(p) for p in pids]))
+        return len(pids)
+      return -1
 
     elif cmd == "MAKE_GOOD_PROCESSES":
       rc = self.logic.makeGoodProcesses(process_indexes)
