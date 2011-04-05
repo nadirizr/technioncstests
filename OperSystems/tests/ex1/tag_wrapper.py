@@ -6,7 +6,7 @@ TAG_PROCESS_EXECUTABLE = "./tag_process"
 class TagsWrapperParser:
 
   def __init__(self, input_stream=sys.stdin, output_stream=sys.stdout,
-                     tag_process_read_pipe=None, tag_process_write_pipe=None):
+                     tag_process_read_pipe="", tag_process_write_pipe=""):
     self.input_stream = input_stream
     self.output_stream = output_stream
     self.tag_process_read_pipe = tag_process_read_pipe
@@ -92,20 +92,36 @@ class TagsWrapperParser:
 
     if os.fork() == 0:
       os.execv(TAG_PROCESS_EXECUTABLE, [TAG_PROCESS_EXECUTABLE,
-                                        self.tag_process_write_pipe.name,
-                                        self.tag_process_read_pipe.name])
+                                        self.tag_process_write_pipe,
+                                        self.tag_process_read_pipe])
+      sys.exit(0)
+    else:
+      self.tag_process_read_pipe = open(self.tag_process_read_pipe, "r")
+      self.tag_process_write_pipe = open(self.tag_process_write_pipe, "w")
 
   def __sendToTagProcess(self, line, wait_for_input=True):
-    pass
+    if not (self.tag_process_write_pipe and self.tag_process_read_pipe):
+      return ""
+
+    if not line.endswith("\n"):
+      line += "\n"
+
+    self.tag_process_write_pipe.write(line)
+    self.tag_process_write_pipe.flush()
+
+    if not wait_for_input:
+      return ""
+
+    return self.tag_process_read_pipe.readline()
 
 file_input_stream = sys.stdin
-tag_process_read_pipe = None
-tag_process_write_pipe = None
+tag_process_read_pipe = ""
+tag_process_write_pipe = ""
 if sys.argv[1:]:
   file_input_stream = file(sys.argv[1], "r")
 if sys.argv[2:] and sys.argv[3:]:
-  tag_process_read_pipe = file(sys.argv[2], "r")
-  tag_process_write_pipe = file(sys.argv[3], "w")
+  tag_process_read_pipe = sys.argv[2]
+  tag_process_write_pipe = sys.argv[3]
 
 parser = TagsWrapperParser()
 parser.parse(file_input_stream, sys.stdout, tag_process_read_pipe, tag_process_write_pipe)

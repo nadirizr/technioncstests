@@ -72,4 +72,4 @@ clean_test:
 make_dirs:
 	mkdir -p objects
 	mkdir -p objects/tester
-	mkdir -p tests/tmp
+	mkdir -p tmp
