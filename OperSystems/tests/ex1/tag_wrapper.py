@@ -129,8 +129,9 @@ if sys.argv[2:] and sys.argv[3:]:
   tag_process_read_pipe = sys.argv[2]
   tag_process_write_pipe = sys.argv[3]
 
-parser = TagsWrapperParser()
-parser.parse(file_input_stream, sys.stdout, tag_process_read_pipe, tag_process_write_pipe)
+parser = TagsWrapperParser(file_input_stream, sys.stdout,
+                           tag_process_read_pipe, tag_process_write_pipe)
+parser.parse()
 parser.close()
 
 if file_input_stream != sys.stdin:
