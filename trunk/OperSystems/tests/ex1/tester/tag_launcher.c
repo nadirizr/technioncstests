@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
     rc = execv(argv[0], argv);
   } else {
     printf("%d\n",rc);
+    fflush(stdout);
   }
 
   return rc;
