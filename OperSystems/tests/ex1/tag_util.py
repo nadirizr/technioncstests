@@ -77,6 +77,13 @@ class MainState:
     self.processes.append(new_process)
     return new_process
 
+  def addProcess(self, process_state):
+    if process_state.parent and \
+       process_state not in process_state.parent.getChildren():
+      process_state.parent.addChild(process_state)
+
+    self.processes.append(process_state)
+
   def removeProcessAndChildren(self, process_state):
     process_children = process_state.children[:]
     for c in process_children:
