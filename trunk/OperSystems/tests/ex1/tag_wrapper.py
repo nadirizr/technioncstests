@@ -73,10 +73,10 @@ class TagsWrapperParser:
         new_pid = int(reply_args[-1])
         if new_pid > 0:
           new_process = self.state.addNewProcess(
-              tag=0, parent=self.getProcessForIndexes(process_indexes))
+              tag=0, parent=self.state.getProcessForIndexes(process_indexes))
           new_process.pid = new_pid
           self.pids[new_pid] = new_process
-          reply_args[-1] = str(self.pids.index(new_pid))
+          reply_args[-1] = str(self.state.getPIDForProcess(new_process))
           print >> self.output_stream, " ".join(reply_args)
           return 0
         return -1
@@ -92,7 +92,9 @@ class TagsWrapperParser:
 
     elif cmd == "SET_TAG":
       if 0 <= int(args[-2]) < len(self.state.getProcesses()):
+        print >> sys.stderr, "###### arg[-2] before: %d" % int(args[-2])
         args[-2] = str(self.state.getProcessForPID(int(args[-2])).pid)
+        print >> sys.stderr, "###### arg[-2] after: %d" % int(args[-2])
       print >> self.output_stream, self.__sendToTagProcess(" ".join(args))
       return 0
 
@@ -102,8 +104,12 @@ class TagsWrapperParser:
       try:
         pids = reply_args[2:]
         tester_pid_str = str(self.tester_pid)
-        if tester_pid_str in pids:
-          reply_args[2 + reply_args.index(tester_pid_str)] = "-1"
+        for i in range(len(pids)):
+          if tester_pid_str == pids[i]:
+            pids[i] = "-1"
+          elif pids[i] in self.pids.keys():
+            pids[i] = str(self.state.getPIDForProcess(self.pids[pids[i]]))
+        reply_args[2:] = pids
         print >> self.output_stream, " ".join(reply_args)
         return 0
       except:
@@ -139,6 +145,8 @@ class TagsWrapperParser:
     if not (self.tag_process_write_pipe and self.tag_process_read_pipe):
       return
 
+    self.state.processes = []
+
     child_pid = os.fork()
     if child_pid == 0:
       os.execv(TAG_PROCESS_EXECUTABLE, [TAG_PROCESS_EXECUTABLE,
@@ -149,6 +157,7 @@ class TagsWrapperParser:
       self.tag_process_write_pipe = open(self.tag_process_write_pipe, "w")
       self.tag_process_read_pipe = open(self.tag_process_read_pipe, "r")
       new_process = self.state.addNewProcess(tag=0, parent=None)
+      new_process.pid = child_pid
       self.pids[child_pid] = new_process
       self.tag_process_read_pipe.readline()
 

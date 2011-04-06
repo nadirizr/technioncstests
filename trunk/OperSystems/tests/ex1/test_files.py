@@ -99,13 +99,19 @@ class TestProgramRun(unittest.TestCase):
         real_line_words = real_line.split()
         expected_line_words = expected_line.split()
         
-        if "0" in real_line_words:
-          real_line_words.remove("0")
-          expected_line_words.pop()
+        real_line_pids = real_line_words[2:]
+        expected_line_pids = expected_line_words[2:]
+        if "0" in real_line_pids:
+          real_line_pids.remove("0")
+          if len(expected_line_pids) > 2:
+            expected_line_pids.pop()
 
-        if "1" in real_line_words:
-          real_line_words.remove("1")
-          expected_line_words.pop()
+        if "1" in real_line_pids:
+          real_line_pids.remove("1")
+          if len(expected_line_pids) > 2:
+            expected_line_pids.pop()
+        real_line_words = ["DONE", str(len(real_line_pids))] + real_line_pids
+        expected_line_words = ["DONE", str(len(expected_line_pids))] + expected_line_pids
 
         return " ".join(real_line_words), " ".join(expected_line_words)
     
