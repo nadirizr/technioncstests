@@ -39,6 +39,7 @@ def run_program(name):
     
     # run the actual program
     pid = commands.getoutput(test_command)
+    pid = pid[:5]
     pid = int(pid.strip())
 
     # wait for the process to finish
