@@ -68,9 +68,12 @@ class MainState:
       p = p.children[i]
     return p
 
-  def addNewProcess(self, tag, parent):
+  def addNewProcess(self, tag=0, parent=None):
     new_process = ProcessState(parent, tag)
-    parent.addChild(new_process)
+
+    if parent:
+      parent.addChild(new_process)
+
     self.processes.append(new_process)
     return new_process
 
