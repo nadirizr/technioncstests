@@ -125,10 +125,12 @@ class TagsWrapperParser:
       try:
         wait_for_input = len(process_indexes) > 0 
         self.__sendToTagProcess(line, wait_for_input)
+
+        if len(process_indexes) == 0:
+          self.__printTreeWithPIDs()
+
         self.state.removeProcessAndChildren(
             self.state.getProcessForIndexes(process_indexes))
-        if not self.state.getProcesses():
-          self.__printTreeWithPIDs()
         return 0
       except:
         return -1
