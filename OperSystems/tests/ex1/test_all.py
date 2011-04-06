@@ -85,6 +85,8 @@ if CLEAN:
     try:
         os.system("rm -rf ./random")
         os.system("rm -rf ./tmp")
+    except:
+        print "Clean Failed!"
 
 # path constants
 TEST_RANDOM_CMD = "python test_random.py " + str(NUM_OF_FILES)
