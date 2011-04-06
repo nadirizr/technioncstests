@@ -19,7 +19,7 @@ def create_pipes():
 class TagsWrapperParser:
 
   def __init__(self, input_stream=sys.stdin, output_stream=sys.stdout,
-               command_output_stream, tag_process_read_pipe="",
+               command_output_stream=None, tag_process_read_pipe="",
                tag_process_write_pipe=""):
     self.input_stream = input_stream
     self.output_stream = output_stream
