@@ -39,10 +39,15 @@ def run_program(name):
     
     # run the actual program
     pid = commands.getoutput(test_command)
+    pid = int(pid)
 
     # wait for the process to finish
-    while not commands.getoutput("kill -0 %s" % pid):
-      time.sleep(1)
+    while True:
+      try:
+        os.kill(pid, 0) 
+        time.sleep(1)
+      except:
+        break
     
     # compare the output
     try:
