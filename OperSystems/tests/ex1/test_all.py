@@ -83,8 +83,8 @@ if RERUN:
 
 if CLEAN:
     try:
-        os.system("rm -rf ./random")
-        os.system("rm -rf ./tmp")
+        os.system("rm -rf ./random/*")
+        os.system("rm -rf ./tmp/*")
     except:
         print "Clean Failed!"
 

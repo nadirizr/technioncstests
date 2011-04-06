@@ -19,9 +19,11 @@ def create_pipes():
 class TagsWrapperParser:
 
   def __init__(self, input_stream=sys.stdin, output_stream=sys.stdout,
-                     tag_process_read_pipe="", tag_process_write_pipe=""):
+               command_output_stream, tag_process_read_pipe="",
+               tag_process_write_pipe=""):
     self.input_stream = input_stream
     self.output_stream = output_stream
+    self.command_output_stream = command_output_stream
     self.tag_process_read_pipe = tag_process_read_pipe
     self.tag_process_write_pipe = tag_process_write_pipe
 
@@ -125,6 +127,8 @@ class TagsWrapperParser:
         self.__sendToTagProcess(line, wait_for_input)
         self.state.removeProcessAndChildren(
             self.state.getProcessForIndexes(process_indexes))
+        if not self.state.getProcesses():
+          self.__printTreeWithPIDs()
         return 0
       except:
         return -1
@@ -153,6 +157,8 @@ class TagsWrapperParser:
     if not line.endswith("\n"):
       line += "\n"
 
+    self.__writeToCommandOutput(line)
+
     self.tag_process_write_pipe.write(line)
     self.tag_process_write_pipe.flush()
 
@@ -160,20 +166,43 @@ class TagsWrapperParser:
       return ""
 
     time.sleep(0.1)
-    return self.tag_process_read_pipe.readline().strip()
+    reply = self.tag_process_read_pipe.readline().strip()
+
+    self.__writeToCommandOutput("--> %s" % reply)
+    return reply
+
+  def __writeToCommandOutput(self, line):
+    if not self.command_output_stream:
+      return
+    self.command_output_stream.write(line)
+    self.command_output_stream.flush()
+
+  def __printTreeWithPIDs(self):
+    self.__writeToCommandOutput(
+        "\n\nFinal Process Tree (Processes ordered according to creation):\n")
+    for p in self.state.getProcesses():
+      self.__writeToCommandOutput("PID(%d)\t: %s\n" % (
+        p.pid, [c.pid for c in p.getChildren()]))
 
 
 file_input_stream = sys.stdin
+file_output_stream = sys.stdout
+command_output_stream = None
 tag_process_read_pipe = TAG_PROCESS_READ_PIPE
 tag_process_write_pipe = TAG_PROCESS_WRITE_PIPE
 if sys.argv[1:]:
   file_input_stream = file(sys.argv[1], "r")
-if sys.argv[2:] and sys.argv[3:]:
-  tag_process_read_pipe = sys.argv[2]
-  tag_process_write_pipe = sys.argv[3]
+if sys.argv[2:]:
+  file_output_stream = file(sys.argv[2], "w")
+if sys.argv[3:]
+  command_output_stream = file(sys.argv[3], "w")
+if sys.argv[4:] and sys.argv[5:]:
+  tag_process_read_pipe = sys.argv[4]
+  tag_process_write_pipe = sys.argv[5]
 
-parser = TagsWrapperParser(file_input_stream, sys.stdout,
-                           tag_process_read_pipe, tag_process_write_pipe)
+parser = TagsWrapperParser(
+    file_input_stream, file_output_stream, command_output_stream,
+    tag_process_read_pipe, tag_process_write_pipe)
 parser.parse()
 parser.close()
 
