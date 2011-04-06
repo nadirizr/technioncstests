@@ -73,7 +73,7 @@ for arg in sys.argv[1:]:
             usage_and_exit()
     
 # if no flags were given on input or random, do both by default
-if not INPUT and not RANDOM:
+if not INPUT and not RANDOM and not CLEAN:
     INPUT = RANDOM = True
 
 # if rerun is on, set NUM_OF_FILES to be zero
@@ -95,17 +95,18 @@ INPUT_FILES_DIR = "inputs"
 
 
 # run the test_files script on all files in all input dirs
-print "========================"
-print "Input Tests"
-print "========================"
-input_dirs = glob.glob(INPUT_FILES_DIR + os.sep + "*")
-for dir in input_dirs:
+if INPUT:
+  print
+  print "========================"
+  print "Input Tests"
+  print "========================"
+  input_dirs = glob.glob(INPUT_FILES_DIR + os.sep + "*")
+  for dir in input_dirs:
     print
-    if INPUT:
-        print "*** Tests from %s: ***" % dir
-        os.environ["TAGS_TESTS_DIR"] = dir
-        os.system(TEST_FILES_CMD)
-        del os.environ["TAGS_TESTS_DIR"]
+    print "*** Tests from %s: ***" % dir
+    os.environ["TAGS_TESTS_DIR"] = dir
+    os.system(TEST_FILES_CMD)
+    del os.environ["TAGS_TESTS_DIR"]
 
 # run the random files script
 if RANDOM:

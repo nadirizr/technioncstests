@@ -1,7 +1,20 @@
 import os
 import sys
+import time
+
+from tag_util import *
 
 TAG_PROCESS_EXECUTABLE = "./tag_process"
+
+TAG_PROCESS_WRITE_PIPE = "/tmp/tag_process_write_pipe"
+TAG_PROCESS_READ_PIPE = "/tmp/tag_process_read_pipe"
+
+def create_pipes():
+    try:
+      os.mkfifo(TAG_PROCESS_READ_PIPE)
+      os.mkfifo(TAG_PROCESS_WRITE_PIPE)
+    except:
+      pass
 
 class TagsWrapperParser:
 
@@ -13,10 +26,10 @@ class TagsWrapperParser:
     self.tag_process_write_pipe = tag_process_write_pipe
 
     self.tester_pid = os.getpid()
-    self.pids = []
-    self.children = {}
-    self.parent = {}
+    self.state = MainState()
+    self.pids = {}
 
+    create_pipes()
     self.__initializeTagProcess()
 
   def close(self):
@@ -26,10 +39,12 @@ class TagsWrapperParser:
       self.tag_process_read_pipe.close()
 
   def parse(self):
+    line_number = 1
     line = self.input_stream.readline()
     while line:
-      print >> sys.stderr, "// Parsing Line: '%s'" % line.strip()
+      print >> sys.stderr, "// Parsing Line [%d]: '%s'" % (line_number, line.strip())
       self.parseLine(line)
+      line_number += 1
       line = self.input_stream.readline()
 
   def parseLine(self, line):
@@ -54,23 +69,28 @@ class TagsWrapperParser:
       reply_args = reply.split()
       try:
         new_pid = int(reply_args[-1])
-        self.pids.append(new_pid)
-        self.children[new_pid] = []
-        self.parent[new_pid] = self.__getPIDFromProcessIndexes(process_indexes)
-        reply_args[-1] = str(self.pids.index(new_pid))
-        print >> self.output_stream, " ".join(reply_args)
-        return 0
+        if new_pid > 0:
+          new_process = self.state.addNewProcess(
+              tag=0, parent=self.getProcessForIndexes(process_indexes))
+          new_process.pid = new_pid
+          self.pids[new_pid] = new_process
+          reply_args[-1] = str(self.pids.index(new_pid))
+          print >> self.output_stream, " ".join(reply_args)
+          return 0
+        return -1
       except:
         print >> self.output_stream, reply
       return -1
 
     elif cmd == "GET_TAG":
-      args[-1] = str(self.pids[int(args[-1])])
+      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
+        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
       print >> self.output_stream, self.__sendToTagProcess(" ".join(args))
       return 0
 
     elif cmd == "SET_TAG":
-      args[-2] = str(self.pids[int(args[-2])])
+      if 0 <= int(args[-2]) < len(self.state.getProcesses()):
+        args[-2] = str(self.state.getProcessForPID(int(args[-2])).pid)
       print >> self.output_stream, self.__sendToTagProcess(" ".join(args))
       return 0
 
@@ -101,8 +121,10 @@ class TagsWrapperParser:
 
     elif cmd == "CLOSE":
       try:
-        self.__sendToTagProcess(line, wait_for_input=False)
-        self.__removePID(self.__getPIDFromProcessIndexes(process_indexes))
+        wait_for_input = len(process_indexes) > 0 
+        self.__sendToTagProcess(line, wait_for_input)
+        self.state.removeProcessAndChildren(
+            self.state.getProcessForIndexes(process_indexes))
         return 0
       except:
         return -1
@@ -121,6 +143,7 @@ class TagsWrapperParser:
       self.tag_process_write_pipe = open(self.tag_process_write_pipe, "w")
       self.tag_process_read_pipe = open(self.tag_process_read_pipe, "r")
       self.pids.append(child_pid)
+      self.tag_process_read_pipe.readline()
 
   def __sendToTagProcess(self, line, wait_for_input=True):
     if not (self.tag_process_write_pipe and self.tag_process_read_pipe):
@@ -135,30 +158,13 @@ class TagsWrapperParser:
     if not wait_for_input:
       return ""
 
-    return self.tag_process_read_pipe.readline()
-
-  def __getPIDFromProcessIndexes(self, process_indexes):
-    p = self.pids[0]
-    for i in process_indexes:
-      p = self.children[p][i]
-    return p
-
-  def __removePID(self, pid):
-    children = self.children[pid][:]
-    for c in children:
-      self.__removePID(c)
-
-    if pid in self.parent:
-      self.children[self.parent[pid]].remove(pid)
-      del self.parent[pid]
-
-    del self.children[pid]
-    self.pids.remove(pid)
+    time.sleep(0.1)
+    return self.tag_process_read_pipe.readline().strip()
 
 
 file_input_stream = sys.stdin
-tag_process_read_pipe = ""
-tag_process_write_pipe = ""
+tag_process_read_pipe = TAG_PROCESS_READ_PIPE
+tag_process_write_pipe = TAG_PROCESS_WRITE_PIPE
 if sys.argv[1:]:
   file_input_stream = file(sys.argv[1], "r")
 if sys.argv[2:] and sys.argv[3:]:
@@ -169,6 +175,8 @@ parser = TagsWrapperParser(file_input_stream, sys.stdout,
                            tag_process_read_pipe, tag_process_write_pipe)
 parser.parse()
 parser.close()
+
+os.system("killall tag_process")
 
 if file_input_stream != sys.stdin:
   file_input_stream.close()
