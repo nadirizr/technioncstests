@@ -17,6 +17,15 @@ TESTS_INPUT_SUFFIX = ".in.txt"
 TESTS_OUTPUT_SUFFIX = ".out.txt"
 TESTS_COMMANDS_SUFFIX = ".real.in.txt"
 
+def str_to_int(s):
+    num = ""
+    for c in s:
+        if c.isdigit():
+            num += c
+        else:
+            break
+    return int(num)
+
 def run_program(name):
     """
     Runs the given test name by locating the correct test file input and output
@@ -39,8 +48,7 @@ def run_program(name):
     
     # run the actual program
     pid = commands.getoutput(test_command)
-    pid = pid[:5]
-    pid = int(pid.strip())
+    pid = str_to_int(pid)
 
     # wait for the process to finish
     while True:

@@ -170,7 +170,7 @@ class TagsWrapperParser:
     time.sleep(0.1)
     reply = self.tag_process_read_pipe.readline().strip()
 
-    self.__writeToCommandOutput("--> %s" % reply)
+    self.__writeToCommandOutput("--> %s\n" % reply)
     return reply
 
   def __writeToCommandOutput(self, line):
