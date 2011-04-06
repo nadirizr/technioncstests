@@ -142,7 +142,8 @@ class TagsWrapperParser:
     else:
       self.tag_process_write_pipe = open(self.tag_process_write_pipe, "w")
       self.tag_process_read_pipe = open(self.tag_process_read_pipe, "r")
-      self.pids.append(child_pid)
+      new_process = self.state.addNewProcess(tag=0, parent=None)
+      self.pids[child_pid] = new_process
       self.tag_process_read_pipe.readline()
 
   def __sendToTagProcess(self, line, wait_for_input=True):
