@@ -196,7 +196,7 @@ if sys.argv[1:]:
   file_input_stream = file(sys.argv[1], "r")
 if sys.argv[2:]:
   file_output_stream = file(sys.argv[2], "w")
-if sys.argv[3:]
+if sys.argv[3:]:
   command_output_stream = file(sys.argv[3], "w")
 if sys.argv[4:] and sys.argv[5:]:
   tag_process_read_pipe = sys.argv[4]
