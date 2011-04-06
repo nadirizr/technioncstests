@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
-import sys
-import os
 import commands
 import glob
+import os
 import re
+import sys
+import time
 import unittest
 
 
@@ -14,6 +15,7 @@ TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
 TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
 TESTS_INPUT_SUFFIX = ".in.txt"
 TESTS_OUTPUT_SUFFIX = ".out.txt"
+TESTS_COMMANDS_SUFFIX = ".real.in.txt"
 
 def run_program(name):
     """
@@ -30,12 +32,17 @@ def run_program(name):
     # set up all file names for run
     test_in_file = TESTS_DIR + os.sep + name + TESTS_INPUT_SUFFIX
     test_out_file = TEMP_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
+    test_command_file = TEMP_DIR + os.sep + name + TESTS_COMMANDS_SUFFIX
     expected_out_file = TESTS_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
-    test_command = "%s %s > %s" % (
-        PROGRAM_PATH, test_in_file, test_out_file)
+    test_command = "%s %s %s %s" % (
+        PROGRAM_PATH, test_in_file, test_out_file, test_command_file)
     
     # run the actual program
-    os.system(test_command)
+    pid = os.system(test_command)
+
+    # wait for the process to finish
+    while not commands.getoutput("kill -0 %d" % pid):
+      time.sleep(1)
     
     # compare the output
     try:
