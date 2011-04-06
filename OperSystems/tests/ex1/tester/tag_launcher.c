@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,17 +16,16 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  child_argv = (char**)malloc(sizeof(char*)*(argc-1));
   for (i = 1; i < argc; ++i) {
-    child_argv[i-1] = argv[i];
+    argv[i-1] = argv[i];
   }
+  argv[argc-1] = NULL;
 
   settag(getpid(), 0);
 
   if (fork() == 0) {
-    rc = execv(argv[1], child_argv);
+    rc = execv(argv[0], argv);
   }
-  free(child_argv);
 
   return rc;
 }

@@ -8,28 +8,12 @@ import re
 import unittest
 
 
-DEFAULT_PROGRAM_PATH = "./tag_launcher python ./tag_wrapper.py"
+DEFAULT_PROGRAM_PATH = "./tag_launcher /usr/bin/python ./tag_wrapper.py"
 PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", DEFAULT_PROGRAM_PATH)
 TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
 TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
 TESTS_INPUT_SUFFIX = ".in.txt"
 TESTS_OUTPUT_SUFFIX = ".out.txt"
-
-TAG_PROCESS_WRITE_PIPE = "/tmp/tag_process_write_pipe"
-TAG_PROCESS_READ_PIPE = "/tmp/tag_process_read_pipe"
-
-
-def create_pipes():
-    try:
-      os.remove(TAG_PROCESS_READ_PIPE)
-      os.remove(TAG_PROCESS_WRITE_PIPE)
-    except:
-      pass
-    try:
-      os.mkfifo(TAG_PROCESS_READ_PIPE)
-      os.mkfifo(TAG_PROCESS_WRITE_PIPE)
-    except:
-      pass
 
 def run_program(name):
     """
@@ -47,9 +31,8 @@ def run_program(name):
     test_in_file = TESTS_DIR + os.sep + name + TESTS_INPUT_SUFFIX
     test_out_file = TEMP_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
     expected_out_file = TESTS_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
-    test_command = "%s %s %s %s > %s" % (
-        PROGRAM_PATH, test_in_file, TAG_PROCESS_READ_PIPE,
-        TAG_PROCESS_WRITE_PIPE, test_out_file)
+    test_command = "%s %s > %s" % (
+        PROGRAM_PATH, test_in_file, test_out_file)
     
     # run the actual program
     os.system(test_command)
@@ -113,7 +96,7 @@ class TestProgramRun(unittest.TestCase):
         real_out = real_out.split("\n")
         expected_out = expected_out.split("\n")
         for i in range(0, len(expected_out)):
-            if real_out[i].startswith("DONE") and real_out[i].split() > 2:
+            if real_out[i] and real_out[i].startswith("DONE") and real_out[i].split() > 2:
                 real_out[i], expected_out[i] = self.fixGetGoodProcessesOutput(
                     real_out[i], expected_out[i])
 
@@ -128,9 +111,6 @@ class TestProgramRun(unittest.TestCase):
         self.assertEquals(len(expected_out), len(real_out),
             self.name + ": length of expected output and actual output differ")
 
-
-# create the named pipe that will bridge the python and C
-create_pipes()
 
 # create all of the actual test suites
 test_files = glob.glob(TESTS_DIR + os.sep + "*.in.txt")

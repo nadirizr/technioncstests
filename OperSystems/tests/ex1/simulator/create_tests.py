@@ -1,6 +1,7 @@
 import sys
 import os
 import random
+from tag_util import *
 from progressbar import *
 
 TEST_DIR = ".." + os.sep + "random"
@@ -19,21 +20,6 @@ ERROR_CHANCE = 0.05
 # Test State Classes         #
 ##############################
 
-class ProcessState:
-
-  def __init__(self, tag=0, parent=None, children=[]):
-    self.tag = tag
-    self.parent = parent
-    self.children = children[:]
-
-class TestState:
-
-  def __init__(self):
-    self.processes = [ProcessState()]
-
-  def getPIDs(self):
-    return range(len(self.processes))
-
 state = None
 
 # seed the random number generator
@@ -48,32 +34,25 @@ def getRandomPID():
   return random.randint(-1000, 100000)
 
 def getRandomProcess():
-  return random.choice(state.processes)
+  return random.choice(state.getProcesses())
 
 def getProcessIndexAtParent(process):
-  if process.parent is None:
-    return -1
-  return process.parent.children.index(process)
+  return process.getIndexAtParent()
 
 def getRandomChildOrProcess(process):
-  return random.choice([process] + process.children)
+  return random.choice([process] + process.getChildren())
 
 def getProcessPID(process):
-  return state.processes.index(process)
+  return state.getPIDForProcess(process)
 
 def getProcessHierarchy(process):
-  hier_list = []
-  p = process
-  while p and p.parent:
-    hier_list.append((p, getProcessIndexAtParent(p)))
-    p = p.parent
-  return hier_list
+  return process.getHierarchy()
 
 def generateHierarchyLine(hier_list):
   if not hier_list:
     return ""
 
-  new_list = [str(h[1]) for h in hier_list]
+  new_list = [str(h) for h in hier_list]
   new_list.reverse()
   return "/".join(new_list) + " "
 
@@ -81,13 +60,7 @@ def getProcessHierarchyLine(process):
   return generateHierarchyLine(getProcessHierarchy(process))
 
 def removeProcess(process):
-  process_children = process.children[:]
-  for c in process_children:
-    removeProcess(c)
-
-  state.processes.remove(process)
-  if process.parent:
-    process.parent.children.remove(process)
+  state.removeProcessAndChildren(process)
 
 def getRandomTag():
   return random.randint(1,20000)
@@ -99,9 +72,7 @@ def getRandomTag():
 
 def createCreateChild():
   process = getRandomProcess()
-  new_process = ProcessState(process.tag / 2, process)
-  process.children.append(new_process)
-  state.processes.append(new_process)
+  state.addNewProcess(process.tag / 2, process)
   return "%sCREATE_CHILD" % getProcessHierarchyLine(process)
 
 def createGetTag():
@@ -168,7 +139,7 @@ commands["tags"] = [
     (createSetTag, 0.5),
     (createGetGoodProcesses, 0.3),
     (createMakeGoodProcesses, 0.3),
-    (createClose, 0.3),
+#    (createClose, 0.0),
 ]
 
 # Sum all of the chances together for each set of commands.
@@ -199,7 +170,7 @@ def createNewCommand(cmd_list, cmd_sum):
 # Creates a new random set of commands for a file.
 def createNewCommandSet(cmd_list, cmd_sum, init_commands, fin_commands):
   global state
-  state = TestState()
+  state = MainState()
 
   num_lines = random.randint(MIN_COMMANDS, MAX_COMMANDS) - \
               (len(init_commands) + len(fin_commands))
