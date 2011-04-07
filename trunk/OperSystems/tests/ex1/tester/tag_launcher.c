@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
   }
   argv[argc-1] = NULL;
 
-  settag(getpid(), 0);
+//  settag(getpid(), 0);
 
   rc = fork();
   if (rc == 0) {
