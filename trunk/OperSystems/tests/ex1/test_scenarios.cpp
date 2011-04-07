@@ -61,14 +61,18 @@ bool testSetTagInputs() {
 }
 
 bool testGetGoodProcessesInputs() {
-  int array[1000] = {-1};
-  int array2[1000] = {-1};
+  int array[1000];
+  int array2[1000];
   int reply = 0;
   int found = 0;
   int i;
   void* bogus;
   int my_pid = getpid();
   int old_tag = gettag(getpid());
+
+  for (i = 0; i < 1000; ++i) {
+    array[i] = array2[i] = -1;
+  }
 
   ASSERT_TRUE(settag(my_pid, 1) == 0);
 
