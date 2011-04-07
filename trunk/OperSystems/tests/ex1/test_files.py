@@ -98,18 +98,21 @@ class TestProgramRun(unittest.TestCase):
     def fixGetGoodProcessesOutput(self, real_line, expected_line):
         real_line_words = real_line.split()
         expected_line_words = expected_line.split()
-        
         real_line_pids = real_line_words[2:]
         expected_line_pids = expected_line_words[2:]
+
+        num_possible_extras = 0
         if "0" in real_line_pids:
           real_line_pids.remove("0")
-          if len(expected_line_pids) > 2:
-            expected_line_pids.pop()
-
+          num_possible_extras += 1
         if "1" in real_line_pids:
           real_line_pids.remove("1")
-          if len(expected_line_pids) > 2:
-            expected_line_pids.pop()
+          num_possible_extras += 1
+
+        len_diff = len(expected_line_pids) - len(real_line_pids)
+        if 0 < len_diff <= num_possible_extras:
+          expected_line_pids = expected_line_pids[:-len_diff]
+
         real_line_words = ["DONE", str(len(real_line_pids))] + real_line_pids
         expected_line_words = ["DONE", str(len(expected_line_pids))] + expected_line_pids
 

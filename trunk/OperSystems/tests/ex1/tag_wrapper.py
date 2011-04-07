@@ -102,14 +102,13 @@ class TagsWrapperParser:
       reply = self.__sendToTagProcess(line)
       reply_args = reply.split()
       try:
-        pids = reply_args[2:]
-        tester_pid_str = str(self.tester_pid)
+        pids = [int(r) for r in reply_args[2:]]
         for i in range(len(pids)):
-          if tester_pid_str == pids[i]:
-            pids[i] = "-1"
+          if self.tester_pid == pids[i]:
+            pids[i] = -1
           elif pids[i] in self.pids.keys():
-            pids[i] = str(self.state.getPIDForProcess(self.pids[pids[i]]))
-        reply_args[2:] = pids
+            pids[i] = self.state.getPIDForProcess(self.pids[pids[i]])
+        reply_args[2:] = [str(p) for p in pids]
         print >> self.output_stream, " ".join(reply_args)
         return 0
       except:
