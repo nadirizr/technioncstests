@@ -69,6 +69,7 @@ for arg in sys.argv[1:]:
     else:
         try:
             NUM_OF_FILES = int(arg)
+            RANDOM = True
         except:
             usage_and_exit()
     
