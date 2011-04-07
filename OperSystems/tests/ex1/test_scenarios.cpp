@@ -1,7 +1,8 @@
+#include <string>
+
 #include <stdlib.h>
 #include <unistd.h>
-
-#include <string>
+#include <errno.h>
 
 #include "test.h"
 #include "syscall_tags.h"
@@ -16,6 +17,111 @@ bool testTagsAfterReboot_OK_To_Fail_If_Not_After_Reboot() {
   ASSERT_TRUE(swapper_tag == 0);
   ASSERT_TRUE(init_tag == 0);
   ASSERT_TRUE(current_tag == 0);
+}
+
+bool testGetTagInputs() {
+  ASSERT_TRUE(gettag(0) >= 0);
+  ASSERT_TRUE(gettag(1) >= 0);
+  ASSERT_TRUE(gettag(getpid()) >= 0);
+
+  ASSERT_TRUE(gettag(-1) == -1);
+  ASSERT_TRUE(errno = ESRCH);
+  ASSERT_TRUE(gettag(100000) == -1);
+  ASSERT_TRUE(errno = ESRCH);
+}
+
+bool testSetTagInputs() {
+  int old_tag = gettag(getpid());
+
+  ASSERT_TRUE(settag(getpid(), 0) == 0);
+  ASSERT_TRUE(settag(getpid(), old_tag) == 0);
+
+  // All of these should be ESRCH errros, and should precede EINVAL whenever
+  // they both happen.
+  ASSERT_TRUE(settag(-1, 100) == -1);
+  ASSERT_TRUE(errno == -ESRCH);
+  ASSERT_TRUE(settag(-1, -1) == -1);
+  ASSERT_TRUE(errno == -ESRCH);
+  ASSERT_TRUE(settag(-100, 100) == -1);
+  ASSERT_TRUE(errno == -ESRCH);
+
+  // All of these should be EINVAL errros.
+  ASSERT_TRUE(settag(getpid(), -1) == -1);
+  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(settag(getpid(), -100) == -1);
+  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(settag(getppid(), 10) == -1);
+  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(settag(getppid(), -10) == -1);
+  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(settag(0, 500) == -1);
+  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(settag(1, 200) == -1);
+  ASSERT_TRUE(errno == -EINVAL);
+}
+
+bool testGetGoodProcessesInputs() {
+  int array[1000] = {-1};
+  int array2[1000] = {-1};
+  int reply = 0;
+  int found = 0;
+  int i;
+  void* bogus;
+  int my_pid = getpid();
+  int old_tag = gettag(getpid());
+
+  ASSERT_TRUE(settag(my_pid, 1) == 0);
+
+  // Do one round.
+  reply = getgoodprocesses(array, 1000);
+  ASSERT_TRUE(reply > 0);
+  ASSERT_TRUE(reply < 1000);
+  found = -1;
+  for (i = 0; i < reply; ++i) {
+    // Check if the array returned by getgoodprocesses is sorted.
+    ASSERT_TRUE((i == 0) || (array[i-1] < array[i]));
+    if (array[i] == my_pid) {
+      found = i;
+    }
+  }
+  for (i = reply; i < 1000; ++i) {
+    ASSERT_TRUE(array[i] == -1);
+  }
+  ASSERT_TRUE(found > 0);
+
+  // Do a second round.
+  ASSERT_TRUE(reply == getgoodprocesses(array2, reply));
+  for (i = 0; i < reply; ++i) {
+    ASSERT_TRUE(array[i] == array2[i]);
+  }
+  for (i = reply; i < 1000; ++i) {
+    ASSERT_TRUE(array2[i] == -1);
+  }
+
+  // Do a third round, with less elements and make sure no elements other than
+  // ours were touched.
+  for (i = 1; i < reply; ++i) {
+    array[i] = -1;
+  }
+  ASSERT_TRUE(1 == getgoodprocesses(array, 1));
+  ASSERT_TRUE(array[0] == array2[0]);
+  for (i = 1; i < 1000; ++i) {
+    ASSERT_TRUE(array[i] == -1);
+  }
+
+  // Now hand out a few basic errors.
+  ASSERT_TRUE(-1 == getgoodprocesses(NULL, 10));
+  ASSERT_TRUE(errno == EINVAL);
+  ASSERT_TRUE(-1 == getgoodprocesses(array, -1));
+  ASSERT_TRUE(errno == EINVAL);
+  ASSERT_TRUE(-1 == getgoodprocesses(array, 0));
+  ASSERT_TRUE(errno == EINVAL);
+  bogus = (void*)&bogus;
+  ASSERT_TRUE(-1 == getgoodprocesses((int*)bogus, 10));
+  ASSERT_TRUE(errno == EINVAL);
+  bogus = (void*)&printf;
+  ASSERT_TRUE(-1 == getgoodprocesses((int*)bogus, 10));
+  ASSERT_TRUE(errno == EINVAL);
 }
 
 bool testMakeGoodProcessesFixSwapperTag() {
@@ -46,6 +152,9 @@ int main() {
 
   RUN_TEST(testTagsAfterReboot_OK_To_Fail_If_Not_After_Reboot);
   RUN_TEST(testMakeGoodProcessesFixSwapperTag);
+  RUN_TEST(testGetTagInputs);
+  RUN_TEST(testSetTagInputs);
+  RUN_TEST(testGetGoodProcessesInputs);
 
   return 0;
 }
