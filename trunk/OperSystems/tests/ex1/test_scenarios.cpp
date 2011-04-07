@@ -43,25 +43,25 @@ bool testSetTagInputs() {
   // All of these should be ESRCH errros, and should precede EINVAL whenever
   // they both happen.
   ASSERT_TRUE(settag(-1, 100) == -1);
-  ASSERT_TRUE(errno == -ESRCH);
+  ASSERT_TRUE(errno == ESRCH);
   ASSERT_TRUE(settag(-1, -1) == -1);
-  ASSERT_TRUE(errno == -ESRCH);
+  ASSERT_TRUE(errno == ESRCH);
   ASSERT_TRUE(settag(-100, 100) == -1);
-  ASSERT_TRUE(errno == -ESRCH);
+  ASSERT_TRUE(errno == ESRCH);
 
   // All of these should be EINVAL errros.
   ASSERT_TRUE(settag(getpid(), -1) == -1);
-  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(settag(getpid(), -100) == -1);
-  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(settag(getppid(), 10) == -1);
-  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(settag(getppid(), -10) == -1);
-  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(settag(0, 500) == -1);
-  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(settag(1, 200) == -1);
-  ASSERT_TRUE(errno == -EINVAL);
+  ASSERT_TRUE(errno == EINVAL);
 
   return true;
 }
