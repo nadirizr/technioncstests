@@ -13,7 +13,7 @@ def str_to_int(s):
       break
   if num:
     return int(num), s[len(num):]
-  return ""
+  return 0, s
 
 def run_and_wait(command):
   # run the actual program
