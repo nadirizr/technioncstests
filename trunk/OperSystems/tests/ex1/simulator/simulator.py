@@ -35,7 +35,7 @@ class TagsParser:
       return 0
 
     process_indexes = []
-    if ("/" in args[0]) or ('0' <= args[0][0] <= '9'):
+    if ("/" in args[0]) or args[0][0].isdigit():
       process_indexes = args[0].split("/")
       process_indexes = [int(a) for a in process_indexes]
       cmd = args[1]
