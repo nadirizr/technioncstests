@@ -91,9 +91,7 @@ class TagsWrapperParser:
 
     elif cmd == "SET_TAG":
       if 0 <= int(args[-2]) < len(self.state.getProcesses()):
-        print >> sys.stderr, "###### arg[-2] before: %d" % int(args[-2])
         args[-2] = str(self.state.getProcessForPID(int(args[-2])).pid)
-        print >> sys.stderr, "###### arg[-2] after: %d" % int(args[-2])
       print >> self.output_stream, self.__sendToTagProcess(" ".join(args))
       return 0
 
