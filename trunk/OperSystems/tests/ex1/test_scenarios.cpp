@@ -8,6 +8,16 @@
 
 std::string location;
 
+bool testTagsAfterReboot_OK_To_Fail_If_Not_After_Reboot() {
+  int swapper_tag = gettag(0);
+  int init_tag = gettag(1);
+  int current_tag = gettag(getpid());
+
+  ASSERT_TRUE(swapper_tag == 0);
+  ASSERT_TRUE(init_tag == 0);
+  ASSERT_TRUE(current_tag == 0);
+}
+
 bool testMakeGoodProcessesFixSwapperTag() {
   int swapper_tag = gettag(0);
   int init_tag = gettag(1);
@@ -34,6 +44,7 @@ int main() {
 	// initialize random number generator
 	srand( time(NULL) );
 
+  RUN_TEST(testTagsAfterReboot_OK_To_Fail_If_Not_After_Reboot);
   RUN_TEST(testMakeGoodProcessesFixSwapperTag);
 
   return 0;
