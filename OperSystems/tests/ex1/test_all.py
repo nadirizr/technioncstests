@@ -22,7 +22,7 @@ def usage_and_exit():
     print "                      size=M-N   : M-N lines in each test"
     print "       clean        - Cleans all of the files from the previous run"
     print
-    print "       DEFAULT: Run medium size random tests and input tests, on 500 files."
+    print "       DEFAULT: Run medium size random tests and unit tests, on 20 files."
     print
     print "       NOTES  : Assumes that this is the project directory, and that"
     print "                the file 'syscall_tags.h' is there."
@@ -30,7 +30,7 @@ def usage_and_exit():
 
 
 # gather command line arguments
-NUM_OF_FILES = 500
+NUM_OF_FILES = 20
 RANDOM = False
 INPUT = False
 RERUN = False
@@ -75,7 +75,7 @@ for arg in sys.argv[1:]:
     
 # if no flags were given on input or random, do both by default
 if not INPUT and not RANDOM and not CLEAN:
-    INPUT = RANDOM = True
+    RANDOM = True
 
 # if rerun is on, set NUM_OF_FILES to be zero
 if RERUN:
