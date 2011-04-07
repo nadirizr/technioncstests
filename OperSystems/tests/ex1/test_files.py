@@ -11,6 +11,7 @@ import unittest
 
 DEFAULT_PROGRAM_PATH = "./tag_launcher /usr/bin/python ./tag_wrapper.py"
 PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", DEFAULT_PROGRAM_PATH)
+SPECIFIC_TEST = os.environ.get("TAGS_SPECIFIC_TEST", "")
 TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
 TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
 TESTS_INPUT_SUFFIX = ".in.txt"
@@ -117,7 +118,14 @@ class TestProgramRun(unittest.TestCase):
 
 
 # create all of the actual test suites
-test_files = glob.glob(TESTS_DIR + os.sep + "*.in.txt")
+if SPECIFIC_TEST:
+	test_files = []
+	test_patterns = SPECIFIC_TEST.split(",")
+	for pattern in test_patterns:
+		test_files += glob.glob("%s%s%s%s" % (
+			TESTS_DIR, os.sep, pattern, TESTS_INPUT_SUFFIX))
+else:
+	test_files = glob.glob(TESTS_DIR + os.sep + "*.in.txt")
 test_files = [f[len(TESTS_DIR + os.sep):f.rindex(TESTS_INPUT_SUFFIX)] for f in test_files]
 test_cases = [TestProgramRun(f) for f in test_files]
 

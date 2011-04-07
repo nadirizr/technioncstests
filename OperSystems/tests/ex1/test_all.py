@@ -8,7 +8,7 @@ import glob
 
 def usage_and_exit():
     print "Usage: python test_all.py [num of files] [size=small|medium|big|low-high]"
-    print "                          [rerun|random|input] [clean] [help]"
+    print "                          [rerun|random|input] [test=testN] [clean] [help]"
     print
     print "       help         - Displays this usage and exits"
     print "       random       - Run random tests"
@@ -20,6 +20,9 @@ def usage_and_exit():
     print "                      size=medium: 100-500 lines in each test"
     print "                      size=big   : 500-2000 lines in each test"
     print "                      size=M-N   : M-N lines in each test"
+    print "       test         - Designate specific tests to rerun For example:"
+    print "                      test=test1"
+    print "                      test=test387,test108,test1"
     print "       clean        - Cleans all of the files from the previous run"
     print
     print "       DEFAULT: Run medium size random tests and unit tests, on 20 files."
@@ -35,6 +38,7 @@ RANDOM = False
 INPUT = False
 RERUN = False
 CLEAN = False
+SPECIFIC_TEST = ""
 MIN_COMMANDS = 100
 MAX_COMMANDS = 500
 for arg in sys.argv[1:]:
@@ -66,6 +70,8 @@ for arg in sys.argv[1:]:
                 MAX_COMMANDS = int(size[dash+1:])
             except:
                 usage_and_exit()
+    elif arg[:len("test=")] == "test=":
+        SPECIFIC_TEST = arg[len("test="):]
     else:
         try:
             NUM_OF_FILES = int(arg)
@@ -74,12 +80,15 @@ for arg in sys.argv[1:]:
             usage_and_exit()
     
 # if no flags were given on input or random, do both by default
-if not INPUT and not RANDOM and not CLEAN:
+if not INPUT and not RANDOM and not CLEAN and not SPECIFIC_TEST:
     RANDOM = True
 
 # if rerun is on, set NUM_OF_FILES to be zero
 if RERUN:
     RANDOM = True
+    NUM_OF_FILES = 0
+
+if SPECIFIC_TEST:
     NUM_OF_FILES = 0
 
 if CLEAN:
@@ -119,3 +128,11 @@ if RANDOM:
     os.environ["TAGS_MAX_COMMANDS"] = str(MAX_COMMANDS)
     os.system(TEST_RANDOM_CMD)
 
+# run specific tests
+if SPECIFIC_TEST:
+    print
+    print "========================"
+    print "Specific Tests"
+    print "========================"
+    os.environ["TAGS_SPECIFIC_TEST"] = SPECIFIC_TEST
+    os.system(TEST_RANDOM_CMD)
