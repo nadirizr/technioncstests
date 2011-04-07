@@ -44,7 +44,6 @@ class TagsWrapperParser:
     line_number = 1
     line = self.input_stream.readline()
     while line:
-      print >> sys.stderr, "// Parsing Line [%d]: '%s'" % (line_number, line.strip())
       self.parseLine(line)
       line_number += 1
       line = self.input_stream.readline()
@@ -175,7 +174,7 @@ class TagsWrapperParser:
     if not wait_for_input:
       return ""
 
-    time.sleep(0.1)
+    #time.sleep(0.1)
     reply = self.tag_process_read_pipe.readline().strip()
 
     self.__writeToCommandOutput("--> %s\n" % reply)
