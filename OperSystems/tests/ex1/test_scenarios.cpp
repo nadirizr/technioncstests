@@ -17,6 +17,8 @@ bool testTagsAfterReboot_OK_To_Fail_If_Not_After_Reboot() {
   ASSERT_TRUE(swapper_tag == 0);
   ASSERT_TRUE(init_tag == 0);
   ASSERT_TRUE(current_tag == 0);
+
+  return true;
 }
 
 bool testGetTagInputs() {
@@ -28,6 +30,8 @@ bool testGetTagInputs() {
   ASSERT_TRUE(errno = ESRCH);
   ASSERT_TRUE(gettag(100000) == -1);
   ASSERT_TRUE(errno = ESRCH);
+
+  return true;
 }
 
 bool testSetTagInputs() {
@@ -58,6 +62,8 @@ bool testSetTagInputs() {
   ASSERT_TRUE(errno == -EINVAL);
   ASSERT_TRUE(settag(1, 200) == -1);
   ASSERT_TRUE(errno == -EINVAL);
+
+  return true;
 }
 
 bool testGetGoodProcessesInputs() {
@@ -120,12 +126,14 @@ bool testGetGoodProcessesInputs() {
   ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(-1 == getgoodprocesses(array, 0));
   ASSERT_TRUE(errno == EINVAL);
-  bogus = (void*)&bogus;
+  bogus = reinterpret_cast<void*>(30);
   ASSERT_TRUE(-1 == getgoodprocesses((int*)bogus, 10));
   ASSERT_TRUE(errno == EINVAL);
   bogus = (void*)&printf;
   ASSERT_TRUE(-1 == getgoodprocesses((int*)bogus, 10));
   ASSERT_TRUE(errno == EINVAL);
+
+  return true;
 }
 
 bool testMakeGoodProcessesFixSwapperTag() {
