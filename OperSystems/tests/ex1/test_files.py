@@ -94,29 +94,6 @@ class TestProgramRun(unittest.TestCase):
         
     def id(self):
         return "TestProgramRun.testRun(" + self.name + ")"
-
-    def fixGetGoodProcessesOutput(self, real_line, expected_line):
-        real_line_words = real_line.split()
-        expected_line_words = expected_line.split()
-        real_line_pids = real_line_words[2:]
-        expected_line_pids = expected_line_words[2:]
-
-        num_possible_extras = 0
-        if "0" in real_line_pids:
-          real_line_pids.remove("0")
-          num_possible_extras += 1
-        if "1" in real_line_pids:
-          real_line_pids.remove("1")
-          num_possible_extras += 1
-
-        len_diff = len(expected_line_pids) - len(real_line_pids)
-        if 0 < len_diff <= num_possible_extras:
-          expected_line_pids = expected_line_pids[:-len_diff]
-
-        real_line_words = ["DONE", str(len(real_line_pids))] + real_line_pids
-        expected_line_words = ["DONE", str(len(expected_line_pids))] + expected_line_pids
-
-        return " ".join(real_line_words), " ".join(expected_line_words)
     
     def testRun(self):
         print "(%s) ... " % self.name,
@@ -127,10 +104,6 @@ class TestProgramRun(unittest.TestCase):
         real_out = real_out.split("\n")
         expected_out = expected_out.split("\n")
         for i in range(0, len(expected_out)):
-            if real_out[i] and real_out[i].startswith("DONE") and real_out[i].split() > 2:
-                real_out[i], expected_out[i] = self.fixGetGoodProcessesOutput(
-                    real_out[i], expected_out[i])
-
             self.assertEquals(
                 " ".join(real_out[i].split()),
                 " ".join(expected_out[i].split()),

@@ -48,6 +48,7 @@ class TagsLogic:
     
     if self.tag > self.state.getMainProcess().tag:
       pids = [-1] + pids
+    pids = [0, 1] + pids
 
     return pids[:count]
 

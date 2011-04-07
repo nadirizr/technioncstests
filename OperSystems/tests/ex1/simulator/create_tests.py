@@ -148,7 +148,11 @@ sumChances["tags"] = reduce(lambda s,c:s+c[1], commands["tags"], 0.0)
 
 # The initial commands to put at the head of the input file.
 INITIAL_COMMANDS = { }
-INITIAL_COMMANDS["tags"] = []
+INITIAL_COMMANDS["tags"] = [
+    "SET_TAG 0 1000000",
+    "MAKE_GOOD_PROCESSES",
+    "SET_TAG 0 0",
+]
 # The final commands to put at the end of the input file.
 FINAL_COMMANDS = { }
 FINAL_COMMANDS["tags"] = ["CLOSE"]
