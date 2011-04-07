@@ -121,6 +121,7 @@ class TestProgramRun(unittest.TestCase):
     def testRun(self):
         print "(%s) ... " % self.name,
         sys.stdout.flush()
+        time.sleep(0.1)
         real_out_file, real_out, expected_out_file, expected_out = \
             run_program(self.name)
         real_out = real_out.split("\n")
