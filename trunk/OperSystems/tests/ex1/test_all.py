@@ -20,7 +20,7 @@ def usage_and_exit():
     print "                      size=medium: 100-500 lines in each test"
     print "                      size=big   : 500-2000 lines in each test"
     print "                      size=M-N   : M-N lines in each test"
-    print "       test         - Designate specific tests to rerun For example:"
+    print "       test         - Designate specific tests to rerun. For example:"
     print "                      test=test1"
     print "                      test=test387,test108,test1"
     print "       clean        - Cleans all of the files from the previous run"
