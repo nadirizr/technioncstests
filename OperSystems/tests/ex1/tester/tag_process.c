@@ -7,13 +7,13 @@
 #include "syscall_tags.h"
 
 
-#define MAX_STRING_INPUT_SIZE 256
+#define MAX_STRING_INPUT_SIZE 65536
 
 #define CHILD_EXECUTABLE "./tag_process"
 
 #define MAX_GOOD_PROCESSES 1000
 
-#define MAX_CHILDREN 100
+#define MAX_CHILDREN 1000
 
 
 /*** Process Childs ***/
