@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
 
   rc = fork();
   if (rc == 0) {
+    sleep(0.1);
     rc = execv(argv[0], argv);
   } else {
     printf("%d\n",rc);

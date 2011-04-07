@@ -12,13 +12,14 @@ def str_to_int(s):
     else:
       break
   if num:
-    return int(num)
+    return int(num), s[len(num):]
   return ""
 
 def run_and_wait(command):
   # run the actual program
   reply = commands.getoutput("./tag_launcher " + str(command))
-  pid = str_to_int(reply)
+  pid, reply = str_to_int(reply)
+  reply = reply.strip()
   if not pid:
     print reply
     return
@@ -30,5 +31,7 @@ def run_and_wait(command):
       time.sleep(1)
     except:
       break
+  
+  print reply
 
 run_and_wait(" ".join(sys.argv[1:]))
