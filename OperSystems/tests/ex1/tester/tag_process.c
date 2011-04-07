@@ -83,8 +83,6 @@ int handle_create_child(char* arguments) {
     return -1;
   }
 
-  fprintf(stderr, "// Creating child...\n");
-  
   /* Create the new process. */
   pid = fork();
   if (pid < 0) {
@@ -148,9 +146,7 @@ int handle_set_tag(char* arguments) {
   arg1 = atoi(arguments);
   arg2 = atoi(argument2);
 
-  fprintf(stderr, "// Starting settag: arg1 = %d, arg2 = %d\n", arg1, arg2);
   rc = settag(arg1, arg2);
-  fprintf(stderr, "// Finished settag: rc = %d\n", rc);
   
   if (rc < 0) {
     if (errno == ESRCH) {
@@ -169,9 +165,7 @@ int handle_get_good_processes(char* arguments) {
   int rc = 0;
   int i;
 
-  fprintf(stderr, "// Starting getgoodprocesses: arg = %d\n", arg);
   rc = getgoodprocesses(array, arg);
-  fprintf(stderr, "// Finished getgoodprocesses: rc = %d\n", rc);
 
   if (rc < 0) {
     if (errno == ESRCH) {
@@ -191,7 +185,6 @@ int handle_get_good_processes(char* arguments) {
   }
   fprintf(out_pipe, "\n");
   fflush(out_pipe);
-  fprintf(stderr, "// Finished printing everything...\n");
   
   return rc;
 }
@@ -225,12 +218,9 @@ int handle_close(char* arguments) {
 int hand_command_to_child(int index, char* line) {
   char buffer[MAX_STRING_INPUT_SIZE];
 
-  fprintf(stderr, "// hand_command_to_child: index=%d, num_children=%d\n", index, num_children);
   if (index < 0 || index >= num_children || children[index] == NULL) {
     return -1;
   }
-
-  fprintf(stderr, "// hand_command_to_child[%d]: '%s'\n", index, line);
 
   fprintf(children[index]->out_pipe, "%s", line);
   fflush(children[index]->out_pipe);
@@ -242,7 +232,6 @@ int hand_command_to_child(int index, char* line) {
     return 0;
   }
 
-  fprintf(stderr, "// waiting for reply...\n");
   if (fgets(buffer, MAX_STRING_INPUT_SIZE, children[index]->in_pipe) == NULL) {
     return -1;
   }
@@ -261,8 +250,6 @@ int handle_command(char* line) {
     arguments++;
   }
 
-  fprintf(stderr, "// Received Command: line = %s\n", line);
-  
   if (strcmp(line, "CREATE_CHILD") == 0) {
     rc = handle_create_child(arguments);
   }
@@ -295,11 +282,8 @@ int parse(char* line) {
   char* newline = NULL;
   int child_index = 0;
 
-  fprintf(stderr, "// Parsing line: '%s'\n", line);
-
   /* Check if this line is meant for a child process. */
   if (isdigit(line[0])) {
-    fprintf(stderr, "// Command for child...\n");
     /* Find the space character. */
     line_child = strchr(line, '/');
     if (line_child == NULL) {
@@ -307,7 +291,6 @@ int parse(char* line) {
     }
     line_child[0] = '\0';
     line_child++;
-    fprintf(stderr, "// line_child = '%s'\n", line_child);
 
     /* Now get the child process index and hand the command to it. */
     child_index = atoi(line);

@@ -9,22 +9,13 @@ import time
 import unittest
 
 
-DEFAULT_PROGRAM_PATH = "./tag_launcher /usr/bin/python ./tag_wrapper.py"
+DEFAULT_PROGRAM_PATH = "/usr/bin/python ./tag_launcher.py /usr/bin/python ./tag_wrapper.py"
 PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", DEFAULT_PROGRAM_PATH)
 TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
 TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
 TESTS_INPUT_SUFFIX = ".in.txt"
 TESTS_OUTPUT_SUFFIX = ".out.txt"
 TESTS_COMMANDS_SUFFIX = ".real.in.txt"
-
-def str_to_int(s):
-    num = ""
-    for c in s:
-        if c.isdigit():
-            num += c
-        else:
-            break
-    return int(num)
 
 def run_program(name):
     """
@@ -47,16 +38,7 @@ def run_program(name):
         PROGRAM_PATH, test_in_file, test_out_file, test_command_file)
     
     # run the actual program
-    pid = commands.getoutput(test_command)
-    pid = str_to_int(pid)
-
-    # wait for the process to finish
-    while True:
-      try:
-        os.kill(pid, 0) 
-        time.sleep(1)
-      except:
-        break
+    os.system(test_command)
     
     # compare the output
     try:
