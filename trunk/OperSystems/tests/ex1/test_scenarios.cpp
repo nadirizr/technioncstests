@@ -119,12 +119,19 @@ bool testGetGoodProcessesInputs() {
     ASSERT_TRUE(array[i] == -1);
   }
 
+  // TA specified that this should not return an error.
+  for (i = 0; i < 1000; ++i) {
+    array[i] = -1;
+  }
+  ASSERT_TRUE(0 == getgoodprocesses(array, 0));
+  for (i = 0; i < 1000; ++i) {
+    ASSERT_TRUE(array[i] == -1);
+  }
+
   // Now hand out a few basic errors.
   ASSERT_TRUE(-1 == getgoodprocesses(NULL, 10));
   ASSERT_TRUE(errno == EINVAL);
   ASSERT_TRUE(-1 == getgoodprocesses(array, -1));
-  ASSERT_TRUE(errno == EINVAL);
-  ASSERT_TRUE(-1 == getgoodprocesses(array, 0));
   ASSERT_TRUE(errno == EINVAL);
   bogus = reinterpret_cast<void*>(30);
   ASSERT_TRUE(-1 == getgoodprocesses((int*)bogus, 10));
