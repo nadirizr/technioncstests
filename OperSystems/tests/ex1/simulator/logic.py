@@ -39,7 +39,7 @@ class TagsLogic:
     return -EINVAL
 
   def getGoodProcesses(self, process_indexes, count):
-    if count <= 0:
+    if count < 0:
       return -EINVAL
     
     pids = [pid for pid in self.state.getPIDs()
