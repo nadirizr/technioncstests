@@ -64,7 +64,10 @@ class TagsParser:
         print "DONE %d" % pids
         return pids
       if type(pids) == list:
-        print "DONE %d %s" % (len(pids), " ".join([str(p) for p in pids]))
+        if len(pids) > 0:
+          print "DONE %d %s" % (len(pids), " ".join([str(p) for p in pids]))
+        else:
+          print "DONE 0"
         return len(pids)
       return -1
 
