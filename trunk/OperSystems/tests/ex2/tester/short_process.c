@@ -138,6 +138,18 @@ int handle_overdue_time(char* arguments) {
   return overdue_time;
 }
 
+int handle_get_scheduler(char* arguments) {
+  int pid = atoi(arguments);
+  int policy = 0;
+
+  policy = sched_getscheduler(pid);
+  
+  if (policy < 0) {
+    return -errno;
+  }
+  return policy;
+}
+
 int handle_set_short(char* arguments) {
   int pid = 0, requested_time = 0;
   int rc = 0;
@@ -211,6 +223,7 @@ int handle_command(char* line) {
   HANDLE("CREATE_CHILD", handle_create_child);
   HANDLE("REMAINING_TIME", handle_remaining_time);
   HANDLE("OVERDUE_TIME", handle_overdue_time);
+  HANDLE("GET_SCHEDULER", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
   if (EQUALS(line, "CLOSE")) {
     return handle_close(arguments);
