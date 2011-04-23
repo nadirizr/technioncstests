@@ -114,8 +114,7 @@ int handle_create_child(char* arguments) {
   return pid;
 }
 
-/*
-int handle_get_tag(char* arguments) {
+int handle_remaining_time(char* arguments) {
   int arg = atoi(arguments);
   int tag = 0;
 
@@ -257,13 +256,9 @@ int handle_command(char* line) {
     arguments++;
   }
 
-  /*
   HANDLE("CREATE_CHILD", handle_create_child);
-  HANDLE("GET_TAG", handle_get_tag);
-  HANDLE("SET_TAG", handle_set_tag);
-  HANDLE("GET_GOOD_PROCESSES", handle_get_good_processes);
-  HANDLE("MAKE_GOOD_PROCESSES", handle_make_good_processes);
-  */
+  HANDLE("REMAINING_TIME", handle_remaining_time);
+  HANDLE("OVERDUE_TIME", handle_overdue_time);
   HANDLE("SET_SHORT", handle_set_short);
   if (EQUALS(line, "CLOSE")) {
     return handle_close(arguments);
