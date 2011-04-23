@@ -115,91 +115,16 @@ int handle_create_child(char* arguments) {
 }
 
 int handle_remaining_time(char* arguments) {
-  int arg = atoi(arguments);
-  int tag = 0;
+  int pid = atoi(arguments);
+  int remaining_time = 0;
 
-  tag = gettag(arg);
+  remaining_time = short_query_remaining_time(pid);
   
-  if (tag < 0) {
-    if (errno == ESRCH) {
-      return -ESRCH;
-    }
-    if (errno == EINVAL) {
-      return -EINVAL;
-    }
+  if (remaining_time < 0) {
+    return -errno;
   }
-  return tag;
+  return remaining_time;
 }
-
-int handle_set_tag(char* arguments) {
-  int arg1 = 0, arg2 = 0;
-  int rc = 0;
-
-  char* argument2 = strchr(arguments, ' ');
-  if (argument2 != NULL) {
-    argument2[0] = '\0';
-    argument2++;
-  }
-  arg1 = atoi(arguments);
-  arg2 = atoi(argument2);
-
-  rc = settag(arg1, arg2);
-  
-  if (rc < 0) {
-    if (errno == ESRCH) {
-      return -ESRCH;
-    }
-    if (errno == EINVAL) {
-      return -EINVAL;
-    }
-  }
-  return rc;
-}
-
-int handle_get_good_processes(char* arguments) {
-  int array[MAX_GOOD_PROCESSES] = {0};
-  int arg = atoi(arguments);
-  int rc = 0;
-  int i;
-
-  rc = getgoodprocesses(array, arg);
-
-  if (rc < 0) {
-    if (errno == ESRCH) {
-      rc = -ESRCH;
-    }
-    if (errno == EINVAL) {
-      rc = -EINVAL;
-    }
-    fprintf(out_pipe, "DONE %d\n", rc);
-    fflush(out_pipe);
-    return rc;
-  }
-
-  fprintf(out_pipe, "DONE %d", rc);
-  for (i = 0; i < rc; ++i) {
-    fprintf(out_pipe, " %d", array[i]);
-  }
-  fprintf(out_pipe, "\n");
-  fflush(out_pipe);
-  
-  return rc;
-}
-
-int handle_make_good_processes(char* arguments) {
-  int num_checked = makegoodprocesses();
-
-  if (num_checked < 0) {
-    if (errno == ESRCH) {
-      return -ESRCH;
-    }
-    if (errno == EINVAL) {
-      return -EINVAL;
-    }
-  }
-  return num_checked;
-}
-*/
 
 int handle_set_short(char* arguments) {
   int pid = 0, requested_time = 0;
