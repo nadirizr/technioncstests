@@ -126,6 +126,18 @@ int handle_remaining_time(char* arguments) {
   return remaining_time;
 }
 
+int handle_overdue_time(char* arguments) {
+  int pid = atoi(arguments);
+  int overdue_time = 0;
+
+  overdue_time = short_query_overdue_time(pid);
+  
+  if (overdue_time < 0) {
+    return -errno;
+  }
+  return overdue_time;
+}
+
 int handle_set_short(char* arguments) {
   int pid = 0, requested_time = 0;
   int rc = 0;
