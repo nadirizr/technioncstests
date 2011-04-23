@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sched.h>
 
 
 #define MAX_STRING_INPUT_SIZE 65536
@@ -202,7 +203,9 @@ int handle_make_good_processes(char* arguments) {
 */
 
 int handle_set_short(char* arguments) {
-
+  int res;
+  int pid = atoi(arguments);
+  res = setscheduler(pid, SCHED_RR, NULL);
 }
 
 int handle_close(char* arguments) {
