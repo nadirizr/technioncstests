@@ -202,9 +202,24 @@ int handle_make_good_processes(char* arguments) {
 */
 
 int handle_set_short(char* arguments) {
-  int res;
-  int pid = atoi(arguments);
-  res = setscheduler(pid, SCHED_RR, NULL);
+  int pid = 0, requested_time = 0;
+  int rc = 0;
+  struct sched_param params;
+
+  char* argument2 = strchr(arguments, ' ');
+  if (argument2 != NULL) {
+    argument2[0] = '\0';
+    argument2++;
+  }
+  pid = atoi(arguments);
+  requested_time = atoi(argument2);
+  
+  params.sched_priority = requested_time;
+  rc = sched_setscheduler(pid, 4, &params);
+  if (rc < 0) {
+    return -errno;
+  }
+  return rc;
 }
 
 int handle_close(char* arguments) {
