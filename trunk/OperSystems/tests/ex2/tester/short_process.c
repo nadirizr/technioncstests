@@ -209,8 +209,8 @@ int hand_command_to_child(int index, char* line) {
   return 0;
 }
 
-#define EQUALS(str1,str2) (strcmp(str1,str2) == 0)
-#define HANDLE(cmd, fn) if (EQUALS(line, cmd)) { rc = fn(arguments); }
+#define EQUALS(str1,str2) (strcmp((str1),(str2)) == 0)
+#define HANDLE(cmd, fn) if (EQUALS((line), (cmd))) { rc = fn(arguments); }
 
 int handle_command(char* line) {
   int rc = -1;
