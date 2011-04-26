@@ -176,17 +176,19 @@ int handle_set_short(char* arguments) {
 
 int handle_do_work(char* arguments) {
   int work_time = atoi(arguments) * CLOCKS_PER_SEC / 1000;
-  int start_time;
+  int start_time, current_time;
   int a = 0, b = 1, c;
   
-  start_time = clock();
-  while ((clock() - start_time) < work_time) {
+  start_time = current_time = clock();
+  while ((current_time - start_time) < work_time) {
     c = a + b;
     a = b;
     b = c;
+    
+    current_time = clock();
   }
   
-  return c;
+  return (current_time * 1000 / CLOCKS_PER_SEC);
 }
 
 int handle_close(char* arguments) {
@@ -217,6 +219,11 @@ int hand_command_to_child(int index, char* line) {
     fflush(out_pipe);
     return 0;
   }
+  if (strncmp(line, "DO_WORK_ASYNC", 13) == 0) {
+    fprintf(out_pipe, "DONE 0\n");
+    fflush(out_pipe);
+    return 0;
+  }
 
   if (fgets(buffer, MAX_STRING_INPUT_SIZE, children[index]->in_pipe) == NULL) {
     return -1;
@@ -244,6 +251,7 @@ int handle_command(char* line) {
   HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
   HANDLE("DO_WORK", handle_do_work);
+  HANDLE("DO_WORK_ASYNC", handle_do_work);
   if (EQUALS(line, "CLOSE")) {
     return handle_close(arguments);
   }
