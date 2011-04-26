@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <sched.h>
 
+#include "hw2_syscalls.h"
+
 
 #define MAX_STRING_INPUT_SIZE 65536
 
