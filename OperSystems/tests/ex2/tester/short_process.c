@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sched.h>
+#include <time.h>
 
 #include "hw2_syscalls.h"
 
@@ -173,6 +174,21 @@ int handle_set_short(char* arguments) {
   return rc;
 }
 
+int handle_do_work(char* arguments) {
+  int work_time = atoi(arguments) * CLOCKS_PER_SEC / 1000;
+  int start_time;
+  int a = 0, b = 1, c;
+  
+  start_time = clock();
+  while ((clock() - start_time) < work_time) {
+    c = a + b;
+    a = b;
+    b = c;
+  }
+  
+  return c;
+}
+
 int handle_close(char* arguments) {
   int i;
   for (i = num_children - 1; i >= 0; --i) {
@@ -225,8 +241,9 @@ int handle_command(char* line) {
   HANDLE("CREATE_CHILD", handle_create_child);
   HANDLE("REMAINING_TIME", handle_remaining_time);
   HANDLE("OVERDUE_TIME", handle_overdue_time);
-  HANDLE("GET_SCHEDULER", handle_get_scheduler);
+  HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
+  HANDLE("DO_WORK", handle_do_work);
   if (EQUALS(line, "CLOSE")) {
     return handle_close(arguments);
   }
