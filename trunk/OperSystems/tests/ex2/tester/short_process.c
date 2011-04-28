@@ -219,11 +219,6 @@ int hand_command_to_child(int index, char* line) {
     fflush(out_pipe);
     return 0;
   }
-  if (strncmp(line, "DO_WORK_ASYNC", 13) == 0) {
-    fprintf(out_pipe, "DONE 0\n");
-    fflush(out_pipe);
-    return 0;
-  }
 
   if (fgets(buffer, MAX_STRING_INPUT_SIZE, children[index]->in_pipe) == NULL) {
     return -1;
@@ -239,11 +234,25 @@ int hand_command_to_child(int index, char* line) {
 
 int handle_command(char* line) {
   int rc = -1;
+  int async = 0;
   char* arguments = strchr(line, ' ');
   if (arguments != NULL) {
     arguments[0] = '\0';
     arguments++;
   }
+
+  if (EQUALS(line, "ASYNC")) {
+    async = 1;
+    line = arguments;
+    arguments = strchr(line, ' ');
+    if (arguments != NULL) {
+      arguments[0] = '\0';
+      arguments++;
+    }
+
+    fprintf(out_pipe, "DONE 0\n");
+    fflush(out_pipe);
+  } 
 
   HANDLE("CREATE_CHILD", handle_create_child);
   HANDLE("REMAINING_TIME", handle_remaining_time);
@@ -251,12 +260,14 @@ int handle_command(char* line) {
   HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
   HANDLE("DO_WORK", handle_do_work);
-  HANDLE("DO_WORK_ASYNC", handle_do_work);
   if (EQUALS(line, "CLOSE")) {
     return handle_close(arguments);
   }
-  fprintf(out_pipe, "DONE %d\n", rc);
-  fflush(out_pipe);
+
+  if (!async) {
+    fprintf(out_pipe, "DONE %d\n", rc);
+    fflush(out_pipe);
+  }
 
   return rc;
 }
