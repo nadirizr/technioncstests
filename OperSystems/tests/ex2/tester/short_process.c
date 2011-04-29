@@ -191,6 +191,19 @@ int handle_do_work(char* arguments) {
   return (current_time * 1000 / CLOCKS_PER_SEC);
 }
 
+int handle_stats(char* arguments) {
+  struct switch_info stats[150];
+  int num, i;
+
+  num = get_scheduling_statistic(&stats);
+
+  for (i = 0; i < num; ++i) {
+    fprintf(out_pipe, "(%d,%d,%d,%d,%ul,%d);");
+  }
+  
+  return 0;
+}
+
 int handle_close(char* arguments) {
   int i;
   for (i = num_children - 1; i >= 0; --i) {
@@ -260,6 +273,7 @@ int handle_command(char* line) {
   HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
   HANDLE("DO_WORK", handle_do_work);
+  HANDLE("STATS", handle_stats);
   if (EQUALS(line, "CLOSE")) {
     return handle_close(arguments);
   }
