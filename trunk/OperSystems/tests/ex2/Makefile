@@ -7,7 +7,7 @@ TEST_TARGETS = test_scenarios
 # Compiler Flags
 CC = gcc
 CXX = g++
-CCFLAGS = -I.. -I../linux-2.4.18-14custom/include -g
+CCFLAGS = -I.. -Ilinux_include -g
 
 # Source Files
 SHORT_PROCESS_SRC = tester/short_process.c
