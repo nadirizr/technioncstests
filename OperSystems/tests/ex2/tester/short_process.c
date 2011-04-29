@@ -292,7 +292,7 @@ int handle_command(char* line) {
   HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
   HANDLE("DO_WORK", handle_do_work);
-  HANDLE_NO_OUTPUT("STATS", handle_stats);
+  HANDLE_NO_OUTPUT("GET_STATS", handle_stats);
   HANDLE_NO_OUTPUT("CLOSE", handle_close);
 
   if (!async) {
