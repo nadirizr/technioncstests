@@ -220,8 +220,11 @@ short_process_read_pipe = SHORT_PROCESS_READ_PIPE
 short_process_write_pipe = SHORT_PROCESS_WRITE_PIPE
 if sys.argv[1:]:
   file_input_stream = file(sys.argv[1], "r")
+  file_output_stream = None
+  command_output_stream = sys.stdout
 if sys.argv[2:]:
   file_output_stream = file(sys.argv[2], "w")
+  command_output_stream = None
 if sys.argv[3:]:
   command_output_stream = file(sys.argv[3], "w")
 if sys.argv[4:] and sys.argv[5:]:
