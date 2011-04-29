@@ -214,7 +214,7 @@ int handle_stats(char* arguments) {
 
   fprintf(out_pipe, "DONE %d", num);
   for (i = 0; i < num; ++i) {
-    fprintf(out_pipe, " [prev_pid=%d,next_pid=%d,prev_policy=%d,next_policy=%d,time=%ul,reason=%d]");
+    fprintf(out_pipe, " [prev_pid=%d,next_pid=%d,prev_policy=%d,next_policy=%d,time=%ul,reason=%d]", stats[i].previous_pid, stats[i].next_pid, stats[i].previous_policy, stats[i].next_policy, stats[i].time, stats[i].reason);
   }
   fprintf(out_pipe, "\n");
   fflush(out_pipe);
