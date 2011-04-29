@@ -1,9 +1,9 @@
+#include <sched.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sched.h>
 #include <time.h>
 
 #include "hw2_syscalls.h"
@@ -118,8 +118,12 @@ int handle_create_child(char* arguments) {
 }
 
 int handle_remaining_time(char* arguments) {
-  int pid = atoi(arguments);
+  int pid = 0;
   int remaining_time = 0;
+
+  if (sscanf(arguments, "%d", &pid) != 1) {
+    return -10000;
+  }
 
   remaining_time = short_query_remaining_time(pid);
   
@@ -130,9 +134,13 @@ int handle_remaining_time(char* arguments) {
 }
 
 int handle_overdue_time(char* arguments) {
-  int pid = atoi(arguments);
+  int pid = 0;
   int overdue_time = 0;
 
+  if (sscanf(arguments, "%d", &pid) != 1) {
+    return -10000;
+  }
+  
   overdue_time = short_query_overdue_time(pid);
   
   if (overdue_time < 0) {
@@ -142,8 +150,12 @@ int handle_overdue_time(char* arguments) {
 }
 
 int handle_get_scheduler(char* arguments) {
-  int pid = atoi(arguments);
+  int pid = 0;
   int policy = 0;
+
+  if (sscanf(arguments, "%d", &pid) != 1) {
+    return -10000;
+  }
 
   policy = sched_getscheduler(pid);
   
@@ -158,13 +170,9 @@ int handle_set_short(char* arguments) {
   int rc = 0;
   struct sched_param params;
 
-  char* argument2 = strchr(arguments, ' ');
-  if (argument2 != NULL) {
-    argument2[0] = '\0';
-    argument2++;
+  if (sscanf(arguments, "%d %d", &pid, &requested_time) != 2) {
+    return -10000;
   }
-  pid = atoi(arguments);
-  requested_time = atoi(argument2);
   
   params.sched_priority = requested_time;
   rc = sched_setscheduler(pid, 4, &params);
@@ -175,27 +183,34 @@ int handle_set_short(char* arguments) {
 }
 
 int handle_do_work(char* arguments) {
-  int work_time = atoi(arguments) * CLOCKS_PER_SEC / 1000;
+  int work_time;
   int start_time, current_time;
-  int a = 0, b = 1, c;
+  int a = 0, b = 1, c, i;
+
+  if (sscanf(arguments, "%d", &work_time) != 1) {
+    return -10000;
+  }
+  work_time = work_time * CLOCKS_PER_SEC / 1000;
   
   start_time = current_time = clock();
-  while ((current_time - start_time) < work_time) {
+  for (i = 0; (current_time - start_time) < work_time; ++i) {
     c = a + b;
     a = b;
     b = c;
     
-    current_time = clock();
+    if (i % 1000000 == 0) {
+      current_time = clock();
+    }
   }
   
-  return (current_time * 1000 / CLOCKS_PER_SEC);
+  return ((current_time - start_time) * 1000 / CLOCKS_PER_SEC);
 }
 
 int handle_stats(char* arguments) {
   struct switch_info stats[150];
   int num, i;
 
-  num = get_scheduling_statistic(&stats);
+  num = get_scheduler_statistic((struct switch_info*)stats);
 
   for (i = 0; i < num; ++i) {
     fprintf(out_pipe, "(%d,%d,%d,%d,%ul,%d);");
@@ -246,7 +261,7 @@ int hand_command_to_child(int index, char* line) {
 #define HANDLE(cmd, fn) if (EQUALS((line), (cmd))) { rc = fn(arguments); }
 
 int handle_command(char* line) {
-  int rc = -1;
+  int rc = -10000;
   int async = 0;
   char* arguments = strchr(line, ' ');
   if (arguments != NULL) {
