@@ -212,11 +212,14 @@ int handle_stats(char* arguments) {
 
   num = get_scheduler_statistic((struct switch_info*)stats);
 
+  fprintf(out_pipe, "DONE %d", num);
   for (i = 0; i < num; ++i) {
-    fprintf(out_pipe, "(%d,%d,%d,%d,%ul,%d);");
+    fprintf(out_pipe, " [prev_pid=%d,next_pid=%d,prev_policy=%d,next_policy=%d,time=%ul,reason=%d]");
   }
+  fprintf(out_pipe, "\n");
+  fflush(out_pipe);
   
-  return 0;
+  return num;
 }
 
 int handle_close(char* arguments) {
@@ -259,6 +262,7 @@ int hand_command_to_child(int index, char* line) {
 
 #define EQUALS(str1,str2) (strcmp((str1),(str2)) == 0)
 #define HANDLE(cmd, fn) if (EQUALS((line), (cmd))) { rc = fn(arguments); }
+#define HANDLE_NO_OUTPUT(cmd, fn) if (EQUALS((line), (cmd))) { return fn(arguments); }
 
 int handle_command(char* line) {
   int rc = -10000;
@@ -288,10 +292,8 @@ int handle_command(char* line) {
   HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("SET_SHORT", handle_set_short);
   HANDLE("DO_WORK", handle_do_work);
-  HANDLE("STATS", handle_stats);
-  if (EQUALS(line, "CLOSE")) {
-    return handle_close(arguments);
-  }
+  HANDLE_NO_OUTPUT("STATS", handle_stats);
+  HANDLE_NO_OUTPUT("CLOSE", handle_close);
 
   if (!async) {
     fprintf(out_pipe, "DONE %d\n", rc);
