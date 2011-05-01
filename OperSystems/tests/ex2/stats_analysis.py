@@ -3,34 +3,61 @@
 import re
 import commands
 
-# create input file
-f = open('/tmp/stats.in','w')
-f.write('GET_STATS\nCLOSE')
-f.close()
+def write_commands(cmds):
+  # create input file
+  f = open('/tmp/stats.in','w')
+  cmds.append('')
+  f.write('\n'.join(cmds))
+  f.close()
 
-# run the short process
-commands.getoutput("(./short_process < /tmp/stats.in) > /tmp/stats.out")
+def get_stats():
+  write_commands(['GET_STATS','CLOSE'])
 
-f = open('/tmp/stats.out', 'r')
-lines = f.readlines()
-f.close()
+  commands.getoutput("(./short_process < /tmp/stats.in) > /tmp/stats.out")
 
-stats = lines[1].split('] [')
-stats[0] = stats[0][10:]
-stats[-1] = stats[-1][:-2]
+  f = open('/tmp/stats.out', 'r')
+  lines = f.readlines()
+  f.close()
 
-reasons = {}
-for stat in stats:
-  m = re.search('reason=([\\d]+)', stat)
-  r = m.group(1)
-  if not reasons.has_key(r):
-    reasons[r] = []
-  reasons[r].append(stat)
+  stats = lines[1].split('] [')
+  stats[0] = stats[0][10:]
+  stats[-1] = stats[-1][:-2]
 
-l = []
-for k in reasons.keys():
-  l.append(k)
-l.sort()
+  reasons = {}
+  for stat in stats:
+    m = re.search('reason=([\\d]+)', stat)
+    r = m.group(1)
+    if not reasons.has_key(r):
+      reasons[r] = []
+    reasons[r].append(stat)
 
-for k in l:
-  print "%s: %d" % (k, len(reasons[k]))
+  return reasons
+
+def run_commands(cmds):
+  write_commands(cmds)
+  commands.getoutput("echo /tmp/stats.in | ./short_process")
+
+# check reason 2 (exit)
+def test_exit():
+  print "check reason 2 (exit) ....",
+  run_commands(['CLOSE'])
+  result = get_stats()
+  if result.has_key('2'):
+    print "OK"
+  else:
+    print "FAIL"
+    
+# check reason 3 (yield)
+def test_yield():
+  print "check reason 3 (yield) ...",
+  run_commands(['YIELD', 'CLOSE'])
+  result = get_stats()
+  if result.has_key('3'):
+    print "OK"
+  else:
+    print result.keys()
+    print "FAIL"
+
+
+test_exit()
+test_yield()

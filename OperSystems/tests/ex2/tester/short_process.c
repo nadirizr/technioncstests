@@ -121,7 +121,7 @@ int handle_remaining_time(char* arguments) {
   int pid = 0;
   int remaining_time = 0;
 
-  if (sscanf(arguments, "%d", &pid) != 1) {
+  if (!arguments || sscanf(arguments, "%d", &pid) != 1) {
     return -10000;
   }
 
@@ -137,7 +137,7 @@ int handle_overdue_time(char* arguments) {
   int pid = 0;
   int overdue_time = 0;
 
-  if (sscanf(arguments, "%d", &pid) != 1) {
+  if (!arguments || sscanf(arguments, "%d", &pid) != 1) {
     return -10000;
   }
   
@@ -153,7 +153,7 @@ int handle_get_scheduler(char* arguments) {
   int pid = 0;
   int policy = 0;
 
-  if (sscanf(arguments, "%d", &pid) != 1) {
+  if (!arguments || sscanf(arguments, "%d", &pid) != 1) {
     return -10000;
   }
 
@@ -165,12 +165,26 @@ int handle_get_scheduler(char* arguments) {
   return policy;
 }
 
+int handle_get_param(char* arguments) {
+  int pid = 0;
+  struct sched_param param; 
+
+  if (!arguments || sscanf(arguments, "%d", &pid) != 1) {
+    return -10000;
+  }
+
+  if (sched_getparam(pid, &param) < 0) {
+    return -errno;
+  }
+  return param.sched_priority;
+}
+
 int handle_set_short(char* arguments) {
   int pid = 0, requested_time = 0;
   int rc = 0;
   struct sched_param params;
 
-  if (sscanf(arguments, "%d %d", &pid, &requested_time) != 2) {
+  if (!arguments || sscanf(arguments, "%d %d", &pid, &requested_time) != 2) {
     return -10000;
   }
   
@@ -183,17 +197,78 @@ int handle_set_short(char* arguments) {
 }
 
 int handle_do_work(char* arguments) {
-  int work_time;
-  int start_time, current_time;
+  int work_time, start_time, current_time, temp_time;
+  int is_short = 0, use_overdue = 0;
+  int pid = getpid();
   int a = 0, b = 1, c, i;
 
-  if (sscanf(arguments, "%d", &work_time) != 1) {
+  if (!arguments || sscanf(arguments, "%d", &work_time) != 1) {
+    return -10000;
+  }
+  
+  if (sched_getscheduler(pid) == SCHED_SHORT) {
+    is_short = 1;
+    start_time = 0;
+    temp_time = short_query_remaining_time(pid);
+    if (temp_time > 0 && work_time <= temp_time) {
+      start_time = -temp_time;
+      work_time = -(temp_time - work_time);
+    } else {
+      start_time = -temp_time;
+      work_time -= temp_time;
+      temp_time = short_query_overdue_time(pid);
+      start_time += temp_time;
+      work_time += temp_time;
+      use_overdue = 1;
+    }
+    current_time = start_time;
+  } else {
+    work_time = work_time * CLOCKS_PER_SEC / 1000;
+    start_time = clock();
+    work_time += start_time;
+  }
+  
+  for (i = 0; current_time < work_time; ++i) {
+    c = a + b;
+    a = b;
+    b = c;
+    
+    if (i % 1000 == 0) {
+      if (!is_short) {
+        current_time = clock();
+      } else if (use_overdue) {
+        current_time = short_query_overdue_time(pid);
+      } else {
+        current_time = -short_query_remaining_time(pid);
+      }
+    }
+  }
+  
+  if (is_short) {
+    return (current_time - start_time);
+  }
+  return ((current_time - start_time) * 1000 / CLOCKS_PER_SEC);
+}
+
+int handle_do_work_and_yield_at_halftime(char* arguments) {
+  int work_time;
+  int start_time, current_time, first;
+  int a = 0, b = 1, c, i;
+  first = 0;
+
+  if (!arguments || sscanf(arguments, "%d", &work_time) != 1) {
     return -10000;
   }
   work_time = work_time * CLOCKS_PER_SEC / 1000;
   
   start_time = current_time = clock();
   for (i = 0; (current_time - start_time) < work_time; ++i) {
+    if (((current_time - start_time) == (work_time / 2)) && first == 0) {
+      first = 1;
+      fprintf(out_pipe, "YIELDING %d\n", getpid());
+      fflush(out_pipe);
+      sched_yield();
+    }
     c = a + b;
     a = b;
     b = c;
@@ -290,8 +365,10 @@ int handle_command(char* line) {
   HANDLE("REMAINING_TIME", handle_remaining_time);
   HANDLE("OVERDUE_TIME", handle_overdue_time);
   HANDLE("GET_POLICY", handle_get_scheduler);
+  HANDLE("GET_PARAM", handle_get_param);
   HANDLE("SET_SHORT", handle_set_short);
   HANDLE("DO_WORK", handle_do_work);
+  HANDLE("DO_WORK_AND_YIELD", handle_do_work_and_yield_at_halftime);
   HANDLE_NO_OUTPUT("GET_STATS", handle_stats);
   HANDLE_NO_OUTPUT("CLOSE", handle_close);
 
