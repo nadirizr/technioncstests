@@ -97,10 +97,34 @@ class ShortWrapperParser:
     elif cmd == "REMAINING_TIME":
       if 0 <= int(args[-1]) < len(self.state.getProcesses()):
         args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
-      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
+      reply = self.__sendToShortProcess(" ".join(args))
+      reply_args = reply.split()
+      try:
+        remaining_time = int(reply_args[-1])
+        if remaining_time > 0:
+          remaining_time = (remaining_time / 100) * 100
+        reply_args[-1] = str(remaining_time)
+        print >> self.output_stream, " ".join(reply_args)
+      except:
+        print >> self.output_stream, reply
       return 0
 
     elif cmd == "OVERDUE_TIME":
+      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
+        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
+      reply = self.__sendToShortProcess(" ".join(args))
+      reply_args = reply.split()
+      try:
+        overdue_time = int(reply_args[-1])
+        if overdue_time > 0:
+          overdue_time = (overdue_time / 100) * 100
+        reply_args[-1] = str(overdue_time)
+        print >> self.output_stream, " ".join(reply_args)
+      except:
+        print >> self.output_stream, reply
+      return 0
+
+    elif cmd == "GET_PARAM":
       if 0 <= int(args[-1]) < len(self.state.getProcesses()):
         args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
       print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
@@ -157,6 +181,10 @@ class ShortWrapperParser:
         return 0
       except:
         return -1
+
+    else:
+      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
+      return 0
 
   def __initializeShortProcess(self):
     if not (self.short_process_write_pipe and self.short_process_read_pipe):
