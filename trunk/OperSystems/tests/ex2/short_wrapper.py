@@ -56,7 +56,7 @@ class ShortWrapperParser:
 
     cmd = args[0]
     if not cmd or cmd[0] == "#":
-      print line,
+      print >> self.output_stream, line,
       return 0
 
     process_indexes = []
@@ -102,7 +102,7 @@ class ShortWrapperParser:
       try:
         remaining_time = int(reply_args[-1])
         if remaining_time > 0:
-          remaining_time = (remaining_time / 100) * 100
+          remaining_time = (remaining_time / 5) * 5
         reply_args[-1] = str(remaining_time)
         print >> self.output_stream, " ".join(reply_args)
       except:
@@ -117,11 +117,17 @@ class ShortWrapperParser:
       try:
         overdue_time = int(reply_args[-1])
         if overdue_time > 0:
-          overdue_time = (overdue_time / 100) * 100
+          overdue_time = (overdue_time / 5) * 5
         reply_args[-1] = str(overdue_time)
         print >> self.output_stream, " ".join(reply_args)
       except:
         print >> self.output_stream, reply
+      return 0
+
+    elif cmd == "GET_POLICY":
+      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
+        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
+      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
       return 0
 
     elif cmd == "GET_PARAM":
