@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = tag_process tag_launcher
+TARGET = short_process
 MODULES = MAIN
 
 TEST_TARGETS = test_scenarios
