@@ -1,0 +1,16 @@
+# Check setscheduler and setparam on invalid inputs that aren't short related.
+DONE 0
+DONE -22
+DONE -22
+DONE -3
+DONE -22
+DONE -22
+DONE -22
+DONE -22
+DONE -22
+DONE -22
+
+# Check setscheduler and setparam on short related invalid inputs.
+DONE -22
+DONE -22
+DONE -22
