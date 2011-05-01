@@ -9,8 +9,26 @@ DONE -22
 DONE -22
 DONE -22
 DONE -22
+DONE -22
 
 # Check setscheduler and setparam on short related invalid inputs.
 DONE -22
 DONE -22
 DONE -22
+
+# Check setscheduler and setparam on non-short related permission error inputs.
+DONE 1
+DONE -22
+DONE 0
+DONE 0
+DONE -1
+DONE 100
+CLOSED 0
+
+# Check setscheduler and setparam on short related permission error inputs.
+DONE 1
+DONE 0
+DONE -1
+DONE -1
+DONE -1
+DONE -1

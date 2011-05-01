@@ -23,7 +23,6 @@ CREATE_CHILD
 0 SET_SCHEDULER 1 4 100
 0 SET_PARAM 20
 0 GET_PARAM 1
-0 SET_
 0 CLOSE
 
 # Check setscheduler and setparam on short related permission error inputs.
@@ -33,4 +32,4 @@ CREATE_CHILD
 0 SET_SCHEDULER 0 0 100
 0 SET_SCHEDULER 0 1 10
 0 SET_SCHEDULER 0 2 20
-0 SET_SCHEDULER 0 
+CLOSE
