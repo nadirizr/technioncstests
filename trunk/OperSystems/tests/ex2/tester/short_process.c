@@ -31,6 +31,8 @@ int num_children;
 FILE* out_pipe;
 FILE* in_pipe;
 
+char* async_trap_file;
+
 int add_child_process(int pid, FILE* child_in_pipe, FILE* child_out_pipe) {
   if (num_children == MAX_CHILDREN) {
     return -1;
@@ -117,6 +119,47 @@ int handle_create_child(char* arguments) {
   return pid;
 }
 
+int handle_set_async_trap(char* arguments) {
+  FILE* async_trap = fopen(async_trap_file, "w");
+  fclose(async_trap);
+  return 0;
+}
+
+int handle_print_async_trap(char* arguments) {
+  int num_of_calls = 0, i = 0;
+  char buffer[MAX_STRING_INPUT_SIZE];
+  int buffer_size = 0;
+  FILE* async_trap;
+
+  if (!arguments || sscanf(arguments, "%d", &num_of_calls) != 1) {
+    return -10000;
+  }
+  
+  while (i < num_of_calls) {
+    async_trap = fopen(async_trap_file, "r");
+    buffer_size = 0;
+    for (i = 0; i < num_of_calls; ++i) {
+      if (i > 0) {
+        buffer[buffer_size] = '\n';
+        ++buffer_size;
+      }
+      if (!fgets(buffer + buffer_size, MAX_STRING_INPUT_SIZE, async_trap)) {
+        sleep(1);
+        break;
+      }
+      buffer_size = strlen(buffer);
+    }
+    fclose(async_trap);
+  }
+
+  if (buffer_size > 0) {
+    fprintf(out_pipe, buffer);
+    fflush(out_pipe);
+  }
+  
+  return num_of_calls;
+}
+
 int handle_remaining_time(char* arguments) {
   int pid = 0;
   int remaining_time = 0;
@@ -179,6 +222,23 @@ int handle_get_param(char* arguments) {
   return param.sched_priority;
 }
 
+int handle_set_param(char* arguments) {
+  int pid = 0, requested_time = 0;
+  int rc = 0;
+  struct sched_param params;
+
+  if (!arguments || sscanf(arguments, "%d %d", &pid, &requested_time) != 2) {
+    return -10000;
+  }
+  
+  params.sched_priority = requested_time;
+  rc = sched_setparam(pid, &params);
+  if (rc < 0) {
+    return -errno;
+  }
+  return rc;
+}
+
 int handle_set_short(char* arguments) {
   int pid = 0, requested_time = 0;
   int rc = 0;
@@ -190,6 +250,24 @@ int handle_set_short(char* arguments) {
   
   params.sched_priority = requested_time;
   rc = sched_setscheduler(pid, 4, &params);
+  if (rc < 0) {
+    return -errno;
+  }
+  return rc;
+}
+
+int handle_set_scheduler(char* arguments) {
+  int pid = 0, policy = 0, requested_time = 0;
+  int rc = 0;
+  struct sched_param params;
+
+  if (!arguments || sscanf(arguments, "%d %d %d",
+                           &pid, &policy, &requested_time) != 3) {
+    return -10000;
+  }
+  
+  params.sched_priority = requested_time;
+  rc = sched_setscheduler(pid, policy, &params);
   if (rc < 0) {
     return -errno;
   }
@@ -362,11 +440,15 @@ int handle_command(char* line) {
   } 
 
   HANDLE("CREATE_CHILD", handle_create_child);
+  HANDLE("SET_ASYNC_TRAP", handle_set_async_trap);
+  HANDLE_NO_OUTPUT("PRINT_ASYNC_TRAP", handle_print_async_trap);
   HANDLE("REMAINING_TIME", handle_remaining_time);
   HANDLE("OVERDUE_TIME", handle_overdue_time);
   HANDLE("GET_POLICY", handle_get_scheduler);
   HANDLE("GET_PARAM", handle_get_param);
+  HANDLE("SET_PARAM", handle_set_param);
   HANDLE("SET_SHORT", handle_set_short);
+  HANDLE("SET_SCHEDULER", handle_set_scheduler);
   HANDLE("DO_WORK", handle_do_work);
   HANDLE("DO_WORK_AND_YIELD", handle_do_work_and_yield_at_halftime);
   HANDLE_NO_OUTPUT("GET_STATS", handle_stats);
@@ -375,6 +457,11 @@ int handle_command(char* line) {
   if (!async) {
     fprintf(out_pipe, "DONE %d\n", rc);
     fflush(out_pipe);
+  } else {
+    FILE* async_trap = fopen(async_trap_file, "a");
+    fprintf(async_trap, "%d DONE %d\n", getpid(), rc);
+    fflush(async_trap);
+    fclose(async_trap);
   }
 
   return rc;
@@ -441,6 +528,8 @@ int do_work() {
 }
 
 int main(int argc, char* argv[]) {
+  async_trap_file = NULL;
+
   if (argc >= 3) {
     in_pipe = fopen(argv[1], "r");
     out_pipe = fopen(argv[2], "w");
@@ -449,5 +538,11 @@ int main(int argc, char* argv[]) {
     out_pipe = stdout;
   }
 
-  return do_work();
+  async_trap_file = mktemp("/tmp/async_XXXXXX.trap");
+
+  int rc = do_work();
+
+  unlink(async_trap_file);
+
+  return rc;
 }

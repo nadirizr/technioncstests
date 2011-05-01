@@ -88,9 +88,52 @@ class ShortWrapperParser:
         print >> self.output_stream, reply
       return -1
 
+    elif cmd == "PRINT_ASYNC_TRAP":
+      num_of_calls = int(args[-1])
+      reply = self.__sendToShortProcess(line, num_of_lines = num_of_calls)
+      reply_lines = reply.split("\n")
+      for i in xrange(len(reply_lines)):
+        line = reply_lines[i]
+        reply_args = line.split()
+        try:
+          pid = int(reply_args[0])
+          if pid in self.pids.keys():
+            pid = self.state.getPIDForProcess(self.pids[pid])
+          reply_args[0] = str(pid)
+          reply_lines[i] = " ".join(reply_args);
+        except:
+          print >> self.output_stream, reply
+          return -1
+      print >> self.output_stream, "\n".join(reply_lines)
+      return 0
+
+    elif cmd == "SET_SCHEDULER":
+      if 0 <= int(args[-3]) < len(self.state.getProcesses()):
+        args[-3] = str(self.state.getProcessForPID(int(args[-3])).pid)
+      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
+      return 0
+
     elif cmd == "SET_SHORT":
       if 0 <= int(args[-2]) < len(self.state.getProcesses()):
         args[-2] = str(self.state.getProcessForPID(int(args[-2])).pid)
+      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
+      return 0
+
+    elif cmd == "GET_POLICY":
+      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
+        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
+      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
+      return 0
+
+    elif cmd == "SET_PARAM":
+      if 0 <= int(args[-2]) < len(self.state.getProcesses()):
+        args[-2] = str(self.state.getProcessForPID(int(args[-2])).pid)
+      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
+      return 0
+
+    elif cmd == "GET_PARAM":
+      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
+        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
       print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
       return 0
 
@@ -122,18 +165,6 @@ class ShortWrapperParser:
         print >> self.output_stream, " ".join(reply_args)
       except:
         print >> self.output_stream, reply
-      return 0
-
-    elif cmd == "GET_POLICY":
-      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
-        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
-      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
-      return 0
-
-    elif cmd == "GET_PARAM":
-      if 0 <= int(args[-1]) < len(self.state.getProcesses()):
-        args[-1] = str(self.state.getProcessForPID(int(args[-1])).pid)
-      print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
       return 0
 
     elif cmd == "DO_WORK":
