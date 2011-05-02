@@ -21,3 +21,15 @@ DONE 0
 DONE 0
 2 DONE 2000
 1 DONE 2000
+# run 2 children: 1 first, which should already be overdue, and then 2 will
+# be overdue as well and they should flip with each other, 2 ending last.
+DONE 1
+DONE 2
+DONE 0
+DONE 0
+DONE 0
+DONE 0
+DONE 0
+DONE 0
+1 DONE 2000
+2 DONE 3000
