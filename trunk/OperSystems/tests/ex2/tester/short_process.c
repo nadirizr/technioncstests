@@ -361,7 +361,7 @@ int handle_stats(char* arguments) {
   struct switch_info stats[150];
   int num, i;
 
-  num = get_scheduler_statistic((struct switch_info*)stats);
+  num = get_scheduling_statistic((struct switch_info*)stats);
 
   fprintf(out_pipe, "DONE %d", num);
   for (i = 0; i < num; ++i) {
