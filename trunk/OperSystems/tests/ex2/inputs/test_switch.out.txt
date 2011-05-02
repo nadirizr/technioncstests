@@ -1,0 +1,11 @@
+# run 2 children: 1 first, then 2, while 2 should finish before 1
+DONE 1
+DONE 2
+DONE 0
+DONE 0
+DONE 0
+DONE 0
+DONE 0
+DONE 0
+2 DONE 2000
+1 DONE 2000
