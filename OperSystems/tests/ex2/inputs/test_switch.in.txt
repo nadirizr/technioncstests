@@ -23,4 +23,17 @@ SET_ASYNC_TRAP
 PRINT_ASYNC_TRAP 2
 1 CLOSE
 0 CLOSE
+# run 2 children: 1 first, which should already be overdue, and then 2 will
+# be overdue as well and they should flip with each other, 2 ending last.
+CREATE_CHILD
+CREATE_CHILD
+SET_SHORT 0 1000
+SET_SHORT 1 1000
+SET_SHORT 2 1000
+SET_ASYNC_TRAP
+0 ASYNC DO_WORK 2000
+1 ASYNC DO_WORK 3000
+PRINT_ASYNC_TRAP 2
+1 CLOSE
+0 CLOSE
 CLOSE
