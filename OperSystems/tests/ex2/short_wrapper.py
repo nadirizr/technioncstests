@@ -243,7 +243,7 @@ class ShortWrapperParser:
       self.pids[child_pid] = new_process
       self.short_process_read_pipe.readline()
 
-  def __sendToShortProcess(self, line, wait_for_input=True):
+  def __sendToShortProcess(self, line, wait_for_input=True, num_of_lines = 1):
     if not (self.short_process_write_pipe and self.short_process_read_pipe):
       return ""
 
@@ -260,6 +260,8 @@ class ShortWrapperParser:
 
     #time.sleep(0.1)
     reply = self.short_process_read_pipe.readline().strip()
+    for l in xrange(1, num_of_lines):
+      reply += "\n" + self.short_process_read_pipe.readline().strip()
 
     self.__writeToCommandOutput("--> %s\n" % reply)
     return reply

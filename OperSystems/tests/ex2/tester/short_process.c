@@ -31,7 +31,7 @@ int num_children;
 FILE* out_pipe;
 FILE* in_pipe;
 
-char* async_trap_file;
+char async_trap_file[] = "/tmp/async_trap_XXXXXX";
 
 int add_child_process(int pid, FILE* child_in_pipe, FILE* child_out_pipe) {
   if (num_children == MAX_CHILDREN) {
@@ -139,11 +139,9 @@ int handle_print_async_trap(char* arguments) {
     async_trap = fopen(async_trap_file, "r");
     buffer_size = 0;
     for (i = 0; i < num_of_calls; ++i) {
-      if (i > 0) {
-        buffer[buffer_size] = '\n';
-        ++buffer_size;
-      }
-      if (!fgets(buffer + buffer_size, MAX_STRING_INPUT_SIZE, async_trap)) {
+      if (!fgets(buffer + buffer_size,
+                 MAX_STRING_INPUT_SIZE - buffer_size,
+                 async_trap)) {
         sleep(1);
         break;
       }
@@ -302,7 +300,7 @@ int handle_do_work(char* arguments) {
     current_time = start_time;
   } else {
     work_time = work_time * CLOCKS_PER_SEC / 1000;
-    start_time = clock();
+    current_time = start_time = clock();
     work_time += start_time;
   }
   
@@ -528,8 +526,6 @@ int do_work() {
 }
 
 int main(int argc, char* argv[]) {
-  async_trap_file = NULL;
-
   if (argc >= 3) {
     in_pipe = fopen(argv[1], "r");
     out_pipe = fopen(argv[2], "w");
@@ -538,7 +534,7 @@ int main(int argc, char* argv[]) {
     out_pipe = stdout;
   }
 
-  async_trap_file = mktemp("/tmp/async_XXXXXX.trap");
+  mkstemp(async_trap_file);
 
   int rc = do_work();
 

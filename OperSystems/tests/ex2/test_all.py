@@ -47,6 +47,7 @@ if CLEAN:
     try:
         os.system("rm -rf ./random/*")
         os.system("rm -rf ./tmp/*")
+        os.system("rm -f /tmp/async_trap_*")
     except:
         print "Clean Failed!"
 
