@@ -30,7 +30,7 @@ class ShortWrapperParser:
     self.tester_pid = os.getpid()
     self.state = MainState()
     self.pids = {}
-    self.time_margin = 10
+    self.time_margin = 1
 
     create_pipes()
     self.__initializeShortProcess()

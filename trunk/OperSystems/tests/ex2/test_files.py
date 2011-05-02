@@ -78,6 +78,19 @@ class TestProgramRun(unittest.TestCase):
         
     def id(self):
         return "TestProgramRun.testRun(" + self.name + ")"
+
+    def replaceNumberRanges(self, real_line, expected_line):
+        real_words = real_line.split()
+        expected_words = expected_line.split()
+        for i in xrange(len(expected_words)):
+            if re.match("^[0-9]+-[0-9]+$", expected_words[i]):
+                limits = [int(r) for r in expected_words[i].split("-")]
+                try:
+                    if limits[0] <= int(real_words[i]) <= limits[1]:
+                        real_words[i] = expected_words[i]
+                except:
+                    pass
+        return " ".join(real_words), " ".join(expected_words)
     
     def testRun(self):
         print "(%s) ... " % self.name,
@@ -88,14 +101,17 @@ class TestProgramRun(unittest.TestCase):
         real_out = real_out.split("\n")
         expected_out = expected_out.split("\n")
         for i in range(0, len(expected_out)):
+            real_line = real_out[i]
+            expected_line = expected_out[i]
+            real_line, expected_line = self.replaceNumberRanges(real_line, expected_line)
             self.assertEquals(
-                " ".join(real_out[i].split()),
-                " ".join(expected_out[i].split()),
+                " ".join(real_line.split()),
+                " ".join(expected_line.split()),
                 self.name + (": line %d differs in output:\n" +
                     "real_out (file:'%s')\t: '%s'\n!=\n" +
                     "expected (file:'%s')\t: '%s'") % (
-                    (i+1), real_out_file, real_out[i],
-                    expected_out_file, expected_out[i]))
+                    (i+1), real_out_file, real_line,
+                    expected_out_file, expected_line))
         self.assertEquals(len(expected_out), len(real_out),
             self.name + ": length of expected output and actual output differ")
 
