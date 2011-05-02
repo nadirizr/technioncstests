@@ -435,6 +435,7 @@ int handle_command(char* line) {
 
     fprintf(out_pipe, "DONE 0\n");
     fflush(out_pipe);
+    sleep(1);
   } 
 
   HANDLE("CREATE_CHILD", handle_create_child);
