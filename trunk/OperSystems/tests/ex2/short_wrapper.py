@@ -30,6 +30,7 @@ class ShortWrapperParser:
     self.tester_pid = os.getpid()
     self.state = MainState()
     self.pids = {}
+    self.time_margin = 10
 
     create_pipes()
     self.__initializeShortProcess()
@@ -145,7 +146,8 @@ class ShortWrapperParser:
       try:
         remaining_time = int(reply_args[-1])
         if remaining_time > 0:
-          remaining_time = (remaining_time / 5) * 5
+          remaining_time = ((remaining_time / self.time_margin) *
+                             self.time_margin)
         reply_args[-1] = str(remaining_time)
         print >> self.output_stream, " ".join(reply_args)
       except:
@@ -160,7 +162,7 @@ class ShortWrapperParser:
       try:
         overdue_time = int(reply_args[-1])
         if overdue_time > 0:
-          overdue_time = (overdue_time / 5) * 5
+          overdue_time = (overdue_time / self.time_margin) * self.time_margin
         reply_args[-1] = str(overdue_time)
         print >> self.output_stream, " ".join(reply_args)
       except:
@@ -218,6 +220,9 @@ class ShortWrapperParser:
         return 0
       except:
         return -1
+
+    elif cmd == "SET_TIME_MARGIN":
+      self.time_margin = int(args[-1])
 
     else:
       print >> self.output_stream, self.__sendToShortProcess(" ".join(args))
