@@ -16,12 +16,12 @@ extern std::string location; // Used for finding the origin of an exception
 
 #define ASSERT_TRUE(command) do  { \
     if (!(command)) { \
-      FAIL("expexted to get true"); \
+      FAIL("expected to get true"); \
     } \
   } while (0)
 #define ASSERT_FALSE(command) do  { \
     if ((command)) { \
-      FAIL("expexted to get false"); \
+      FAIL("expected to get false"); \
     } \
   } while (0)
 #define ASSERT_EQUALS(expected,actual) do { \
