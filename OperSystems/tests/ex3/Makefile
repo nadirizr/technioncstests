@@ -5,7 +5,8 @@ MODULES = MAIN
 # Compiler Flags
 CC = gcc
 CXX = g++
-CCFLAGS = -I../src -g
+CCFLAGS = -I.. -I../src -g
+LDFLAGS = -L.. -lmp
 
 # Source Files
 MESSAGE_SENDER_SRC = message_sender.c
