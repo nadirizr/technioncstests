@@ -12,13 +12,11 @@
 #define TOO_MANY_CONTEXTS -10010
 #define TOO_MANY_BARRIERS -10011
 
-#define MAX_CONTEXTS 50
 #define MAX_BARRIERS 50
 
 /*** Contexts ***/
 
-int num_contexts;
-context_t* contexts[MAX_CONTEXTS];
+context_t* context;
 
 /*** Barriers ***/
 
@@ -43,40 +41,29 @@ int handle_context_init(char* arguments) {
     return ILLEGAL_ARGS;
   }
 
-  if (num_contexts == MAX_CONTEXTS) {
-    return TOO_MANY_CONTEXTS;
-  }
-
   // TODO hand command to thread
-  contexts[num_contexts] = mp_init();
+  context = mp_init();
   
-  if (contexts[num_contexts] == NULL) {
+  if (context == NULL) {
     return INIT_FAILED;
   }
-  ++num_contexts;
   return 0;
 }
 
 /*
  * Arguments:
  * [0] - Number of thread to do the register.
- * [1] - Number of context to register.
  */
 int handle_context_register(char* arguments) {
   int rc;
   int tid = 0;
-  int context = 0;
 
-  if (!arguments || sscanf(arguments, "%d %d", &tid, &context) != 2) {
+  if (!arguments || sscanf(arguments, "%d", &tid) != 1) {
     return ILLEGAL_ARGS;
   }
 
-  if (context >= num_contexts) {
-    return INDEX_OUT_OF_RANGE;
-  }
-
   // TODO hand command to thread
-  rc = mp_register(contexts[context]);
+  rc = mp_register(context);
   
   return rc;
 }
@@ -84,22 +71,16 @@ int handle_context_register(char* arguments) {
 /*
  * Arguments:
  * [0] - Number of thread to do the unregister.
- * [1] - Number of context to unregister.
  */
 int handle_context_unregister(char* arguments) {
   int tid = 0;
-  int context = 0;
 
-  if (!arguments || sscanf(arguments, "%d %d", &tid, &context) != 2) {
+  if (!arguments || sscanf(arguments, "%d", &tid) != 1) {
     return ILLEGAL_ARGS;
   }
 
-  if (context >= num_contexts) {
-    return INDEX_OUT_OF_RANGE;
-  }
-
   // TODO hand command to thread
-  mp_unregister(contexts[context]);
+  mp_unregister(context);
   
   return 0;
 }
@@ -107,28 +88,18 @@ int handle_context_unregister(char* arguments) {
 /*
  * Arguments:
  * [0] - Number of thread to do the destroy.
- * [1] - Number of context to destroy.
  */
 int handle_context_destroy(char* arguments) {
   int i;
   int tid = 0;
-  int context = 0;
 
-  if (!arguments || sscanf(arguments, "%d %d", &tid, &context) != 2) {
+  if (!arguments || sscanf(arguments, "%d", &tid) != 1) {
     return ILLEGAL_ARGS;
   }
 
-  if (context < 0 || context >= num_contexts) {
-    return INDEX_OUT_OF_RANGE;
-  }
-
   // TODO hand command to thread
-  mp_destroy(contexts[context]);
-  for (i = context; i < num_contexts - 1; ++i) {
-    contexts[i] = contexts[i+1];
-  }
-  --num_contexts;
-  contexts[num_contexts] = NULL;
+  mp_destroy(context);
+  context = NULL;
   
   return 0;
 }
@@ -136,13 +107,12 @@ int handle_context_destroy(char* arguments) {
 /*
  * Arguments:
  * [0] - Number of thread to do the init.
- * [1] - Number of context to pass to the barrier.
- * [2] - N to pass to the barrier.
+ * [1] - N to pass to the barrier.
  */
 int handle_barrier_init(char* arguments) {
-  int tid = 0, context = 0, n = 0;
+  int tid = 0, n = 0;
 
-  if (!arguments || sscanf(arguments, "%d %d %d", &tid, &context, &n) != 3) {
+  if (!arguments || sscanf(arguments, "%d %d", &tid, &n) != 2) {
     return ILLEGAL_ARGS;
   }
 
@@ -151,7 +121,7 @@ int handle_barrier_init(char* arguments) {
   }
 
   // TODO hand command to thread
-  barriers[num_barriers] = mp_initbarrier(contexts[context], n);
+  barriers[num_barriers] = mp_initbarrier(context, n);
   
   if (barriers[num_barriers] == NULL) {
     return INIT_FAILED;
@@ -163,23 +133,22 @@ int handle_barrier_init(char* arguments) {
 /*
  * Arguments:
  * [0] - Number of thread to do the destroy.
- * [1] - Number of context to pass to the barrier.
- * [2] - Number of barrier to destroy.
+ * [1] - Number of barrier to destroy.
  */
 int handle_barrier_destroy(char* arguments) {
   int i;
-  int tid = 0, context = 0, barrier = 0;
+  int tid = 0, barrier = 0;
 
-  if (!arguments || sscanf(arguments, "%d %d %d", &tid, &context, &barrier) != 3) {
+  if (!arguments || sscanf(arguments, "%d %d", &tid, &barrier) != 2) {
     return ILLEGAL_ARGS;
   }
 
-  if (context < 0 || context >= num_contexts || barrier < 0 || barrier >= num_barriers) {
+  if (barrier < 0 || barrier >= num_barriers) {
     return INDEX_OUT_OF_RANGE;
   }
 
   // TODO hand command to thread
-  mp_destroybarrier(contexts[context], barriers[barrier]);
+  mp_destroybarrier(context, barriers[barrier]);
   for (i = barrier; i < num_barriers - 1; ++i) {
     barriers[i] = barriers[i+1];
   }
@@ -192,22 +161,21 @@ int handle_barrier_destroy(char* arguments) {
 /*
  * Arguments:
  * [0] - Number of thread.
- * [1] - Number of context to pass to the barrier.
- * [2] - Number of barrier.
+ * [1] - Number of barrier.
  */
 int handle_barrier_wait(char* arguments) {
-  int rc = 0, tid = 0, context = 0, barrier = 0;
+  int rc = 0, tid = 0, barrier = 0;
 
-  if (!arguments || sscanf(arguments, "%d %d %d", &tid, &context, &barrier) != 3) {
+  if (!arguments || sscanf(arguments, "%d %d", &tid, &barrier) != 2) {
     return ILLEGAL_ARGS;
   }
 
-  if (context < 0 || context >= num_contexts || barrier < 0 || barrier >= num_barriers) {
+  if (barrier < 0 || barrier >= num_barriers) {
     return INDEX_OUT_OF_RANGE;
   }
 
   // TODO hand command to thread
-  rc = mp_barrier(contexts[context], barriers[barrier]);
+  rc = mp_barrier(context, barriers[barrier]);
   
   return rc;
 }
@@ -297,10 +265,7 @@ int do_work() {
   int i;
   char buffer[MAX_STRING_INPUT_SIZE];
 
-  num_contexts = 0;
-  for (i = 0; i < MAX_CONTEXTS; ++i) {
-    contexts[i] = NULL;
-  }
+  context = NULL;
 
   num_barriers = 0;
   for (i = 0; i < MAX_BARRIERS; ++i) {
