@@ -1,20 +1,22 @@
 # Main Targets
-TARGET = message_sender
+TARGET = unittest message_sender
 MODULES = MAIN
 
 # Compiler Flags
 CC = gcc
 CXX = g++
 CCFLAGS = -I.. -I../src -g
-LDFLAGS = -L.. -lmp
+LDFLAGS = -L.. -lmp -lpthread
 
 # Source Files
 MESSAGE_SENDER_SRC = message_sender.c
+UNITTEST_SRC = unittests/all_tests.c unittests/unittest.c unittests/hash_table_test.c
 
 # Object Files
 OBJ_DIR = objects
 MESSAGE_SENDER_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(MESSAGE_SENDER_SRC)},$(OBJ_DIR)/$(f)}
-ALL_OBJ_FILES = $(MESSAGE_SENDER_OBJ_FILES)
+UNITTEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(UNITTEST_SRC)},$(OBJ_DIR)/$(f)}
+ALL_OBJ_FILES =  $(UNITTEST_OBJ_FILES) $(MESSAGE_SENDER_OBJ_FILES)
 TEST_JUNK = tmp random
 
 # Target Definitions
@@ -24,6 +26,9 @@ $(OBJ_DIR)/%.o: %.c
 $(OBJ_DIR)/%.o: %.cpp
 	$(CXX) $(CCFLAGS) -c $< -o $@
 	
+unittest: $(UNITTEST_OBJ_FILES)
+	$(CC) -o $@ $(UNITTEST_OBJ_FILES) $(LDFLAGS)
+
 message_sender: $(MESSAGE_SENDER_OBJ_FILES)
 	$(CC) -o $@ $(MESSAGE_SENDER_OBJ_FILES) $(LDFLAGS)
 
@@ -39,4 +44,5 @@ clean_test:
 make_dirs:
 	mkdir -p objects
 	mkdir -p objects/tester
+	mkdir -p objects/unittests
 	mkdir -p tmp
