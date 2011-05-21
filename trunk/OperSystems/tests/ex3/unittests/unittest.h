@@ -13,7 +13,8 @@ typedef struct test_result_t test_result_t;
   printf("|*****Running suite %s*****\n", #suite_name); \
   var = suite_name(); \
   printf("|Passed: %d/%d\n", suite_passed(var), suite_ran(var)); \
-  printf("|**************************\n");
+  printf("|**************************\n"); \
+  suite_destroy(var);
 
 #define RUN_TEST(suite, test_name) \
   printf("|Running %s ... ", #test_name); \
