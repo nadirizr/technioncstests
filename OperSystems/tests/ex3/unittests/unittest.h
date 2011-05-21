@@ -48,4 +48,24 @@ void result_destroy(test_result_t* result);
 #define ASSERT_NOT_NULL(expression, message) \
   ASSERT(expression != NULL, message)
 
+#define ASSERT_EQUALS_INT(expected, actual, message) \
+  if (expected != actual) { \
+    printf("FAIL\n"); \
+    printf("|    reason:   expected %d, but got %d, %s\n", expected, actual, message); \
+    printf("|    location: %s:%d\n", __FILE__, __LINE__); \
+    return result_init(FALSE); \
+  }
+
+#define ASSERT_CONTAINS(array, size, element, message) \
+  do { \
+    int i_array, found = 0; \
+    for (i_array = 0; i_array < size; ++i_array) { \
+      if (array[i_array] == element) { found = 1; break; } \
+    } \
+    if (!found) { \
+      FAIL(message); \
+    } \
+  } while (0)
+
+
 #endif /* _UNITTEST_H_ */
