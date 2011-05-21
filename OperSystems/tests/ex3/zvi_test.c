@@ -54,13 +54,13 @@ void mpsend(void* v) {
 
 	number_of_messages = abs(rand()) % (READERS * READERS);				/* more READERS ==> much more messages */
 
-	printf("@ Sender %d registering...\n",tid);
-  fflush(stdout);
 	retval = mp_register(con);										/* register */
 	printf("@ Sender %d registered with return value %d\n",tid,retval);
   fflush(stdout);
 
 	mp_barrier(con,register_barrier);								/*  wait for all others threads to register */
+  printf("@ Sender %d passed barrier.\n",tid);
+  fflush(stdout);
 
 	for (i = 0; i < number_of_messages; i++) {
 
@@ -81,14 +81,17 @@ void mpsend(void* v) {
 		else {
 			strcat(buf," Message from ");							 /* construct the message */
 			strcat(buf,stid);										 /* construct the message */
+      fflush(stdout);
 			retval = mp_send(con,&reader[message_target],buf,strlen(buf)+1,flags);
-			printf("@ Sender %d sent %s MESSAGE to Reader %d with return value %d\n",tid,message_type[flags],reader[message_target],retval);
+			printf("@ Sender %d sent %s MESSAGE to Reader %d with return value %d\n",tid,message_type[flags],(int)reader[message_target],retval);
       fflush(stdout);
 		}
 	}
 
 	mp_barrier(con,senders_barrier);								 /* wait for all sending threads to finish */
 	if (tid == final_message_sender) {								 /* only one of the sending threads will issue a final message */
+		printf("@ Sender %d sending FINAL BROADCAST...\n",tid);
+    fflush(stdout);
 		retval = mp_broadcast(con,final,strlen(final)+1,0);
 		printf("@ Sender %d sent FINAL BROADCAST with return value %d\n",tid,retval);
     fflush(stdout);
@@ -114,12 +117,14 @@ void mpread(void* v) {
 	char buf[BUF_SIZE];
 	int tid = pthread_self();
 
-	printf("@ Reader %d registering...\n",tid);
   fflush(stdout);
 	retval = mp_register(con);											/* register */
 	printf("@ Reader %d registered with return value %d\n",tid,retval);
   fflush(stdout);
+
 	mp_barrier(con,register_barrier);									/* wait for all others threads to register */
+  printf("@ Sender %d passed barrier.\n",tid);
+  fflush(stdout);
 
 	while (1) {															/* loop and read messages with RECV_SYNC on */
 		retval = mp_recv(con,buf,BUF_SIZE,&len,RECV_SYNC);
@@ -161,13 +166,16 @@ int main(void) {
   }
 
 	/* create threads */
-	for (snum = 0; snum < SENDERS; snum++)
+	for (snum = 0; snum < SENDERS; snum++) {
 		pthread_create(&sender[snum],NULL,(void*)&mpsend,NULL);
-	for (rnum = 0; rnum < READERS; rnum++)
+    fflush(stdout);
+  }
+	for (rnum = 0; rnum < READERS; rnum++) {
 		pthread_create(&reader[rnum],NULL,(void*)&mpread,NULL);
+    fflush(stdout);
+  }
 
-	//final_message_sender = sender[abs(rand()) % SENDERS];
-	final_message_sender = sender[0];
+	final_message_sender = sender[abs(rand()) % SENDERS];
 
 	/* wait for threads to finish */
 	for (snum = 0; snum < SENDERS; snum++)
