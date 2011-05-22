@@ -66,7 +66,7 @@ test_result_t* test_barrier_usage() {
   /* wait for the whole thing to end */
   for (i = 0; i < 5; ++i) {
     ASSERT_EQUALS_INT(0, pthread_join(threads[i], (void**)&rc), "Couldn't join");
-    ASSERT_EQUALS_INT(0, rc, "mp_barrier(...) caused an error");
+    ASSERT_EQUALS_INT(0, (int)rc, "mp_barrier(...) caused an error");
   }
   ASSERT_EQUALS_INT(5, check.counter, "last thread didn't start");
   ASSERT_EQUALS_INT(5, check.barrier_counter, "barrier wasn't released");
@@ -94,14 +94,14 @@ test_result_t* test_barrier_reuse_not_allowed() {
   /* wait for the whole thing to end */
   for (i = 0; i < 5; ++i) {
     ASSERT_EQUALS_INT(0, pthread_join(threads[i], (void**)&rc), "Couldn't join");
-    ASSERT_EQUALS_INT(0, rc, "mp_barrier(...) caused an error");
+    ASSERT_EQUALS_INT(0, (int)rc, "mp_barrier(...) caused an error");
   }
   ASSERT_EQUALS_INT(5, check.barrier_counter, "barrier wasn't released");
 
   ASSERT_EQUALS_INT(0, pthread_create(&another_thread, NULL, (void*)&inc_counter, &check),
                     "thread failed to init");
   ASSERT_EQUALS_INT(0, pthread_join(another_thread, (void**)&rc), "Couldn't join");
-  ASSERT_EQUALS_INT(-1, rc, "mp_barrier(...) caused an error");
+  ASSERT_EQUALS_INT(-1, (int)rc, "mp_barrier(...) caused an error");
 
   mp_destroybarrier(check.con, check.bar);
   mp_destroy(check.con);

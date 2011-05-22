@@ -10,7 +10,7 @@ LDFLAGS = -L.. -lmp -lpthread
 
 # Source Files
 THREADS_PROCESS_SRC = tester/threads_process.c
-UNITTEST_SRC = unittests/all_tests.c unittests/unittest.c unittests/hash_table_test.c unittests/list_test.c unittests/barrier_test.c
+UNITTEST_SRC = unittests/all_tests.c unittests/unittest.c unittests/hash_table_test.c unittests/list_test.c unittests/barrier_test.c unittests/context_test.c
 ZVI_TEST_SRC = zvi_test.c
 
 # Object Files
