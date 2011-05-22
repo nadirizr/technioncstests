@@ -41,6 +41,7 @@ void suite_add_result(test_suite_t* suite, test_result_t* result) {
     suite->last = result;
   } else {
     suite->last->next = result;
+    suite->last = result;
   }
   ++suite->ran;
   if (result->test_passed) {
