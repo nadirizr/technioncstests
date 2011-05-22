@@ -36,7 +36,7 @@ void inc_counter(struct barrier_check_t* check) {
   pthread_exit(0);
 }
 
-test_result_t* test_barrier_reuse_not_allowed() {
+test_result_t* test_barrier_usage() {
   pthread_t threads[5];
   int i;
   struct barrier_check_t check = { NULL, NULL, 0, 0 };
@@ -74,9 +74,18 @@ test_result_t* test_barrier_reuse_not_allowed() {
   TEST_SUCCESS();
 }
 
+test_result_t* test_barrier_reuse_not_allowed() {
+  pthread_t threads[5], another_thread;
+
+  FAIL("Not implemented");
+
+  TEST_SUCCESS();
+}
+
 test_suite_t* test_barrier() {
   test_suite_t* results = suite_init();
   RUN_TEST(results, test_barrier_bad_init);
+  RUN_TEST(results, test_barrier_usage);
   RUN_TEST(results, test_barrier_reuse_not_allowed);
 
   return results;
