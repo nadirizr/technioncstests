@@ -73,6 +73,7 @@ test_result_t* test_barrier_usage() {
 
   mp_destroybarrier(check.con, check.bar);
   mp_destroy(check.con);
+  ASSERT_EQUALS_INT(0,1,"ccc");
   TEST_SUCCESS();
 }
 
