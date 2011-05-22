@@ -330,7 +330,7 @@ void thread_main(void* arg) {
   my_index = add_myself_to_threads();
   if (my_index < 0) {
     printf("ERROR: thread %d couldn't be registered!\n", (int)pthread_self());
-    pthread_exit(-1);
+    pthread_exit((void*)-1);
     return;
   }
 
@@ -355,7 +355,7 @@ void thread_main(void* arg) {
         printf("[Thread %d]: ERROR [line %d]: Line doesn't have command prefix!\n",
                my_index, line_num);
         fflush(stdout);
-        pthread_exit(ERROR_INVALID_LINE);
+        pthread_exit((void*)ERROR_INVALID_LINE);
         return;
       }
       ++line;
@@ -367,7 +367,7 @@ void thread_main(void* arg) {
         printf("[Thread %d]: ERROR [line %d]: Invalid Line!\n",
                my_index, line_num);
         fflush(stdout);
-        pthread_exit(ERROR_INVALID_LINE);
+        pthread_exit((void*)ERROR_INVALID_LINE);
         return;
       }
       if (rc == FINISH_THREAD) {
