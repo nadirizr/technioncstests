@@ -336,7 +336,7 @@ void thread_main(void* arg) {
 
   /* Then we regiter ourselves to the context. */
   mp_register(main_context);
-  printf("[Thread %d]: Registered (Thread ID = %d)",
+  printf("[Thread %d]: Registered (Thread ID = %d)\n",
          my_index, (int)pthread_self());
   fflush(stdout);
   
@@ -484,6 +484,7 @@ int do_work(int requested_num_threads) {
   char buffer[MAX_STRING_INPUT_SIZE];
   char message_buffer[MAX_STRING_INPUT_SIZE];
   int message_len;
+  pthread_t thread_id;
   int i;
 
   if (requested_num_threads < 1 || requested_num_threads >= MAX_THREADS) {
@@ -506,7 +507,7 @@ int do_work(int requested_num_threads) {
 
   /* Initialize all threads. */
   for (i = 0; i < requested_num_threads; ++i) {
-    pthread_create(NULL, NULL, (void*)&thread_main, NULL);
+    pthread_create(&thread_id, NULL, (void*)&thread_main, NULL);
   }
 
   /* Wait on a barrier for all threads. */
@@ -548,15 +549,15 @@ int do_work(int requested_num_threads) {
 }
 
 int main(int argc, char* argv[]) {
-  int requested_num_threads = 0;
+  int requested_num_threads = DEFAULT_NUM_THREADS;
 
-  if (argc > 1) {
+  if (argc == 2) {
     if (sscanf(argv[1], "%d", &requested_num_threads) != 1) {
       printf("ERROR: invalid <requested_num_threads> (must be integer)!\n");
       printf("Usage: ./threads_process [<requested_num_threads>]\n");
       return 1;
     }
-  } else if (argc != 1) {
+  } else if (argc > 2) {
     printf("ERROR: invalid number of arguments!\n");
     printf("Usage: ./threads_process [<requested_num_threads>]\n");
     return 1;
