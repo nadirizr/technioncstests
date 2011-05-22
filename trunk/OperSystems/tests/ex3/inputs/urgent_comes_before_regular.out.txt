@@ -1,0 +1,27 @@
+Main Thread Registered
+[Thread 1]: Registered (Thread ID = 1)
+[Thread 2]: Registered (Thread ID = 2)
+[Thread 3]: Registered (Thread ID = 3)
+[Thread 1]: Barrier Created
+[Thread 1]: Send Successfull (Flags: None)
+[Thread 1]: Send Successfull (Flags: URGENT)
+[Thread 3]: Barrier Passed
+[Thread 1]: Barrier Passed
+[Thread 3]: Received Message (length = 24): 'URGENT should arrive 1st'
+[Thread 3]: Received Message (length = 17): 'should arrive 2nd'
+[Thread 3]: Barrier Destroyed
+[Thread 2]: Barrier Created
+[Thread 1]: Send Successfull (Flags: None)
+[Thread 2]: Send Successfull (Flags: URGENT)
+[Thread 3]: Barrier Passed
+[Thread 2]: Barrier Passed
+[Thread 3]: Received Message (length = 24): 'URGENT should arrive 3rd'
+[Thread 3]: Received Message (length = 17): 'should arrive 4th'
+[Thread 3]: Barrier Destroyed
+[Thread 1]: Broadcast Successfull (Flags: None)
+[Thread 2]: Received Message (length = 6): 'FINISH'
+[Thread 3]: Received Message (length = 6): 'FINISH'
+[Thread 1]: Unregistered (Thread ID = 1)
+[Thread 2]: Unregistered (Thread ID = 2)
+[Thread 3]: Unregistered (Thread ID = 3)
+Main Thread Unregistered
