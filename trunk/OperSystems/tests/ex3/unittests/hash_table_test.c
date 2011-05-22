@@ -9,9 +9,11 @@ test_result_t* test_hash_table_basic() {
 
   ASSERT_NOT_NULL(ht, "Bad hash table init");
 
-  values = (int**)malloc(sizeof(int) * 1000);
+  values = (int**)malloc(sizeof(int*) * 1000);
+  ASSERT_NOT_NULL(values, "malloc failed");
   for (i = 0; i < 1000; ++i) {
     values[i] = malloc(sizeof(int));
+    ASSERT_NOT_NULL(values[i], "malloc failed");
     *(values[i]) = 10*i;
     ASSERT(ht_put(ht, i, values[i]), "Value not inserted");
   }
