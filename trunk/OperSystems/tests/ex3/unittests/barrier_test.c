@@ -33,7 +33,7 @@ void inc_counter(struct barrier_check_t* check) {
   rc = mp_barrier(check->con, check->bar);
   ++check->barrier_counter;
 
-  pthread_exit(rc);
+  pthread_exit((void*)rc);
 }
 
 test_result_t* test_barrier_usage() {
