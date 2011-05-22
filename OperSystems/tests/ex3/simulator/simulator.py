@@ -75,7 +75,7 @@ class ThreadsParser:
       return ERROR_STOP
 
     # Handle commands that don't require a thread ID.
-    if cmd == "CLOSE" or cmd == "NOP":
+    if cmd == "CLOSE" or cmd == "WAIT":
       if thread_index < 0:
         thread_index = 1
 
@@ -88,7 +88,7 @@ class ThreadsParser:
     # Handle the various commands.
     rc = 0
 
-    if cmd == "NOP":
+    if cmd == "WAIT":
       rc = 0
 
     elif cmd == "CREATE_BARRIER":

@@ -11,8 +11,8 @@ SIMULATOR_PATH = "python simulator.py"
 TEST_INPUT_SUFFIX = ".in.txt"
 TEST_OUTPUT_SUFFIX = ".out.txt"
 
-MIN_COMMANDS = int(os.environ.get("TAGS_MIN_COMMANDS",100))
-MAX_COMMANDS = int(os.environ.get("TAGS_MAX_COMMANDS",500))
+MIN_COMMANDS = int(os.environ.get("THREADS_MIN_COMMANDS",100))
+MAX_COMMANDS = int(os.environ.get("THREADS_MAX_COMMANDS",500))
 ERROR_CHANCE = 0.05
 
 
@@ -20,7 +20,18 @@ ERROR_CHANCE = 0.05
 # Test State Classes         #
 ##############################
 
-state = None
+class TestState:
+  def __init__(self, num_threads):
+    self.num_threads = num_threads
+    self.threads = range(1, num_threads + 1)
+
+    self.barrier_counter = -1
+    self.waiting_at_barrier = []
+    self.waiting_at_sync = []
+    
+    self.event = 0
+
+test_state = None
 
 # seed the random number generator
 random.seed()
@@ -30,132 +41,153 @@ random.seed()
 # Utility Functions          #
 ##############################
 
-def getRandomPID():
-  return random.randint(-1000, 100000)
+def getRandomThreadCount():
+  return random.randint(2, MAX_COMMANDS / 10)
 
-def getRandomProcess():
-  return random.choice(state.getProcesses())
+def getRandomThread():
+  return random.randint(1, test_state.num_threads)
 
-def getProcessIndexAtParent(process):
-  return process.getIndexAtParent()
+def getBlockedThreads():
+  return test_state.waiting_at_barrier + test_state.waiting_at_sync
 
-def getRandomChildOrProcess(process):
-  return random.choice([process] + process.getChildren())
+def getRandomAvailableThread():
+  t = getRandomThread()
+  while t in getBlockedThreads():
+    t = getRandomThread()
+  return t
 
-def getProcessPID(process):
-  return state.getPIDForProcess(process)
+def blockAtBarrier(thread_id):
+  if thread_id not in test_state.waiting_at_barrier:
+    test_state.waiting_at_barrier.append(thread_id)
 
-def getProcessHierarchy(process):
-  return process.getHierarchy()
+def blockAtSync(thread_id):
+  if thread_id not in test_state.waiting_at_sync:
+    test_state.waiting_at_sync.append(thread_id)
 
-def generateHierarchyLine(hier_list):
-  if not hier_list:
-    return ""
+LETTERS = [chr(c) for c in range(ord('a'), ord('z') + 1)]
+def getRandomMessage():
+  message_len = random.randint(10, 20)
+  return "".join([LETTERS[random.randrange(len(LETTERS))]
+                  for i in range(message_len)])
 
-  new_list = [str(h) for h in hier_list]
-  new_list.reverse()
-  return "/".join(new_list) + " "
-
-def getProcessHierarchyLine(process):
-  return generateHierarchyLine(getProcessHierarchy(process))
-
-def removeProcess(process):
-  state.removeProcessAndChildren(process)
-
-def getRandomTag():
-  return random.randint(1,20000)
-  
 
 ##############################
 # Command Creation Functions #
 ##############################
 
-def createCreateChild():
-  process = getRandomProcess()
-  state.addNewProcess(process.tag / 2, process)
-  return "%sCREATE_CHILD" % getProcessHierarchyLine(process)
+def createInit():
+  test_state = TestState(getRandomThreadCount())
+  return "INIT %d" % test_state.num_threads
 
-def createGetTag():
-  process = getRandomProcess()
+def createCreateBarrier():
+  t = getRandomThread()
 
+  num = 0
   if random.random() < ERROR_CHANCE:
-    return "%sGET_TAG -1" % getProcessHierarchyLine(process)
+    num = random.randint(-10, 0)
+  else:
+    num = random.randint(1, test_state.num_threads)
 
-  process_get = getRandomProcess()
-  return "%sGET_TAG %d" % (getProcessHierarchyLine(process),
-                           getProcessPID(process_get))
+  if num >= 1:
+    test_state.barrier_counter = num
+  return "%d CREATE_BARRIER %d" % (t, num)
 
-def createSetTag():
-  process = getRandomProcess()
+def createBarrier():
+  t = getRandomAvailableThread()
+  blockAtBarrier(t)
 
-  if random.random() < ERROR_CHANCE:
-    return "%sSET_TAG -1 %d" % (getProcessHierarchyLine(process),
-                                getRandomTag())
+  if len(test_state.waiting_at_barrier) == test_state.barrier_counter:
+    freeAllBlocking()
+    test_state.barrier_counter = -1
 
-  if random.random() < ERROR_CHANCE:
-    process_set = getRandomProcess()
-    return "%sSET_TAG %d %d" % (getProcessHierarchyLine(process),
-                                getProcessPID(process_set),
-                                getRandomTag())
-  process_set = getRandomChildOrProcess(process)
-  if random.random() < ERROR_CHANCE:
-    return "%sSET_TAG %d %d" % (getProcessHierarchyLine(process),
-                                getProcessPID(process_set),
-                                -getRandomTag())
-  return "%sSET_TAG %d %d" % (getProcessHierarchyLine(process),
-                              getProcessPID(process_set),
-                              getRandomTag())
+  event = self.event
+  self.event += 1
+  return "%d BARRIER <EVENT %d>" % (t, event)
 
-def createGetGoodProcesses():
-  process = getRandomProcess()
+def createDestroyBarrier():
+  t = getRandomAvailableThread()
+  test_state.waiting_at_barrier = []
+  return "%d DESTROY_BARRIER" % t
 
-  if random.random() < ERROR_CHANCE:
-    return "%sGET_GOOD_PROCESSES %d" % (getProcessHierarchyLine(process),
-                                        random.randint(-10,0))
+def createBarrierCommand():
+  if test_state.barrier_counter < 0 and not test_state.waiting_at_barrier:
+    return createCreateBarrier()
 
-  return "%sGET_GOOD_PROCESSES %d" % (getProcessHierarchyLine(process),
-                                      random.randint(1,100))
+  if test_state.barrier_counter < len(test_state.waiting_at_barrier):
+    return createBarrier()
 
-def createMakeGoodProcesses():
-  process = getRandomProcess()
-  return "%sMAKE_GOOD_PROCESSES" % getProcessHierarchyLine(process)
+  if test_state.barrier_counter < 0 and test_state.waiting_at_barrier:
+    if random.random() < ERROR_CHANCE:
+      return createBarrier()
+    else:
+      return createDestroyBarrier()
+
+  return createBarrier()
+
+def createSend():
+  t = getRandomAvailableThread()
+  target = getRandomThread()
+  message = getRandomMessage()
+  return "%d SEND %d %s" % (t, target, message)
+
+def createSendSync():
+  t = getRandomAvailableThread()
+  target = getRandomThread()
+  message = getRandomMessage()
+
+  if not isAvailableThread(target):
+    blockAtSync(t)
+
+  event = self.event
+  self.event += 1
+  return "%d SEND %d SYNC %s <EVENT %d>" % (t, target, message, event)
+
+def createBroadcast():
+  t = getRandomAvailableThread()
+  message = getRandomMessage()
+  return "%d BROADCAST %s" % (t, message)
+
+def createBroadcastSync():
+  t = getRandomAvailableThread()
+  message = getRandomMessage()
+
+  if blockedThreads():
+    blockAtSync(t)
+
+  event = self.event
+  self.event += 1
+  return "%d BROADCAST SYNC %s <EVENT %d>" % (t, message, event)
 
 def createClose():
-  process = getRandomProcess()
-  if process == state.processes[0]:
-    return ""
-
-  close_line = "%sCLOSE" % getProcessHierarchyLine(process)
-  removeProcess(process)
-  return close_line
+  command = ""
+  if test_state.barrier_counter >= 0 and test_state.waiting_at_barrier:
+    while len(test_state.waiting_at_barrier) <= test_state.barrier_counter:
+      command += createBarrier() + "\n"
+    command += createDestroyBarrier() + "\n"
+  return command + "CLOSE"
 
 # This dictionary holds all available commands to create as keys, and the
 # values are the associated creation functions for those commands and their
 # probability of appearing (before normalization).
 commands = { }
-commands["tags"] = [
-    (createCreateChild, 0.5),
-    (createGetTag, 0.5),
-    (createSetTag, 0.5),
-    (createGetGoodProcesses, 0.3),
-    (createMakeGoodProcesses, 0.3),
-#    (createClose, 0.0),
+commands["threads"] = [
+    (createBarrierCommand, 0.5),
+    (createSend, 0.25),
+    (createSendSync, 0.25),
+    (createBroadcast, 0.25),
+    (createBroadcastSync, 0.25),
 ]
 
 # Sum all of the chances together for each set of commands.
 sumChances = { }
-sumChances["tags"] = reduce(lambda s,c:s+c[1], commands["tags"], 0.0)
+sumChances["threads"] = reduce(lambda s,c:s+c[1], commands["threads"], 0.0)
 
 # The initial commands to put at the head of the input file.
 INITIAL_COMMANDS = { }
-INITIAL_COMMANDS["tags"] = [
-    "SET_TAG 0 1000000",
-    "MAKE_GOOD_PROCESSES",
-    "SET_TAG 0 0",
-]
+INITIAL_COMMANDS["threads"] = [createInit]
 # The final commands to put at the end of the input file.
 FINAL_COMMANDS = { }
-FINAL_COMMANDS["tags"] = ["CLOSE"]
+FINAL_COMMANDS["tags"] = [createClose]
 
 
 ##############################

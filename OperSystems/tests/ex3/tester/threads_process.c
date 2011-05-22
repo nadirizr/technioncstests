@@ -278,6 +278,10 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
   return 0;
 }
 
+int thread_handle_wait(int index, char* arguments, int line_num) {
+  return 0;
+}
+
 int thread_handle_close(int index, char* arguments, int line_num) {
   thread_handle_broadcast(index, "FINISH", line_num);
   return FINISH_THREAD;
@@ -309,7 +313,8 @@ int thread_handle_command(int my_index, char* line, int line_num) {
   HANDLE("SEND", thread_handle_send);
   HANDLE("BROADCAST", thread_handle_broadcast);
 
-  /* Handle finish commands. */
+  /* Handle general commands. */
+  HANDLE("WAIT", thread_handle_wait);
   HANDLE("CLOSE", thread_handle_close);
 
   return rc;
@@ -411,15 +416,21 @@ void thread_main(void* arg) {
 
 int hand_command_to_thread(int index, char* line, int line_num) {
   char buffer[MAX_STRING_INPUT_SIZE];
-  pthread_t target_id = threads[index - 1]->tid;
+  pthread_t target_id;
   int buffer_len;
+  int is_broadcast = 0;
 
   /* Verify input. */
-  --index;  /* index should be between 1 and num_threads in text. */
-  if (index < 0 || index >= num_threads || threads[index] == NULL) {
-    printf("ERROR [line %d]: Invalid thread index %d!\n", line_num, index + 1);
-    fflush(stdout);
-    return -1;
+  if (index == 0) {
+    is_broadcast = 1;
+  } else {
+    --index;  /* index should be between 1 and num_threads in text. */
+    if (index < 0 || index >= num_threads || threads[index] == NULL) {
+      printf("ERROR [line %d]: Invalid thread index %d!\n", line_num, index + 1);
+      fflush(stdout);
+      return -1;
+    }
+    target_id = threads[index]->tid;
   }
 
   /* Create the command to send with our prefix. */
@@ -427,12 +438,21 @@ int hand_command_to_thread(int index, char* line, int line_num) {
                         line_num, line) + 1;
   buffer[buffer_len - 1] = '\0';
 
-  /* Send the command to the child. */
-  if (mp_send(main_context, &target_id, buffer, buffer_len, SEND_SYNC) < 0) {
-    printf("ERROR [line %d]: Error while sending command to thread %d!\n",
-           line_num, index + 1);
-    fflush(stdout);
-    return -1;
+  if (is_broadcast) {
+    /* Broadcast the command to all threads. */
+    if (mp_broadcast(main_context, buffer, buffer_len, SEND_SYNC) < 0) {
+      printf("ERROR [line %d]: Error while broadcasting command!\n", line_num);
+      fflush(stdout);
+      return -1;
+    }
+  } else {
+    /* Send the command to the thread. */
+    if (mp_send(main_context, &target_id, buffer, buffer_len, SEND_SYNC) < 0) {
+      printf("ERROR [line %d]: Error while sending command to thread %d!\n",
+             line_num, index + 1);
+      fflush(stdout);
+      return -1;
+    }
   }
 
   /* If this is the CLOSE command, return the FINISH_THREAD status. */
@@ -480,8 +500,7 @@ int parse(int line_num, char* line) {
     /* In this case we simply hand the close over to the first thread. */
     return hand_command_to_thread(1, line, line_num);
   } else {
-    printf("ERROR [line %d]: Line doesn't start with thread number!\n", line_num);
-    return ERROR_INVALID_LINE;
+    return hand_command_to_thread(0, line, line_num);
   }
 }
 
