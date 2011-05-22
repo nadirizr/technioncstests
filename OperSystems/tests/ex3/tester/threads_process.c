@@ -16,6 +16,8 @@
 #define ERROR_INVALID_LINE -10000
 #define FINISH_THREAD -9999
 
+#define TIMEOUT_BETWEEN_COMMANDS 0.1
+
 
 /*** Contex and Barrier ***/
 context_t* main_context;
@@ -521,7 +523,7 @@ int do_work() {
 
   /* Register ourselves at the context. */
   mp_register(main_context);
-  printf("Main Thread Regsitered\n");
+  printf("Main Thread Registered\n");
 
   /* Initialize all threads. */
   for (i = 0; i < requested_num_threads; ++i) {
@@ -553,6 +555,9 @@ int do_work() {
       /* This means we are done so break. */
       break;
     }
+
+    /* Sleep a little to give threads time to process. */
+    sleep(TIMEOUT_BETWEEN_COMMANDS);
   }
 
   /* If we reach the end, wait for everyone to finish. */

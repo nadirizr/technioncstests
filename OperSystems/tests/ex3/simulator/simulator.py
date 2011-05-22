@@ -167,7 +167,8 @@ class ThreadsParser:
       # We have now received this message.
       print THREAD_PREFIX % (
           m.destination,
-          "Received Message (length = %d): '%s'" % (len(m.message), m.message))
+          "Received Message (length = %d): '%s'" % (
+              len(m.message) + 1, m.message))
 
       # For non-sync messages, we are done.
       if not m.is_sync:
