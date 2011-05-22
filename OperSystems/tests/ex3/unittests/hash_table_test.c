@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdlib.h>
 #include "hash_table_test.h"
 #include "../../src/hash_table.h"
