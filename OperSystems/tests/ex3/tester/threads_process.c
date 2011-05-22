@@ -16,7 +16,7 @@
 #define ERROR_INVALID_LINE -10000
 #define FINISH_THREAD -9999
 
-#define TIMEOUT_BETWEEN_COMMANDS 0.1
+#define TIMEOUT_BETWEEN_COMMANDS 0.2
 
 
 /*** Contex and Barrier ***/

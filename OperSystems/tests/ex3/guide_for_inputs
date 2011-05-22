@@ -1,0 +1,11 @@
+list of commands:
+  INIT N - initializes N threads
+  CREATE_BARRIER N - creates a barrier with N as a threashold
+  DESTROY_BARRIER - destroys the barrier
+  BARRIER - waits on the  barrier
+  SEND <target> [SYNC|URGETN] [SYNC|URGENT] message - sends the message to the target thread with SYNC or/and URGETN as flags
+  BROADCAST [SYNC|URGETN] [SYNC|URGENT] message - broadcasts the message with SYNC or/and URGETN as flags
+  SEND <target> FINISH - causes the target thread to finish its run
+  CLOSE - finishes the program
+
+add an index before each command to cause a thread other than the main one to run the command
