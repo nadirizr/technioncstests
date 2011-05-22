@@ -89,13 +89,13 @@ int thread_handle_create_barrier(int index, char* arguments, int line_num) {
   /* Handle errors. */
   if (main_barrier == NULL) {
     printf("[Thread %d]: ERROR [line %d]: Barrier Creation Failed!\n",
-           index, line_num);
+           index + 1, line_num);
     fflush(stdout);
     return -1;
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Barrier Created\n", index);
+  printf("[Thread %d]: Barrier Created\n", index + 1);
   fflush(stdout);
   return 0;
 }
@@ -106,7 +106,7 @@ int thread_handle_destroy_barrier(int index, char* arguments, int line_num) {
   main_barrier = NULL;
 
   /* Handle success. */
-  printf("[Thread %d]: Barrier Destroyed\n", index);
+  printf("[Thread %d]: Barrier Destroyed\n", index + 1);
   fflush(stdout);
   return 0;
 }
@@ -120,13 +120,13 @@ int thread_handle_barrier(int index, char* arguments, int line_num) {
   /* Handle errors. */
   if (rc < 0) {
     printf("[Thread %d]: ERROR [line %d]: Barrier Failed (rc = %d)\n",
-           index, line_num, rc);
+           index + 1, line_num, rc);
     fflush(stdout);
     return rc;
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Barrier Passed", index);
+  printf("[Thread %d]: Barrier Passed\n", index + 1);
   fflush(stdout);
   return 0;
 }
@@ -146,7 +146,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   }
 
   --target_id;
-  if (target_id < 0 || target_id > num_threads) {
+  if (target_id < 0 || target_id >= num_threads) {
     return ERROR_INVALID_LINE;
   }
 
@@ -156,7 +156,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   }
   ++message;
   message_len = strlen(message) + 1;
-  if (message_len > 1) {
+  if (message_len < 1) {
     return ERROR_INVALID_LINE;
   }
 
@@ -178,7 +178,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   /* Handle errors. */
   if (rc < 0) {
     printf("[Thread %d]: ERROR [line %d]: Send Failed (Flags:",
-           index, line_num);
+           index + 1, line_num);
     if (is_urgent) {
       printf(" URGENT");
     }
@@ -194,7 +194,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Send Successfull (Flags:", index);
+  printf("[Thread %d]: Send Successfull (Flags:", index + 1);
   if (is_urgent) {
     printf(" URGENT");
   }
@@ -222,13 +222,9 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
     return ERROR_INVALID_LINE;
   }
 
-  message = strchr(arguments, ' ');
-  if (message == NULL) {
-    return ERROR_INVALID_LINE;
-  }
-  ++message;
+  message = arguments;
   message_len = strlen(message) + 1;
-  if (message_len > 1) {
+  if (message_len < 1) {
     return ERROR_INVALID_LINE;
   }
 
@@ -249,7 +245,7 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
   /* Handle errors. */
   if (rc < 0) {
     printf("[Thread %d]: ERROR [line %d]: Broadcast Failed (Flags:",
-           index, line_num);
+           index + 1, line_num);
     if (is_urgent) {
       printf(" URGENT");
     }
@@ -265,7 +261,7 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Broadcast Successfull (Flags:", index);
+  printf("[Thread %d]: Broadcast Successfull (Flags:", index + 1);
   if (is_urgent) {
     printf(" URGENT");
   }
@@ -337,7 +333,7 @@ void thread_main(void* arg) {
   /* Then we regiter ourselves to the context. */
   mp_register(main_context);
   printf("[Thread %d]: Registered (Thread ID = %d)\n",
-         my_index, (int)pthread_self());
+         my_index + 1, (int)pthread_self());
   fflush(stdout);
   
   /* Then we hold at the start barrier. */
@@ -350,10 +346,10 @@ void thread_main(void* arg) {
       /* Handle this message as a command. */
 
       /* Find the actual command, and extract the line number. */
-      line = strchr(line, '>');
+      line = strchr(buffer, '>');
       if (line == NULL) {
         printf("[Thread %d]: ERROR [line %d]: Line doesn't have command prefix!\n",
-               my_index, line_num);
+               my_index + 1, line_num);
         fflush(stdout);
         pthread_exit((void*)ERROR_INVALID_LINE);
         return;
@@ -365,7 +361,7 @@ void thread_main(void* arg) {
       rc = thread_handle_command(my_index, line, line_num);
       if (rc == ERROR_INVALID_LINE) {
         printf("[Thread %d]: ERROR [line %d]: Invalid Line!\n",
-               my_index, line_num);
+               my_index + 1, line_num);
         fflush(stdout);
         pthread_exit((void*)ERROR_INVALID_LINE);
         return;
@@ -378,7 +374,7 @@ void thread_main(void* arg) {
       /* Handle this message as a regular thread-to-thread message. */
 
       printf("[Thread %d]: Received Message (length = %d): '%s'\n",
-             my_index, len, buffer);
+             my_index + 1, len, buffer);
       fflush(stdout);
 
       /* Check if we got the finish message. */
@@ -392,7 +388,7 @@ void thread_main(void* arg) {
   /* If we havn't finished nicely, we had an mp_recv failure. */
   if (!finished) {
     printf("[Thread %d]: ERROR [line %d]: Receive Failed (Flags: SYNC)!\n",
-           my_index, line_num);
+           my_index + 1, line_num);
     fflush(stdout);
   }
 
@@ -401,8 +397,8 @@ void thread_main(void* arg) {
 
   /* Unregister ourselves before dying. */
   mp_unregister(main_context);
-  printf("[Thread %d]: Unregistered (Thread ID = %d)",
-         my_index, (int)pthread_self());
+  printf("[Thread %d]: Unregistered (Thread ID = %d)\n",
+         my_index + 1, (int)pthread_self());
   fflush(stdout);
   
   pthread_exit(0);
@@ -413,13 +409,14 @@ void thread_main(void* arg) {
 
 int hand_command_to_thread(int index, char* line, int line_num) {
   char buffer[MAX_STRING_INPUT_SIZE];
-  pthread_t target_id = threads[index]->tid;
+  pthread_t target_id = threads[index - 1]->tid;
   int buffer_len;
 
   /* Verify input. */
   --index;  /* index should be between 1 and num_threads in text. */
   if (index < 0 || index >= num_threads || threads[index] == NULL) {
-    printf("ERROR [line %d]: Invalid thread index %d!\n", line_num, index);
+    printf("ERROR [line %d]: Invalid thread index %d!\n", line_num, index + 1);
+    fflush(stdout);
     return -1;
   }
 
@@ -430,9 +427,15 @@ int hand_command_to_thread(int index, char* line, int line_num) {
 
   /* Send the command to the child. */
   if (mp_send(main_context, &target_id, buffer, buffer_len, SEND_SYNC) < 0) {
-    printf("ERROR [line %d]: Error while sending command to thread %d!",
-           line_num, index);
+    printf("ERROR [line %d]: Error while sending command to thread %d!\n",
+           line_num, index + 1);
+    fflush(stdout);
     return -1;
+  }
+
+  /* If this is the CLOSE command, return the FINISH_THREAD status. */
+  if (EQUALS(line, "CLOSE")) {
+    return FINISH_THREAD;
   }
 
   return 0;
@@ -471,6 +474,9 @@ int parse(int line_num, char* line) {
 
     /* Finally, let the thread have it. */
     return hand_command_to_thread(thread_index, line_thread, line_num);
+  } else if (EQUALS(line, "CLOSE")) {
+    /* In this case we simply hand the close over to the first thread. */
+    return hand_command_to_thread(1, line, line_num);
   } else {
     printf("ERROR [line %d]: Line doesn't start with thread number!\n", line_num);
     return ERROR_INVALID_LINE;
@@ -486,6 +492,7 @@ int do_work(int requested_num_threads) {
   int message_len;
   pthread_t thread_id;
   int i;
+  int rc = 0;
 
   if (requested_num_threads < 1 || requested_num_threads >= MAX_THREADS) {
     return 1;
@@ -526,8 +533,14 @@ int do_work(int requested_num_threads) {
     }
 
     /* Handle the command itself. */
-    if (parse(i, buffer) == ERROR_INVALID_LINE) {
+    rc = parse(i, buffer);
+    if (rc == ERROR_INVALID_LINE) {
+      /* This means there was an unrecoverable error, so quit. */
       return 1;
+    }
+    if (rc == FINISH_THREAD) {
+      /* This means we are done so break. */
+      break;
     }
   }
 
@@ -543,6 +556,8 @@ int do_work(int requested_num_threads) {
   mp_destroybarrier(main_context, finish_barrier);
 
   mp_unregister(main_context);
+  printf("Main Thread Unregistered\n");
+
   mp_destroy(main_context);
 
   return 0;
