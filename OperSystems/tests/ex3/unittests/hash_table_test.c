@@ -47,12 +47,16 @@ test_result_t* test_hash_table_basic() {
 
 test_result_t* test_hash_table_concurrent() {
   hash_table_t* ht = ht_init(100);
+  pthread_t threads[50];
+  int i;
 
   ASSERT_NOT_NULL(ht, "Bad hash table init");
+  for (i = 0; i < 50; ++i) {
+    FAIL("Not implemented");
+  }
 
   ht_destroy(ht);
 
-  FAIL("Not implemented.");
   TEST_SUCCESS();
 }
 

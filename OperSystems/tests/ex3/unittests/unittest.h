@@ -46,6 +46,9 @@ void result_destroy(test_result_t* result);
 #define FAIL(message) \
   ASSERT(FALSE, message)
 
+#define ASSERT_NULL(expression, message) \
+  ASSERT(expression == NULL, message)
+
 #define ASSERT_NOT_NULL(expression, message) \
   ASSERT(expression != NULL, message)
 
