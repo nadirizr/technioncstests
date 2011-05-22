@@ -188,7 +188,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
     if (flags == 0) {
       printf(" None");
     }
-    printf(")!\n");
+    printf(") (rc = %d)!\n", rc);
     fflush(stdout);
     return -1;
   }
@@ -255,7 +255,7 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
     if (flags == 0) {
       printf(" None");
     }
-    printf(")!\n");
+    printf(") (rc = %d)!\n", rc);
     fflush(stdout);
     return -1;
   }
@@ -486,7 +486,8 @@ int parse(int line_num, char* line) {
 
 /*** Main ***/
 
-int do_work(int requested_num_threads) {
+int do_work() {
+  int requested_num_threads = DEFAULT_NUM_THREADS;
   char buffer[MAX_STRING_INPUT_SIZE];
   char message_buffer[MAX_STRING_INPUT_SIZE];
   int message_len;
@@ -494,7 +495,17 @@ int do_work(int requested_num_threads) {
   int i;
   int rc = 0;
 
+  /* Read from the input the number of threads to manage. */
+  if (fgets(buffer, MAX_STRING_INPUT_SIZE, stdin) == NULL) {
+    printf("ERROR [line 0]: Input error on INIT line!\n");
+    return 1;
+  }
+  if (sscanf(buffer, "INIT %d", &requested_num_threads) != 1) {
+    printf("ERROR [line 0]: First line is not INIT!\n");
+    return 1;
+  }
   if (requested_num_threads < 1 || requested_num_threads >= MAX_THREADS) {
+    printf("ERROR [line 0]: Invalid number of threads on INIT!\n");
     return 1;
   }
 
@@ -564,19 +575,5 @@ int do_work(int requested_num_threads) {
 }
 
 int main(int argc, char* argv[]) {
-  int requested_num_threads = DEFAULT_NUM_THREADS;
-
-  if (argc == 2) {
-    if (sscanf(argv[1], "%d", &requested_num_threads) != 1) {
-      printf("ERROR: invalid <requested_num_threads> (must be integer)!\n");
-      printf("Usage: ./threads_process [<requested_num_threads>]\n");
-      return 1;
-    }
-  } else if (argc > 2) {
-    printf("ERROR: invalid number of arguments!\n");
-    printf("Usage: ./threads_process [<requested_num_threads>]\n");
-    return 1;
-  }
-
-  return do_work(requested_num_threads);
+  return do_work();
 }
