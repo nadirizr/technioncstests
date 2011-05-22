@@ -65,21 +65,21 @@ test_result_t* test_barrier_usage() {
 
   /* wait for the whole thing to end */
   for (i = 0; i < 5; ++i) {
-    ASSERT_EQUALS_INT(0, pthread_join(threads[i], &rc), "Couldn't join");
+    ASSERT_EQUALS_INT(0, pthread_join(threads[i], (void**)&rc), "Couldn't join");
     ASSERT_EQUALS_INT(0, rc, "mp_barrier(...) caused an error");
   }
   ASSERT_EQUALS_INT(5, check.counter, "last thread didn't start");
   ASSERT_EQUALS_INT(5, check.barrier_counter, "barrier wasn't released");
 
-  mp_destroybarrier(&check.con, &check.bar);
-  mp_destroy(&check.con);
+  mp_destroybarrier(check.con, check.bar);
+  mp_destroy(check.con);
   TEST_SUCCESS();
 }
 
 test_result_t* test_barrier_reuse_not_allowed() {
   pthread_t threads[5], another_thread;
   struct barrier_check_t check = { NULL, NULL, 0, 0 };
-  int rc;
+  int i, rc;
 
   check.con = mp_init();
   ASSERT_NOT_NULL(check.con, "context failed to init");
@@ -93,18 +93,18 @@ test_result_t* test_barrier_reuse_not_allowed() {
   }
   /* wait for the whole thing to end */
   for (i = 0; i < 5; ++i) {
-    ASSERT_EQUALS_INT(0, pthread_join(threads[i], &rc), "Couldn't join");
+    ASSERT_EQUALS_INT(0, pthread_join(threads[i], (void**)&rc), "Couldn't join");
     ASSERT_EQUALS_INT(0, rc, "mp_barrier(...) caused an error");
   }
   ASSERT_EQUALS_INT(5, check.barrier_counter, "barrier wasn't released");
 
   ASSERT_EQUALS_INT(0, pthread_create(&another_thread, NULL, (void*)&inc_counter, &check),
                     "thread failed to init");
-  ASSERT_EQUALS_INT(0, pthread_join(another_thread, &rc), "Couldn't join");
+  ASSERT_EQUALS_INT(0, pthread_join(another_thread, (void**)&rc), "Couldn't join");
   ASSERT_EQUALS_INT(-1, rc, "mp_barrier(...) caused an error");
 
-  mp_destroybarrier(&check.con, &check.bar);
-  mp_destroy(&check.con);
+  mp_destroybarrier(check.con, check.bar);
+  mp_destroy(check.con);
   TEST_SUCCESS();
 }
 
