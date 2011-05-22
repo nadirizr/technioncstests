@@ -27,7 +27,7 @@ struct barrier_check_t {
 };
 
 void inc_counter(struct barrier_check_t* check) {
-  int rc;
+  long rc;
   ++check->counter;
 
   rc = mp_barrier(check->con, check->bar);
@@ -40,7 +40,7 @@ test_result_t* test_barrier_usage() {
   pthread_t threads[5];
   int i;
   struct barrier_check_t check = { NULL, NULL, 0, 0 };
-  int rc;
+  long rc;
 
   check.con = mp_init();
   ASSERT_NOT_NULL(check.con, "context failed to init");
@@ -73,14 +73,13 @@ test_result_t* test_barrier_usage() {
 
   mp_destroybarrier(check.con, check.bar);
   mp_destroy(check.con);
-  ASSERT_EQUALS_INT(0,1,"ccc");
   TEST_SUCCESS();
 }
 
 test_result_t* test_barrier_reuse_not_allowed() {
   pthread_t threads[5], another_thread;
   struct barrier_check_t check = { NULL, NULL, 0, 0 };
-  int i, rc;
+  long i, rc;
 
   check.con = mp_init();
   ASSERT_NOT_NULL(check.con, "context failed to init");
