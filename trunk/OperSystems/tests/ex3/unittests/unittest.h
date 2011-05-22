@@ -59,8 +59,10 @@ void result_destroy(test_result_t* result);
 #define ASSERT_EQUALS_INT(expected, actual, message) \
   if (expected != actual) { \
     printf("FAIL%15s|\n", " "); \
-    printf("|    reason:   expected %d, but got %d, %s\n", expected, actual, message); \
-    printf("|    location: %s:%d\n", __FILE__, __LINE__); \
+    printf("|      reason:   expected %-10d got %-10d%28s|\n", expected, actual, " "); \
+    printf("|                %62s|\n", message); \
+    printf("|      location: %s:%-4d", __FILE__, __LINE__); \
+    do { int i_0=0; for(;i_0<(57-strlen(__FILE__));++i_0) printf(" "); printf("|\n"); } while(0); \
     return result_init(FALSE); \
   }
 
