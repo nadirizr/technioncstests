@@ -15,7 +15,7 @@ typedef struct test_result_t test_result_t;
   printf("|  Running suite %-62s|\n", #suite_name); \
   var = suite_name(); \
   printf("|  Passed: %d/%-66d|\n", suite_passed(var), suite_ran(var)); \
-  printf("|##############################################################################|\n"); \
+  printf("|##############################################################################|\n\n"); \
   suite_destroy(var);
 
 #define RUN_TEST(suite, test_name) \
@@ -60,7 +60,7 @@ void result_destroy(test_result_t* result);
   if (expected != actual) { \
     printf("FAIL%15s|\n", " "); \
     printf("|      reason:   expected %-10d got %-10d%28s|\n", expected, actual, " "); \
-    printf("|                %62s|\n", message); \
+    printf("|                %-62s|\n", message); \
     printf("|      location: %s:%-4d", __FILE__, __LINE__); \
     do { int i_0=0; for(;i_0<(57-strlen(__FILE__));++i_0) printf(" "); printf("|\n"); } while(0); \
     return result_init(FALSE); \
