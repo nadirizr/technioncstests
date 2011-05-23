@@ -100,9 +100,7 @@ def createBarrier():
     freeAllBlocking()
     test_state.barrier_counter = -1
 
-  event = self.event
-  self.event += 1
-  return "%d BARRIER <EVENT %d>" % (t, event)
+  return "%d BARRIER" % t
 
 def createDestroyBarrier():
   t = getRandomAvailableThread()
@@ -140,7 +138,7 @@ def createSendSync():
 
   event = self.event
   self.event += 1
-  return "%d SEND %d SYNC %s <EVENT %d>" % (t, target, message, event)
+  return "%d SEND %d SYNC %s <EVENT %d %d>" % (t, target, message, event, 1)
 
 def createBroadcast():
   t = getRandomAvailableThread()
@@ -156,7 +154,7 @@ def createBroadcastSync():
 
   event = self.event
   self.event += 1
-  return "%d BROADCAST SYNC %s <EVENT %d>" % (t, message, event)
+  return "%d BROADCAST SYNC %s <EVENT %d %d>" % (t, message, event, 1)
 
 def createClose():
   command = ""
@@ -210,9 +208,9 @@ def createNewCommandSet(cmd_list, cmd_sum, init_commands, fin_commands):
 
   num_lines = random.randint(MIN_COMMANDS, MAX_COMMANDS) - \
               (len(init_commands) + len(fin_commands))
-  return init_commands + \
-      [createNewCommand(cmd_list, cmd_sum) for i in range(num_lines)] + \
-       fin_commands
+  return [c() for c in init_commands] + \
+         [createNewCommand(cmd_list, cmd_sum) for i in range(num_lines)] + \
+         [c() for c in fin_commands]
     
 # Creates a new random file from a given command mode.
 def createNewFile(i, mode):
