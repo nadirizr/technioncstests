@@ -3,13 +3,15 @@ from sys import stderr
 ERROR_STOP = -10000
 
 class Message:
-  def __init__(self, origin, destination, message, is_sync, is_urgent, is_broadcast):
+  def __init__(self, origin, destination, message, is_sync,
+               is_urgent, is_broadcast, event):
     self.origin = origin
     self.destination = destination
     self.message = message
     self.is_sync = is_sync
     self.is_urgent = is_urgent
     self.is_broadcast = is_broadcast
+    self.event = event
 
 class ThreadsLogic:
 
@@ -70,7 +72,7 @@ class ThreadsLogic:
       return passed
     return 0
 
-  def send(self, thread_index, to, is_sync, is_urgent, message):
+  def send(self, thread_index, to, is_sync, is_urgent, message, event):
     if to not in self.messages_for_thread:
       return -1
 
@@ -78,7 +80,8 @@ class ThreadsLogic:
        thread_index in self.waiting_broadcasters:
       return ERROR_STOP
 
-    message = Message(thread_index, to, message, is_sync, is_urgent, False)
+    message = Message(thread_index, to, message, is_sync, is_urgent,
+                      False, event)
     if is_urgent:
       self.messages_for_thread[to].insert(0, message)
     else:
@@ -88,7 +91,7 @@ class ThreadsLogic:
       return 0
     return 1
 
-  def broadcast(self, thread_index, is_sync, is_urgent, message):
+  def broadcast(self, thread_index, is_sync, is_urgent, message, event):
     if thread_index in self.waiting_at_barrier or \
        thread_index in self.waiting_broadcasters:
       return ERROR_STOP
@@ -98,7 +101,8 @@ class ThreadsLogic:
       if t == thread_index:
         continue
 
-      message_t = Message(thread_index, t, message, is_sync, is_urgent, True)
+      message_t = Message(thread_index, t, message, is_sync, is_urgent,
+                          True, event)
       if is_urgent:
         q.insert(0, message_t)
       else:
@@ -124,7 +128,7 @@ class ThreadsLogic:
 
           if not self.waiting_broadcasters[m.origin]:
             del self.waiting_broadcasters[m.origin]
-            self.finished_broadcasters.append(m.origin)
+            self.finished_broadcasters.append((m.origin, m))
 
       delivered += q
       self.messages_for_thread[t] = []

@@ -85,6 +85,14 @@ class ThreadsParser:
           line_num, thread_index)
       return ERROR_STOP
 
+    # Check if we have an event here.
+    event = None
+    if "<EVENT" in args:
+      event_index = args.index("<EVENT")
+      event = (int(args[event_index+1]),
+               int(args[event_index+2][:-1]))
+      args = args[:event_index]
+
     # Handle the various commands.
     rc = 0
 
@@ -122,7 +130,7 @@ class ThreadsParser:
       is_sync = "SYNC" in args
       is_urgent = "URGENT" in args
       rc = self.logic.send(
-          thread_index, to, is_sync, is_urgent, " ".join(args[2:]))
+          thread_index, to, is_sync, is_urgent, " ".join(args[2:]), event)
       
       flags = ""
       if is_urgent: flags += " URGENT"
@@ -139,7 +147,7 @@ class ThreadsParser:
       is_sync = "SYNC" in args
       is_urgent = "URGENT" in args
       rc = self.logic.broadcast(
-          thread_index, is_sync, is_urgent, " ".join(args[1:]))
+          thread_index, is_sync, is_urgent, " ".join(args[1:]), event)
       
       flags = ""
       if is_urgent: flags += " URGENT"
@@ -164,11 +172,17 @@ class ThreadsParser:
     # After the commands, deliver all pending messages.
     delivered = self.logic.deliverAllMessages()
     for m in delivered:
+      # Check if we have an event associated with this message.
+      event_str = ""
+      if m.event:
+        event_str = " <EVENT %d %d>" % m.event
+        m.event = (m.event[0], m.event[1] + 1)
+
       # We have now received this message.
       print THREAD_PREFIX % (
           m.destination,
-          "Received Message (length = %d): '%s'" % (
-              len(m.message) + 1, m.message))
+          "Received Message (length = %d): '%s'%s" % (
+              len(m.message) + 1, m.message, event_str))
 
       # For non-sync messages, we are done.
       if not m.is_sync:
@@ -176,22 +190,30 @@ class ThreadsParser:
 
       # If this was a broadcast, we only want to print at the end.
       if not m.is_broadcast:
+        event_str = ""
+        if m.event:
+          event_str = " <EVENT %d %d>" % m.event
+        
         flags = ""
         if m.is_urgent: flags += " URGENT"
         if m.is_sync:   flags += " SYNC"
         if not flags:   flags = " None"
         print THREAD_PREFIX % (
-            m.origin, "Send Successfull (Flags:%s)" % flags)
+            m.origin, "Send Successfull (Flags:%s)%s" % (flags, event_str))
 
     # Finally, go over the broadcasters and print them as well.
     broadcasters = self.logic.finishedBroadcasters()
-    for b in broadcasters:
+    for (b, m) in broadcasters:
+      event_str = ""
+      if m.event:
+        event_str = " <EVENT %d %d>" % m.event
+        
       flags = ""
       if m.is_urgent: flags += " URGENT"
       if m.is_sync:   flags += " SYNC"
       if not flags:   flags = " None"
       print THREAD_PREFIX % (
-          m.origin, "Broadcast Successfull (Flags:%s)" % flags)
+          m.origin, "Broadcast Successfull (Flags:%s)%s" % (flags, event_str))
 
     # Return the return code from the command.
     return rc
