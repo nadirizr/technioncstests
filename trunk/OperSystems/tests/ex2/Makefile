@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = short_process test_special
+TARGET = short_process test_special staff_test
 MODULES = MAIN
 
 # Compiler Flags
@@ -10,12 +10,14 @@ CCFLAGS = -I.. -Ilinux_include -g
 # Source Files
 SHORT_PROCESS_SRC = tester/short_process.c
 TEST_SPECIAL_SRC = tester/test_special.cpp
+STAFF_TEST_SRC = staff_test.c
 
 # Object Files
 OBJ_DIR = objects
 SHORT_PROCESS_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(SHORT_PROCESS_SRC)},$(OBJ_DIR)/$(f)}
 TEST_SPECIAL_OBJ_FILES = ${foreach f,${patsubst %.cpp,%.o,$(TEST_SPECIAL_SRC)},$(OBJ_DIR)/$(f)}
-ALL_OBJ_FILES = $(SHORT_PROCESS_OBJ_FILES) $(TEST_SPECIAL_OBJ_FILES)
+STAFF_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(STAFF_TEST_SRC)},$(OBJ_DIR)/$(f)}
+ALL_OBJ_FILES = $(SHORT_PROCESS_OBJ_FILES) $(TEST_SPECIAL_OBJ_FILES) $(STAFF_TEST_OBJ_FILES)
 TEST_JUNK = tmp random
 
 # Target Definitions
@@ -30,6 +32,9 @@ short_process: $(SHORT_PROCESS_OBJ_FILES)
 
 test_special: $(TEST_SPECIAL_OBJ_FILES)
 	$(CXX) -o $@ $(TEST_SPECIAL_OBJ_FILES) $(LDFLAGS)
+
+staff_test: $(STAFF_TEST_OBJ_FILES)
+	$(CXX) -o $@ $(STAFF_TEST_OBJ_FILES) $(LDFLAGS)
 
 # Build Targets
 all: make_dirs $(TARGET)
