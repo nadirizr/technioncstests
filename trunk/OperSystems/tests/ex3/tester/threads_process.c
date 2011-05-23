@@ -78,6 +78,33 @@ int remove_thread(int index) {
 }
 
 
+/*** Handling Events in Threads ***/
+
+char* getEvent(char* message) {
+  return strstr(message, "<EVENT ");
+}
+
+int increaseEventCounter(char* message) {
+  int event_id, event_counter;
+  char* event = getEvent(message);
+
+  if (event == NULL) {
+    return -1;
+  }
+  if (sscanf(event, "<EVENT %d %d>", &event_id, &event_counter) != 2) {
+    return -1;
+  }
+
+  if (event_counter == 9 || event_counter == 0) {
+    return event_counter;
+  }
+
+  ++event_counter;
+  snprintf(event, strlen(event)+1, "<EVENT %d %d>", event_id, event_counter);
+  return event_counter;
+}
+
+
 /*** Handling Commands in Threads ***/
 
 int thread_handle_create_barrier(int index, char* arguments, int line_num) {
@@ -148,6 +175,7 @@ int thread_handle_barrier(int index, char* arguments, int line_num) {
 
 int thread_handle_send(int index, char* arguments, int line_num) {
   char* message = NULL;
+  char* event = NULL;
   int message_len = 0;
   int target_id = 0;
   int rc = 0;
@@ -190,42 +218,41 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   rc = mp_send(main_context, &(threads[target_id]->tid),
                message, message_len, flags);
   
+  /* Check if there is an EVENT in the message, and if so modify it. */
+  event = getEvent(message);
+  if (event != NULL) {
+    if (increaseEventCounter(event) == 0) {
+      event = NULL;
+    }
+  }
+
   /* Handle errors. */
   if (rc < 0) {
-    printf("[Thread %d]: ERROR [line %d]: Send Failed (Flags:",
-           index + 1, line_num);
-    if (is_urgent) {
-      printf(" URGENT");
-    }
-    if (is_sync) {
-      printf(" SYNC");
-    }
-    if (flags == 0) {
-      printf(" None");
-    }
-    printf(") (rc = %d)!\n", rc);
+    printf("[Thread %d]: ERROR [line %d]: Send Failed (Flags:%s%s%s) (rc = %d)!\n",
+          index + 1, line_num,
+          (is_urgent  ? " URGENT" : ""),
+          (is_sync    ? " SYNC"   : ""),
+          (flags == 0 ? " None"   : ""),
+          rc);
     fflush(stdout);
     return -1;
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Send Successfull (Flags:", index + 1);
-  if (is_urgent) {
-    printf(" URGENT");
-  }
-  if (is_sync) {
-    printf(" SYNC");
-  }
-  if (flags == 0) {
-    printf(" None");
-  }
-  printf(")\n");
+  printf("[Thread %d]: Send Successfull (Flags:%s%s%s)%s%s\n",
+         index + 1,
+         (is_urgent     ? " URGENT" : ""),
+         (is_sync       ? " SYNC"   : ""),
+         (flags == 0    ? " None"   : ""),
+         (event != NULL ? " "       : ""),
+         (event != NULL ? event     : ""));
   fflush(stdout);
   return 0;
 }
 
 int thread_handle_broadcast(int index, char* arguments, int line_num) {
   char* message = NULL;
+  char* event = NULL;
   int message_len = 0;
   int rc = 0;
   int flags = 0;
@@ -257,36 +284,34 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
   /* Perform the command. */
   rc = mp_broadcast(main_context, message, message_len, flags);
   
+  /* Check if there is an EVENT in the message, and if so modify it. */
+  event = getEvent(message);
+  if (event != NULL) {
+    if (increaseEventCounter(event) == 0) {
+      event = NULL;
+    }
+  }
+
   /* Handle errors. */
   if (rc < 0) {
-    printf("[Thread %d]: ERROR [line %d]: Broadcast Failed (Flags:",
-           index + 1, line_num);
-    if (is_urgent) {
-      printf(" URGENT");
-    }
-    if (is_sync) {
-      printf(" SYNC");
-    }
-    if (flags == 0) {
-      printf(" None");
-    }
-    printf(") (rc = %d)!\n", rc);
+    printf("[Thread %d]: ERROR [line %d]: Broadcast Failed (Flags:%s%s%s) (rc = %d)!\n",
+          index + 1, line_num,
+          (is_urgent  ? " URGENT" : ""),
+          (is_sync    ? " SYNC"   : ""),
+          (flags == 0 ? " None"   : ""),
+          rc);
     fflush(stdout);
     return -1;
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Broadcast Successfull (Flags:", index + 1);
-  if (is_urgent) {
-    printf(" URGENT");
-  }
-  if (is_sync) {
-    printf(" SYNC");
-  }
-  if (flags == 0) {
-    printf(" None");
-  }
-  printf(")\n");
+  printf("[Thread %d]: Broadcast Successfull (Flags:%s%s%s)%s%s\n",
+         index + 1,
+         (is_urgent     ? " URGENT" : ""),
+         (is_sync       ? " SYNC"   : ""),
+         (flags == 0    ? " None"   : ""),
+         (event != NULL ? " "       : ""),
+         (event != NULL ? event     : ""));
   fflush(stdout);
   return 0;
 }
@@ -337,6 +362,7 @@ int thread_handle_command(int my_index, char* line, int line_num) {
 void thread_main(void* arg) {
   char buffer[MAX_STRING_INPUT_SIZE];
   char* line = NULL;
+  char* event = NULL;
   int len;
   int my_index;
   int line_num;
@@ -394,8 +420,17 @@ void thread_main(void* arg) {
     } else {
       /* Handle this message as a regular thread-to-thread message. */
 
-      printf("[Thread %d]: Received Message (length = %d): '%s'\n",
-             my_index + 1, len, buffer);
+      /* Check if there is an EVENT in the message, and if so modify it. */
+      event = getEvent(buffer);
+      if (event != NULL) {
+        *(event-1) = '\0';
+      }
+
+      /* Print the message, and if necessary the EVENT. */
+      printf("[Thread %d]: Received Message (length = %d): '%s'%s%s\n",
+             my_index + 1, len, buffer,
+             (event != NULL ? " "   : ""),
+             (event != NULL ? event : ""));
       fflush(stdout);
 
       /* Check if we got the finish message. */

@@ -1,18 +1,18 @@
 INIT 3
 1 CREATE_BARRIER 2
 3 BARRIER
-1 SEND 3 should arrive 3rd
-1 SEND 3 URGENT should arrive 2nd
-1 SEND 3 should arrive 4th
-1 SEND 3 URGENT should arrive 1st
+1 SEND 3 should arrive 3rd <EVENT 3 0>
+1 SEND 3 URGENT should arrive 2nd <EVENT 2 0>
+1 SEND 3 should arrive 4th <EVENT 4 0>
+1 SEND 3 URGENT should arrive 1st <EVENT 1 0>
 1 BARRIER
 3 DESTROY_BARRIER
 2 CREATE_BARRIER 2
 3 BARRIER
-1 SEND 3 should arrive 3rd
-2 SEND 3 URGENT should arrive 2nd
-2 SEND 3 should arrive 4th
-1 SEND 3 URGENT should arrive 1st
+1 SEND 3 should arrive 3rd <EVENT 13 0>
+2 SEND 3 URGENT should arrive 2nd <EVENT 12 0>
+2 SEND 3 should arrive 4th <EVENT 14 0>
+1 SEND 3 URGENT should arrive 1st <EVENT 11 0>
 2 BARRIER
 3 DESTROY_BARRIER
 CLOSE

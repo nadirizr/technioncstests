@@ -176,7 +176,8 @@ class ThreadsParser:
       event_str = ""
       if m.event:
         event_str = " <EVENT %d %d>" % m.event
-        m.event = (m.event[0], m.event[1] + 1)
+        if m.event[1]:
+          m.event = (m.event[0], m.event[1] + 1)
 
       # We have now received this message.
       print THREAD_PREFIX % (
@@ -191,7 +192,7 @@ class ThreadsParser:
       # If this was a broadcast, we only want to print at the end.
       if not m.is_broadcast:
         event_str = ""
-        if m.event:
+        if m.event and m.event[1]:
           event_str = " <EVENT %d %d>" % m.event
         
         flags = ""
@@ -205,7 +206,7 @@ class ThreadsParser:
     broadcasters = self.logic.finishedBroadcasters()
     for (b, m) in broadcasters:
       event_str = ""
-      if m.event:
+      if m.event and m.event[1]:
         event_str = " <EVENT %d %d>" % m.event
         
       flags = ""
