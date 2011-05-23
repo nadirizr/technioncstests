@@ -19,9 +19,12 @@
 #define TIMEOUT_BETWEEN_COMMANDS 0.2
 
 
-/*** Contex and Barrier ***/
+/*** Contex and Barriers ***/
 context_t* main_context;
+
 barrier_t* main_barrier;
+pthread_mutex_t main_barrier_lock;
+pthread_cond_t main_barrier_cond;
 
 barrier_t* start_barrier;
 barrier_t* finish_barrier;
@@ -86,7 +89,12 @@ int thread_handle_create_barrier(int index, char* arguments, int line_num) {
   }
 
   /* Perform the command. */
+  pthread_mutex_lock(&main_barrier_lock);
+  while (main_barrier != NULL) {
+    pthread_cond_wait(&main_barrier_cond, &main_barrier_lock);
+  }
   main_barrier = mp_initbarrier(main_context, n);
+  pthread_mutex_unlock(&main_barrier_lock);
   
   /* Handle errors. */
   if (main_barrier == NULL) {
@@ -104,8 +112,13 @@ int thread_handle_create_barrier(int index, char* arguments, int line_num) {
 
 int thread_handle_destroy_barrier(int index, char* arguments, int line_num) {
   /* Perform the command. */
+  pthread_mutex_lock(&main_barrier_lock);
+  while (main_barrier == NULL) {
+    pthread_cond_wait(&main_barrier_cond, &main_barrier_lock);
+  }
   mp_destroybarrier(main_context, main_barrier);
   main_barrier = NULL;
+  pthread_mutex_unlock(&main_barrier_lock);
 
   /* Handle success. */
   printf("[Thread %d]: Barrier Destroyed\n", index + 1);
@@ -287,6 +300,7 @@ int thread_handle_close(int index, char* arguments, int line_num) {
   return FINISH_THREAD;
 }
 
+#define PREFIX(str1,str2) (strstr((str1),(str2)) == str1)
 #define EQUALS(str1,str2) (strcmp((str1),(str2)) == 0)
 #define HANDLE(cmd, fn) \
   if (EQUALS((line), (cmd))) { \
@@ -433,6 +447,11 @@ int hand_command_to_thread(int index, char* line, int line_num) {
     target_id = threads[index]->tid;
   }
 
+  /* If we need to wait for synchronized commands, do it now. */
+  if (PREFIX(line, "CREATE_BARRIER") || PREFIX(line, "DESTROY_BARRIER")) {
+    parse(line_num, "WAIT");
+  }
+
   /* Create the command to send with our prefix. */
   buffer_len = snprintf(buffer, MAX_STRING_INPUT_SIZE, "<COMMAND %d>%s",
                         line_num, line) + 1;
@@ -455,6 +474,11 @@ int hand_command_to_thread(int index, char* line, int line_num) {
     }
   }
 
+  /* If we need to wait for synchronized commands, do it now. */
+  if (PREFIX(line, "CREATE_BARRIER") || PREFIX(line, "DESTROY_BARRIER")) {
+    parse(line_num, "WAIT");
+  }
+
   /* If this is the CLOSE command, return the FINISH_THREAD status. */
   if (EQUALS(line, "CLOSE")) {
     return FINISH_THREAD;
@@ -470,6 +494,13 @@ int parse(int line_num, char* line) {
   char* line_thread = NULL;
   char* new_line = NULL;
   int thread_index = 0;
+
+  /* If the line is empty, or it is a comment, print it and ignore. */
+  if ((strlen(line) == 0) || (line[0] == '#')) {
+    printf("%s", line);
+    fflush(stdout);
+    return 0;
+  }
 
   /* Throw away the terminating end-line if necessary. */
   new_line = strchr(line, '\n');
