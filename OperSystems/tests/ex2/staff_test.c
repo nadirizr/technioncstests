@@ -5,6 +5,8 @@
 #include <sys/timeb.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
+
 #include "hw2_syscalls.h"
 
 /* 5 milliseconds time difference. */
@@ -466,6 +468,7 @@ int main(int argc, char* argv[]) {
   if (argc != 2) {
     printf("ERROR: No test number given!\n");
     printf("Usage: ./staff_test <num_test>\n");
+    printf("       Test Numbers: 2, 5, 7, 8, 9, 10\n");
     return 1;
   }
 
@@ -487,6 +490,7 @@ int main(int argc, char* argv[]) {
   default:
     printf("ERROR: Invalid test number!\n");
     printf("Usage: ./staff_test <num_test>\n");
+    printf("       Test Numbers: 2, 5, 7, 8, 9, 10\n");
     return 1;
   }
 }
