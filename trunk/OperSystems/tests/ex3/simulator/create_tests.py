@@ -187,7 +187,7 @@ INITIAL_COMMANDS = { }
 INITIAL_COMMANDS["threads"] = [createInit]
 # The final commands to put at the end of the input file.
 FINAL_COMMANDS = { }
-FINAL_COMMANDS["tags"] = [createClose]
+FINAL_COMMANDS["threads"] = [createClose]
 
 
 ##############################
