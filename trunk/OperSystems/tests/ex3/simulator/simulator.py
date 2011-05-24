@@ -66,7 +66,7 @@ class ThreadsParser:
       self.num_threads = int(args[-1])
       self.logic = ThreadsLogic(self.num_threads)
 
-      print "Main Thread Registered"
+      print "Main Thread Registered (%d Threads)" % self.num_threads
       for t in range(1, self.num_threads + 1):
         print THREAD_PREFIX % (t, "Registered (Thread ID = %d)" % t)
       return 0
@@ -105,13 +105,16 @@ class ThreadsParser:
       
       if rc < 0:
         print THREAD_ERROR % (
-            thread_index, line_num, "Barrier Creation Failed")
+            thread_index, line_num,
+            "Barrier %d Creation Failed" % self.logic.getBarrierNumber())
       else:
-        print THREAD_PREFIX % (thread_index, "Barrier Created")
+        print THREAD_PREFIX % (
+            thread_index, "Barrier %d Created" % self.logic.getBarrierNumber())
 
     elif cmd == "DESTROY_BARRIER":
       self.logic.destroyBarrier(thread_index)
-      print THREAD_PREFIX % (thread_index, "Barrier Destroyed")
+      print THREAD_PREFIX % (
+          thread_index, "Barrier %d Destroyed" % self.logic.getBarrierNumber())
       rc = 0
 
     elif cmd == "BARRIER":
@@ -119,11 +122,13 @@ class ThreadsParser:
       
       if type(rc) == list:
         for t in rc:
-          print THREAD_PREFIX % (t, "Barrier Passed")
+          print THREAD_PREFIX % (
+              t, "Barrier %d Passed" % self.logic.getBarrierNumber())
         rc = 0
       elif rc < 0:
         print THREAD_ERROR_RC % (
-            thread_index, line_num, "Barrier Failed", rc)
+            thread_index, line_num,
+            "Barrier %d Failed" % self.logic.getBarrierNumber(), rc)
 
     elif cmd == "SEND":
       to = int(args[1])

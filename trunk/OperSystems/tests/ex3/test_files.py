@@ -9,23 +9,14 @@ import time
 import unittest
 
 
-DEFAULT_PROGRAM_PATH = "./tag_launcher /usr/bin/python ./tag_wrapper.py"
-PROGRAM_PATH = os.environ.get("TAGS_PROGRAM", DEFAULT_PROGRAM_PATH)
-SPECIFIC_TEST = os.environ.get("TAGS_SPECIFIC_TEST", "")
-TESTS_DIR = os.environ.get("TAGS_TESTS_DIR", "random")
-TEMP_DIR = os.environ.get("TAGS_TMP_DIR", "tmp")
+DEFAULT_PROGRAM_PATH = "./threads_process"
+PROGRAM_PATH = os.environ.get("THREADS_PROGRAM", DEFAULT_PROGRAM_PATH)
+SPECIFIC_TEST = os.environ.get("THREADS_SPECIFIC_TEST", "")
+TESTS_DIR = os.environ.get("THREADS_TESTS_DIR", "random")
+TEMP_DIR = os.environ.get("THREADS_TMP_DIR", "tmp")
 TESTS_INPUT_SUFFIX = ".in.txt"
 TESTS_OUTPUT_SUFFIX = ".out.txt"
 TESTS_COMMANDS_SUFFIX = ".real.in.txt"
-
-def str_to_int(s):
-    num = ""
-    for c in s:
-        if c.isdigit():
-            num += c
-        else:
-            break
-    return int(num)
 
 def run_program(name):
     """
@@ -42,22 +33,12 @@ def run_program(name):
     # set up all file names for run
     test_in_file = TESTS_DIR + os.sep + name + TESTS_INPUT_SUFFIX
     test_out_file = TEMP_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
-    test_command_file = TEMP_DIR + os.sep + name + TESTS_COMMANDS_SUFFIX
     expected_out_file = TESTS_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
-    test_command = "%s %s %s %s" % (
-        PROGRAM_PATH, test_in_file, test_out_file, test_command_file)
+    test_command = "cat %s | %s > %s" % (
+        test_in_file, PROGRAM_PATH, test_out_file)
     
     # run the actual program
-    pid = commands.getoutput(test_command)
-    pid = str_to_int(pid)
-
-    # wait for the process to finish
-    while True:
-      try:
-        os.kill(pid, 0) 
-        time.sleep(1)
-      except:
-        break
+    os.system(test_command)
     
     # compare the output
     try:
