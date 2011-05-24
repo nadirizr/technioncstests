@@ -28,10 +28,6 @@ void write(struct test_context* con) {
   }
 
   res->send_result = mp_send(con->con, &con->target, "message", 8, 0);
-  if (res->send_result != 0) {
-    pthread_cond_signal(&con->cond);
-    pthread_exit((void*)res);
-  }
 
   /* if we got here, the thread is registered, so unregister */
   mp_unregister(con->con);
@@ -79,9 +75,26 @@ test_result_t* test_send_receive_unregistered() {
   ASSERT_EQUALS_INT(0, pthread_create(&writer, NULL, (void*)&write, &writer_context),
                     "creation of writer thread failed");
   pthread_cond_wait(&writer_context.cond, &writer_context.mutex); // wait for the writer to finish
+  mp_unregister(writer_context.con);
 
   ASSERT_EQUALS_INT(0, pthread_join(writer, (void**)&results), "couldn't join");
   ASSERT_EQUALS_INT(-1, results->send_result, "send to a thread that didn't register should fail");
+  free(results);
+
+  /*
+   * Case #3:
+   * The reader unregistered.
+   * Writer tries to send a message and should fail.
+   */
+  writer_context.should_register = TRUE;
+  ASSERT_EQUALS_INT(0, pthread_create(&writer, NULL, (void*)&write, &writer_context),
+                    "creation of writer thread failed");
+  pthread_cond_wait(&writer_context.cond, &writer_context.mutex); // wait for the writer to finish
+
+  ASSERT_EQUALS_INT(0, pthread_join(writer, (void**)&results), "couldn't join");
+  ASSERT_EQUALS_INT(0, results->reg_result, "writer failed to register");
+  ASSERT_EQUALS_INT(-1, results->send_result,
+                    "send to a thread that didn't register should fail");
   free(results);
   
   /* destroy the test context */
