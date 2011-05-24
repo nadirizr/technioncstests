@@ -23,6 +23,7 @@
 context_t* main_context;
 
 barrier_t* main_barrier;
+int main_barrier_counter;
 pthread_mutex_t main_barrier_lock;
 pthread_cond_t main_barrier_cond;
 
@@ -121,18 +122,19 @@ int thread_handle_create_barrier(int index, char* arguments, int line_num) {
     pthread_cond_wait(&main_barrier_cond, &main_barrier_lock);
   }
   main_barrier = mp_initbarrier(main_context, n);
+  ++main_barrier_counter;
   pthread_mutex_unlock(&main_barrier_lock);
   
   /* Handle errors. */
   if (main_barrier == NULL) {
-    printf("[Thread %d]: ERROR [line %d]: Barrier Creation Failed!\n",
-           index + 1, line_num);
+    printf("[Thread %d]: ERROR [line %d]: Barrier %d Creation Failed!\n",
+           index + 1, line_num, main_barrier_counter);
     fflush(stdout);
     return -1;
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Barrier Created\n", index + 1);
+  printf("[Thread %d]: Barrier %d Created\n", index + 1, main_barrier_counter);
   fflush(stdout);
   return 0;
 }
@@ -148,7 +150,8 @@ int thread_handle_destroy_barrier(int index, char* arguments, int line_num) {
   pthread_mutex_unlock(&main_barrier_lock);
 
   /* Handle success. */
-  printf("[Thread %d]: Barrier Destroyed\n", index + 1);
+  printf("[Thread %d]: Barrier %d Destroyed\n",
+         index + 1, main_barrier_counter);
   fflush(stdout);
   return 0;
 }
@@ -161,14 +164,14 @@ int thread_handle_barrier(int index, char* arguments, int line_num) {
   
   /* Handle errors. */
   if (rc < 0) {
-    printf("[Thread %d]: ERROR [line %d]: Barrier Failed (rc = %d)\n",
-           index + 1, line_num, rc);
+    printf("[Thread %d]: ERROR [line %d]: Barrier %d Failed (rc = %d)\n",
+           index + 1, line_num, main_barrier_counter, rc);
     fflush(stdout);
     return rc;
   }
 
   /* Handle success. */
-  printf("[Thread %d]: Barrier Passed\n", index + 1);
+  printf("[Thread %d]: Barrier %d Passed\n", index + 1, main_barrier_counter);
   fflush(stdout);
   return 0;
 }
@@ -428,7 +431,7 @@ void thread_main(void* arg) {
 
       /* Print the message, and if necessary the EVENT. */
       printf("[Thread %d]: Received Message (length = %d): '%s'%s%s\n",
-             my_index + 1, len, buffer,
+             my_index + 1, strlen(buffer) + 1, buffer,
              (event != NULL ? " "   : ""),
              (event != NULL ? event : ""));
       fflush(stdout);
@@ -601,6 +604,11 @@ int do_work() {
   start_barrier = mp_initbarrier(main_context, requested_num_threads + 1);
   finish_barrier = mp_initbarrier(main_context, requested_num_threads + 1);
 
+  main_barrier = NULL;
+  main_barrier_counter = 0;
+  pthread_mutex_init(&main_barrier_lock, NULL);
+  pthread_cond_init(&main_barrier_cond, NULL);
+
   num_threads = 0;
   for (i = 0; i < MAX_THREADS; ++i) {
     threads[i] = NULL;
@@ -608,7 +616,7 @@ int do_work() {
 
   /* Register ourselves at the context. */
   mp_register(main_context);
-  printf("Main Thread Registered\n");
+  printf("Main Thread Registered (%d Threads)\n", requested_num_threads);
 
   /* Initialize all threads. */
   for (i = 0; i < requested_num_threads; ++i) {
@@ -655,6 +663,9 @@ int do_work() {
   /* Now do some cleanup before exit. */
   mp_destroybarrier(main_context, start_barrier);
   mp_destroybarrier(main_context, finish_barrier);
+
+  pthread_mutex_destroy(&main_barrier_lock);
+  pthread_cond_destroy(&main_barrier_cond);
 
   mp_unregister(main_context);
   printf("Main Thread Unregistered\n");

@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = unittest threads_process zvi_test
+TARGET = unittest threads_process zvi_test velich_test
 MODULES = MAIN
 
 # Compiler Flags
@@ -11,14 +11,16 @@ LDFLAGS = -L.. -lmp -lpthread
 # Source Files
 THREADS_PROCESS_SRC = tester/threads_process.c
 UNITTEST_SRC = unittests/all_tests.c unittests/unittest.c unittests/hash_table_test.c unittests/list_test.c unittests/barrier_test.c unittests/context_test.c unittests/bad_send_test.c
-ZVI_TEST_SRC = zvi_test.c
+ZVI_TEST_SRC = zvi/zvi_test.c
+VELICH_TEST_SRC = velich/mp_tester.c velich/mp_tester_library.c
 
 # Object Files
 OBJ_DIR = objects
 THREADS_PROCESS_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(THREADS_PROCESS_SRC)},$(OBJ_DIR)/$(f)}
 UNITTEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(UNITTEST_SRC)},$(OBJ_DIR)/$(f)}
 ZVI_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(ZVI_TEST_SRC)},$(OBJ_DIR)/$(f)}
-ALL_OBJ_FILES =  $(UNITTEST_OBJ_FILES) $(THREADS_PROCESS_OBJ_FILES) $(ZVI_TEST_OBJ_FILES)
+VELICH_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(VELICH_TEST_SRC)},$(OBJ_DIR)/$(f)}
+ALL_OBJ_FILES =  $(UNITTEST_OBJ_FILES) $(THREADS_PROCESS_OBJ_FILES) $(ZVI_TEST_OBJ_FILES) $(VELICH_TEST_OBJ_FILES)
 TEST_JUNK = tmp random
 
 # Target Definitions
@@ -37,6 +39,9 @@ threads_process: $(THREADS_PROCESS_OBJ_FILES)
 zvi_test: $(ZVI_TEST_OBJ_FILES)
 	$(CC) -o $@ $(ZVI_TEST_OBJ_FILES) $(LDFLAGS)
 
+velich_test: $(VELICH_TEST_OBJ_FILES)
+	$(CC) -o $@ $(VELICH_TEST_OBJ_FILES) $(LDFLAGS)
+
 # Build Targets
 all: make_dirs $(TARGET)
 
@@ -50,6 +55,8 @@ make_dirs:
 	mkdir -p objects
 	mkdir -p objects/tester
 	mkdir -p objects/unittests
+	mkdir -p objects/zvi
+	mkdir -p objects/velich
 	mkdir -p tmp
 
 # Test Targets

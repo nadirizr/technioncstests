@@ -89,7 +89,7 @@ void mpsend(void* v) {
 	}
 
 	mp_barrier(con,senders_barrier);								 /* wait for all sending threads to finish */
-	if (tid == final_message_sender) {								 /* only one of the sending threads will issue a final message */
+	if (tid == (int)final_message_sender) {					 /* only one of the sending threads will issue a final message */
 		printf("@ Sender %d sending FINAL BROADCAST...\n",tid);
     fflush(stdout);
 		retval = mp_broadcast(con,final,strlen(final)+1,0);

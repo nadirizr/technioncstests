@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <time.h>
 #include <pthread.h>
 #include "barrier_test.h"
 #include "../../src/mp_interface.h"
@@ -54,7 +55,7 @@ test_result_t* test_barrier_usage() {
   }
   /* wait for all threads to get to the barrier */
   while (check.counter < 4) {
-    ASSERT_EQUALS_INT(0, pthread_yield(), "main thread failed to yield");
+    usleep(500000);
   }
   /* check that all got to the barrier and non passed it */
   ASSERT_EQUALS_INT(4, check.counter, "thread didn't start its run");

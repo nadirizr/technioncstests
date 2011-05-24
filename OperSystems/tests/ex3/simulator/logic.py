@@ -23,6 +23,7 @@ class ThreadsLogic:
 
     self.barrier_counter = -1
     self.waiting_at_barrier = []
+    self.barrier_number = 0
 
     self.waiting_broadcasters = {}
     self.finished_broadcasters = []
@@ -34,6 +35,9 @@ class ThreadsLogic:
     self.num_threads = 0
     self.waiting_broadcasters = {}
     self.finished_broadcasters = []
+  
+  def getBarrierNumber(self):
+    return self.barrier_number
 
   def createBarrier(self, thread_index, n):
     if n < 1:
@@ -43,6 +47,7 @@ class ThreadsLogic:
        thread_index in self.waiting_broadcasters:
       return ERROR_STOP
 
+    self.barrier_number += 1
     self.barrier_counter = n
     self.waiting_at_barrier = []
     return 0
