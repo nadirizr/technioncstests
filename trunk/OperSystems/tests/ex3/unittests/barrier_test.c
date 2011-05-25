@@ -2,7 +2,7 @@
 #include <time.h>
 #include <pthread.h>
 #include "barrier_test.h"
-#include "../../src/mp_interface.h"
+#include "../../mp_interface.h"
 
 test_result_t* test_barrier_bad_init() {
   context_t* con = NULL;

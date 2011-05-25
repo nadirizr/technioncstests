@@ -1,7 +1,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include "hash_table_test.h"
-#include "../../src/hash_table.h"
+#include "../../hash_table.h"
 
 test_result_t* test_hash_table_basic() {
   hash_table_t* ht = ht_init(100);

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "barrier_test.h"
-#include "../../src/mp_interface.h"
+#include "../../mp_interface.h"
 
 struct context {
   context_t* con;

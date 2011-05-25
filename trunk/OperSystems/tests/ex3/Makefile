@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = extern_unittest threads_process zvi_test velich_test arik_test
+TARGET = threads_process zvi_test velich_test arik_test
 MODULES = MAIN
 
 # Compiler Flags
@@ -54,7 +54,7 @@ arik_test: $(ARIK_TEST_OBJ_FILES)
 	$(CC) -o $@ $(ARIK_TEST_OBJ_FILES) $(LDFLAGS)
 
 # Build Targets
-all: make_dirs $(TARGET)
+all: make_dirs $(TARGET) 
 
 clean:
 	rm -rf $(ALL_OBJ_FILES) $(TARGET)
@@ -72,14 +72,12 @@ make_dirs:
 	mkdir -p tmp
 
 # Test Targets
-test_extern: extern_unittest zvi_test velich_test
+test_extern: extern_unittest zvi_test velich_test arik_test
 	./extern_unittest
 	./zvi_test > /dev/null && python valgrinder.py ./zvi_test
 	./velich_test
 
-test_all: all_unittest zvi_test velich_test
+test_all: all_unittest zvi_test velich_test arik_test
 	./all_unittest
 	./zvi_test > /dev/null && python valgrinder.py ./zvi_test
 	./velich_test
-
-test: all test_all
