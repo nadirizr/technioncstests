@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "list_test.h"
-#include "../../src/list.h"
+#include "../../list.h"
 
 bool int_cmp(void* int1, void* int2) {
   if (int1 == NULL || int2 == NULL) {

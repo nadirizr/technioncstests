@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "bad_send_test.h"
-#include "../../src/mp_interface.h"
+#include "../../mp_interface.h"
 
 struct test_context {
   context_t* con;
