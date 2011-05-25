@@ -983,7 +983,7 @@ int main()
   fprintf(stderr, "===========================\n\n");
   fflush(stderr);
 
-	printf("Starting test (It make take some time to complete):\n");
+	printf("Starting test (It may take some time to complete):\n");
 	printf("--------------------------------------------------\n");
   fflush(stdout);
 

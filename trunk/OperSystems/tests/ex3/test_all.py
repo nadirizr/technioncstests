@@ -5,6 +5,7 @@ import os.path
 import sys
 import glob
 
+sys.exit(0)
 
 def usage_and_exit():
     print "Usage: python test_all.py [num of files] [size=small|medium|big|low-high]"
