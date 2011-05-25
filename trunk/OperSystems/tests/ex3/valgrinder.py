@@ -7,7 +7,7 @@ args = " ".join(sys.argv[1:])
 print "Testing 'valgrind --leak-check=full' on '%s'..." % args
 output_valgrind = commands.getoutput("valgrind --leak-check=full %s" % args)
 error = False
-if not "definitely lost: 0 bytes in 0 blocks" in output_valgrind:
+if output_valgrind.find("definitely lost: 0 bytes in 0 blocks") == -1:
   print "ERROR: There is unfreed memory!"
   error = True
 if "ERROR SUMMARY: 0 errors from 0 contexts" not in output_valgrind:
