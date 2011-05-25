@@ -60,6 +60,7 @@ make_dirs:
 	mkdir -p tmp
 
 # Test Targets
-test: unittest velich_test
+test: unittest zvi_test velich_test
 	./unittest
+	./zvi_test > /dev/null
 	./velich_test

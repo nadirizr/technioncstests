@@ -25,6 +25,8 @@
 #define SENDERS 2		/* you can change these parameters as you wish */
 #define READERS 5		/* more readers mean much more messages */
 
+#define DEADLOCK_TIMEOUT ((SENDERS) * (READERS))
+
 #define BUF_SIZE 50
 
 pthread_t reader[READERS];
@@ -34,6 +36,8 @@ pthread_t final_message_sender;
 context_t* con;
 barrier_t* register_barrier;
 barrier_t* senders_barrier;
+
+int still_alive;
 
 char *final = "Final Message";
 
@@ -140,11 +144,35 @@ void mpread(void* v) {
 	pthread_exit(0);
 }
 
+void timer(void* arg) {
+  /* This thread simply needs to make sure we don't deadlock, and if we do it
+   * must report it and exit. */
+  pthread_detach(pthread_self());
+
+  sleep(DEADLOCK_TIMEOUT);
+
+  if (still_alive) {
+    fprintf(stderr, "TEST FAILED: Probably Deadlocked!\n\n");
+    fflush(stderr);
+    exit(1);
+  }
+}
+
 int main(void) {
 
 	int rnum,snum;
+  pthread_t timer_thread;
 
 	srand(time(NULL));
+
+  fprintf(stderr, "\n");
+  fprintf(stderr, "===========================\n");
+  fprintf(stderr, "Running Zvi Cahana's Tests:\n");
+  fprintf(stderr, "===========================\n\n");
+  fflush(stderr);
+
+  still_alive = 1;
+  pthread_create(&timer_thread,NULL,(void*)&timer,NULL);
 
 	con = mp_init();
   if (con == NULL) {
@@ -187,8 +215,13 @@ int main(void) {
 	mp_destroybarrier(con,senders_barrier);
 	mp_destroy(con);
 
+  still_alive = 0;
+
 	printf("\n@ All threads terminated successfully\n");
   fflush(stdout);
+
+  fprintf(stderr, "TEST PASSED!\n\n");
+  fflush(stderr);
 
 	return 0;
 }
