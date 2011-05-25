@@ -10,7 +10,7 @@ error = False
 if output_valgrind.find("definitely lost: 0 bytes in 0 blocks") == -1:
   print "ERROR: There is unfreed memory!"
   error = True
-if "ERROR SUMMARY: 0 errors from 0 contexts" not in output_valgrind:
+if output_valgrind.find("ERROR SUMMARY: 0 errors from 0 contexts") == -1:
   print "ERROR: There are errors found by valgrind!"
   error = True
 
@@ -28,13 +28,13 @@ else:
 print "Testing 'valgrind --tool=helgrind' on '%s' ..." % args
 output_valgrind = commands.getoutput("valgrind --tool=helgrind %s" % args)
 error = False
-if "unlocked a not-locked lock" in output_valgrind:
+if output_valgrind.find("unlocked a not-locked lock") != -1:
   print "ERROR: Unlocked a not-locked lock!"
   error = True
-if "call to pthread_mutex_lock failed" in output_valgrind:
+if output_valgrind.find("call to pthread_mutex_lock failed") != -1:
   print "ERROR: A call to pthread_mutex_lock has failed!"
   error = True
-if "call to pthread_mutex_unlock failed" in output_valgrind:
+if output_valgrind.find("call to pthread_mutex_unlock failed") != -1:
   print "ERROR: A call to pthread_mutex_unlock has failed!"
   error = True
 
