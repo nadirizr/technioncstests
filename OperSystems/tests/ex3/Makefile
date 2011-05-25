@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = all_unittest threads_process zvi_test velich_test arik_test
+TARGET = extern_unittest threads_process zvi_test velich_test arik_test
 MODULES = MAIN
 
 # Compiler Flags
