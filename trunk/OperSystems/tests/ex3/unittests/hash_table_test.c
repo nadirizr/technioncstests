@@ -5,7 +5,8 @@
 
 test_result_t* test_hash_table_basic() {
   hash_table_t* ht = ht_init(100);
-  int i, *keys, **values, **all_values;
+  ht_iterator_t it;
+  int i, **values;
 
   ASSERT_NOT_NULL(ht, "Bad hash table init");
 
@@ -18,31 +19,33 @@ test_result_t* test_hash_table_basic() {
     ASSERT(ht_put(ht, i, values[i]), "Value not inserted");
   }
 
-  ASSERT_EQUALS_INT(1000, ht_num_elements(ht), "Bad number of elements");
-
-  keys = malloc(1000*sizeof(int));
-  ASSERT_EQUALS_INT(1000, ht_all_keys(ht, keys), "Bad number  of keys");
-  all_values = malloc(1000*sizeof(int*));
-  ASSERT_EQUALS_INT(1000, ht_all_values(ht, (ht_value_t*)all_values), "Bad number of values");
   for (i = 0; i < 1000; ++i) {
-    ASSERT_CONTAINS(keys, 1000, i, "Missing key");
-    ASSERT_CONTAINS(all_values, 1000, values[i], "Missing value");
     ASSERT_EQUALS_INT(*(values[i]), *((int*)ht_get(ht, i)), "Missing value");
     ASSERT(ht_has_key(ht, i), "Missing key");
   }
 
+  HT_FOR_EACH(ht, it) {
+    ASSERT(HT_ITERATOR_KEY(it) < 1000, "Invalid key");
+    ASSERT_CONTAINS(values, 1000, HT_ITERATOR_VALUE(int, it), "Missing value");
+  }
+
   for (i = 0; i < 1000; ++i) {
     ASSERT(ht_remove(ht, i), "Element was not removed");
-    ASSERT_EQUALS_INT(1000-i-1, ht_num_elements(ht), "Item not removed from counter");
   }
-  ASSERT_EQUALS_INT(0, ht_all_keys(ht, keys), "Not all keys removed");
+  ASSERT(ht_first(ht) == ht_end(ht),
+         "Hash table first iterator not end on empty hash table");
+
+  i = 0;
+  HT_FOR_EACH(ht, it) {
+    ++i;
+  }
+  ASSERT_EQUALS_INT(i, 0, "Elements in hash table");
+
 
   ht_destroy(ht);
   for (i = 0; i < 1000; ++i) {
     free(values[i]);
   }
-  free(keys);
-  free(all_values);
   free(values);
 
   TEST_SUCCESS();
