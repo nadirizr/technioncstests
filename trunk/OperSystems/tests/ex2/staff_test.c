@@ -26,6 +26,11 @@ double get_current_time() {
   return ((double)tb.time) + (((double)tb.millitm) / 1000.0);
 }
 
+double get_current_clock() {
+  double time = (double)(clock() * 1000 / CLOCKS_PER_SEC);
+  return time / 1000.0;
+}
+
 int test2() {
   int error = 0;
   
@@ -423,8 +428,8 @@ int test10() {
       sched_setscheduler(getpid(), 4, &params);
 
       /* Start working for i seconds. */
-      start_time = get_current_time();
-      while (get_current_time() - start_time < ((double)i)) {
+      start_time = get_current_clock();
+      while (get_current_clock() - start_time < ((double)i)) {
         a = a + b;
         b = a;
       }
