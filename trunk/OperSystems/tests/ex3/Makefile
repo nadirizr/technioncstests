@@ -72,7 +72,7 @@ make_dirs:
 	mkdir -p tmp
 
 # Test Targets
-test_extern: extern_unittest zvi_test velich_test arik_test
+test_extern: clean extern_unittest zvi_test velich_test arik_test
 	./extern_unittest
 	./zvi_test > /dev/null && python valgrinder.py ./zvi_test
 	./velich_test
