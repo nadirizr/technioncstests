@@ -977,6 +977,12 @@ int main()
 {
 	fd = open("out", O_CREAT|O_WRONLY|O_TRUNC,S_IRUSR | S_IWUSR);
 
+  fprintf(stderr, "\n");
+  fprintf(stderr, "===========================\n");
+  fprintf(stderr, "Running Roy Velich's Tests:\n");
+  fprintf(stderr, "===========================\n\n");
+  fflush(stderr);
+
 	printf("Starting test (It make take some time to complete):\n");
 	printf("--------------------------------------------------\n");
   fflush(stdout);
