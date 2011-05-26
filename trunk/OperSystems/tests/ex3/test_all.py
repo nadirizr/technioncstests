@@ -29,7 +29,7 @@ def usage_and_exit():
     print "       DEFAULT: Run medium size random tests and unit tests, on 20 files."
     print
     print "       NOTES  : Assumes that this is the project directory, and that"
-    print "                the file 'syscall_tags.h' is there."
+    print "                the file 'libmp.a' is there compiled."
     sys.exit(1)
 
 
@@ -115,9 +115,9 @@ if INPUT:
   for dir in input_dirs:
     print
     print "*** Tests from %s: ***" % dir
-    os.environ["TAGS_TESTS_DIR"] = dir
+    os.environ["THREADS_TESTS_DIR"] = dir
     os.system(TEST_FILES_CMD)
-    del os.environ["TAGS_TESTS_DIR"]
+    del os.environ["THREADS_TESTS_DIR"]
 
 # run the random files script
 if RANDOM:
@@ -125,8 +125,8 @@ if RANDOM:
     print "========================"
     print "Random Tests"
     print "========================"
-    os.environ["TAGS_MIN_COMMANDS"] = str(MIN_COMMANDS)
-    os.environ["TAGS_MAX_COMMANDS"] = str(MAX_COMMANDS)
+    os.environ["THREADS_MIN_COMMANDS"] = str(MIN_COMMANDS)
+    os.environ["THREADS_MAX_COMMANDS"] = str(MAX_COMMANDS)
     os.system(TEST_RANDOM_CMD)
 
 # run specific tests
@@ -135,5 +135,5 @@ if SPECIFIC_TEST:
     print "========================"
     print "Specific Tests"
     print "========================"
-    os.environ["TAGS_SPECIFIC_TEST"] = SPECIFIC_TEST
+    os.environ["THREADS_SPECIFIC_TEST"] = SPECIFIC_TEST
     os.system(TEST_RANDOM_CMD)
