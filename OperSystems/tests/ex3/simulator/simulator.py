@@ -46,9 +46,11 @@ class ThreadsParser:
       return 0
     cmd = args[0]
 
+    if line_num > 0:
+      print "%d: %s" % (line_num, line.strip())
+
     # Handle empty lines and comments.
     if not cmd or cmd[0] == "#":
-      print line,
       return 0
 
     # Get the thread index, if it exists.
@@ -134,9 +136,11 @@ class ThreadsParser:
       to = int(args[1])
       is_sync = "SYNC" in args
       is_urgent = "URGENT" in args
+      message = " ".join(args[2:])
       rc = self.logic.send(
-          thread_index, to, is_sync, is_urgent, " ".join(args[2:]), event)
+          thread_index, to, is_sync, is_urgent, message, event)
       
+      real_flags = ""
       flags = ""
       if is_urgent: flags += " URGENT"
       if is_sync:   flags += " SYNC"
@@ -146,13 +150,14 @@ class ThreadsParser:
             thread_index, line_num, "Send Failed (Flags:%s)" % flags, rc)
       elif rc == 0:
         print THREAD_PREFIX % (
-            thread_index, "Send Successfull (Flags:%s)" % flags)
+            thread_index, "Send Successfull: '%s'" % (message))
 
     elif cmd == "BROADCAST":
       is_sync = "SYNC" in args
       is_urgent = "URGENT" in args
+      message = " ".join(args[1:])
       rc = self.logic.broadcast(
-          thread_index, is_sync, is_urgent, " ".join(args[1:]), event)
+          thread_index, is_sync, is_urgent, message, event)
       
       flags = ""
       if is_urgent: flags += " URGENT"
@@ -163,10 +168,10 @@ class ThreadsParser:
             thread_index, line_num, "Broadcast Failed (Flags:%s)" % flags, rc)
       elif rc == 0:
         print THREAD_PREFIX % (
-            thread_index, "Broadcast Successfull (Flags:%s)" % flags)
+            thread_index, "Broadcast Successfull: '%s'" % (message))
 
     elif cmd == "CLOSE":
-      self.parseLine("%d BROADCAST FINISH" % thread_index, line_num)
+      self.parseLine("%d BROADCAST FINISH" % thread_index, -1)
       rc = self.logic.close(thread_index)
 
       for t in range(1, self.num_threads + 1):
@@ -200,12 +205,8 @@ class ThreadsParser:
         if m.event and m.event[1]:
           event_str = " <EVENT %d %d>" % m.event
         
-        flags = ""
-        if m.is_urgent: flags += " URGENT"
-        if m.is_sync:   flags += " SYNC"
-        if not flags:   flags = " None"
         print THREAD_PREFIX % (
-            m.origin, "Send Successfull (Flags:%s)%s" % (flags, event_str))
+            m.origin, "Send Successfull: '%s'%s" % (m.message, event_str))
 
     # Finally, go over the broadcasters and print them as well.
     broadcasters = self.logic.finishedBroadcasters()
@@ -214,12 +215,8 @@ class ThreadsParser:
       if m.event and m.event[1]:
         event_str = " <EVENT %d %d>" % m.event
         
-      flags = ""
-      if m.is_urgent: flags += " URGENT"
-      if m.is_sync:   flags += " SYNC"
-      if not flags:   flags = " None"
       print THREAD_PREFIX % (
-          m.origin, "Broadcast Successfull (Flags:%s)%s" % (flags, event_str))
+          m.origin, "Broadcast Successfull: '%s'%s" % (m.message, event_str))
 
     # Return the return code from the command.
     return rc

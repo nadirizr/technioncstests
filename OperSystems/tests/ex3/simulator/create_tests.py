@@ -1,7 +1,6 @@
 import sys
 import os
 import random
-from tag_util import *
 from progressbar import *
 
 TEST_DIR = ".." + os.sep + "random"
@@ -41,8 +40,8 @@ random.seed()
 # Utility Functions          #
 ##############################
 
-def getRandomThreadCount():
-  return random.randint(2, MAX_COMMANDS / 10)
+def getRandomThreadCount(num_lines):
+  return random.randint(2, num_lines / 10)
 
 def getRandomThread():
   return random.randint(1, test_state.num_threads)
@@ -50,33 +49,66 @@ def getRandomThread():
 def getBlockedThreads():
   return test_state.waiting_at_barrier + test_state.waiting_at_sync
 
+def isAvailableThread(thread_id):
+  return thread_id not in getBlockedThreads()
+
+def getAvailableThreads():
+  return [id for id in xrange(1, test_state.num_threads+1) if isAvailableThread(id)]
+
 def getRandomAvailableThread():
+  if test_state.num_threads == len(getBlockedThreads()):
+    return None
+
   t = getRandomThread()
   while t in getBlockedThreads():
     t = getRandomThread()
   return t
 
 def blockAtBarrier(thread_id):
+  if thread_id in getBlockedThreads():
+    return False
+
   if thread_id not in test_state.waiting_at_barrier:
     test_state.waiting_at_barrier.append(thread_id)
 
+  return True
+
 def blockAtSync(thread_id):
+  if thread_id in getBlockedThreads():
+    return False
+
+  if (test_state.barrier_counter - len(test_state.waiting_at_barrier)) <= \
+     len(getAvailableThreads()):
+    return False
+
   if thread_id not in test_state.waiting_at_sync:
     test_state.waiting_at_sync.append(thread_id)
+
+  return True
+
+def freeAllBlocking():
+  test_state.waiting_at_barrier = []
+  test_state.waiting_at_sync = []
 
 LETTERS = [chr(c) for c in range(ord('a'), ord('z') + 1)]
 def getRandomMessage():
   message_len = random.randint(10, 20)
-  return "".join([LETTERS[random.randrange(len(LETTERS))]
-                  for i in range(message_len)])
+
+  urgent = ""
+  if random.random() < 0.2:
+    urgent = "URGENT "
+
+  return urgent + "".join([LETTERS[random.randrange(len(LETTERS))]
+                           for i in range(message_len)])
 
 
 ##############################
 # Command Creation Functions #
 ##############################
 
-def createInit():
-  test_state = TestState(getRandomThreadCount())
+def createInit(num_lines):
+  global test_state
+  test_state = TestState(getRandomThreadCount(num_lines))
   return "INIT %d" % test_state.num_threads
 
 def createCreateBarrier():
@@ -86,7 +118,7 @@ def createCreateBarrier():
   if random.random() < ERROR_CHANCE:
     num = random.randint(-10, 0)
   else:
-    num = random.randint(1, test_state.num_threads)
+    num = random.randint(1, test_state.num_threads / 2)
 
   if num >= 1:
     test_state.barrier_counter = num
@@ -98,13 +130,14 @@ def createBarrier():
 
   if len(test_state.waiting_at_barrier) == test_state.barrier_counter:
     freeAllBlocking()
-    test_state.barrier_counter = -1
+    test_state.barrier_counter = 0
 
   return "%d BARRIER" % t
 
 def createDestroyBarrier():
   t = getRandomAvailableThread()
   test_state.waiting_at_barrier = []
+  test_state.barrier_counter = -1
   return "%d DESTROY_BARRIER" % t
 
 def createBarrierCommand():
@@ -114,11 +147,8 @@ def createBarrierCommand():
   if test_state.barrier_counter < len(test_state.waiting_at_barrier):
     return createBarrier()
 
-  if test_state.barrier_counter < 0 and test_state.waiting_at_barrier:
-    if random.random() < ERROR_CHANCE:
-      return createBarrier()
-    else:
-      return createDestroyBarrier()
+  if test_state.barrier_counter == 0 and not test_state.waiting_at_barrier:
+    return createDestroyBarrier()
 
   return createBarrier()
 
@@ -133,12 +163,17 @@ def createSendSync():
   target = getRandomThread()
   message = getRandomMessage()
 
-  if not isAvailableThread(target):
-    blockAtSync(t)
+  if t == target:
+    return createSend()
 
-  event = self.event
-  self.event += 1
-  return "%d SEND %d SYNC %s <EVENT %d %d>" % (t, target, message, event, 1)
+  if not isAvailableThread(target):
+    if not blockAtSync(t):
+      return createSend()
+
+  event = test_state.event
+  test_state.event += 1
+  return "%d SEND %d SYNC %s <EVENT %d %d>\n%d WAIT" % (
+      t, target, message, event, 1, t)
 
 def createBroadcast():
   t = getRandomAvailableThread()
@@ -149,12 +184,13 @@ def createBroadcastSync():
   t = getRandomAvailableThread()
   message = getRandomMessage()
 
-  if blockedThreads():
-    blockAtSync(t)
+  if getBlockedThreads():
+    if not blockAtSync(t):
+      return createBroadcast()
 
-  event = self.event
-  self.event += 1
-  return "%d BROADCAST SYNC %s <EVENT %d %d>" % (t, message, event, 1)
+  event = test_state.event
+  test_state.event += 1
+  return "%d BROADCAST SYNC %s <EVENT %d %d>\nWAIT" % (t, message, event, 1)
 
 def createClose():
   command = ""
@@ -170,10 +206,10 @@ def createClose():
 commands = { }
 commands["threads"] = [
     (createBarrierCommand, 0.5),
-    (createSend, 0.25),
-    (createSendSync, 0.25),
-    (createBroadcast, 0.25),
-    (createBroadcastSync, 0.25),
+    (createSend, 0.5),
+    (createSendSync, 0.2),
+    (createBroadcast, 0.3),
+    (createBroadcastSync, 0.1),
 ]
 
 # Sum all of the chances together for each set of commands.
@@ -203,12 +239,9 @@ def createNewCommand(cmd_list, cmd_sum):
 
 # Creates a new random set of commands for a file.
 def createNewCommandSet(cmd_list, cmd_sum, init_commands, fin_commands):
-  global state
-  state = MainState()
-
   num_lines = random.randint(MIN_COMMANDS, MAX_COMMANDS) - \
               (len(init_commands) + len(fin_commands))
-  return [c() for c in init_commands] + \
+  return [c(num_lines) for c in init_commands] + \
          [createNewCommand(cmd_list, cmd_sum) for i in range(num_lines)] + \
          [c() for c in fin_commands]
     
@@ -279,7 +312,7 @@ def parseArgs():
             sys.exit(1)
 parseArgs()
 if not modes:
-    modes = ["tags"]
+    modes = ["threads"]
 
 if not input_dir:
     # Make sure test dir exists.
