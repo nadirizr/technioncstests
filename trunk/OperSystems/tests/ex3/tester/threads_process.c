@@ -210,6 +210,7 @@ int thread_handle_barrier(int index, char* arguments, int line_num) {
 int thread_handle_send(int index, char* arguments, int line_num) {
   char* message = NULL;
   char* event = NULL;
+  int event_counter = 0;
   int message_len = 0;
   int target_id = 0;
   int rc = 0;
@@ -255,11 +256,16 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   /* Check if there is an EVENT in the message, and if so modify it. */
   event = getEvent(message);
   if (event != NULL) {
-    if (increaseEventCounter(event) == 0) {
+    event_counter = increaseEventCounter(event);
+    if (event_counter == -1) {
       event = NULL;
     }
     if (event != NULL) {
       *(event-1) = '\0';
+      
+      if (event_counter == 0) {
+        event = NULL;
+      }
     }
   }
 
@@ -287,6 +293,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
 int thread_handle_broadcast(int index, char* arguments, int line_num) {
   char* message = NULL;
   char* event = NULL;
+  int event_counter = 0;
   int message_len = 0;
   int rc = 0;
   int flags = 0;
@@ -321,11 +328,16 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
   /* Check if there is an EVENT in the message, and if so modify it. */
   event = getEvent(message);
   if (event != NULL) {
-    if (increaseEventCounter(event) == 0) {
+    event_counter = increaseEventCounter(event);
+    if (event_counter == -1) {
       event = NULL;
     }
     if (event != NULL) {
       *(event-1) = '\0';
+      
+      if (event_counter == 0) {
+        event = NULL;
+      }
     }
   }
 
