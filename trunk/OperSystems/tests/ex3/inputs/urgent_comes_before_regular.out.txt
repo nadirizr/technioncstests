@@ -1,32 +1,50 @@
-Main Thread Registered
+1: INIT 3
+Main Thread Registered (3 Threads)
 [Thread 1]: Registered (Thread ID = 1)
 [Thread 2]: Registered (Thread ID = 2)
 [Thread 3]: Registered (Thread ID = 3)
-[Thread 1]: Barrier Created
-[Thread 1]: Send Successfull (Flags: None)
-[Thread 1]: Send Successfull (Flags: URGENT)
-[Thread 1]: Send Successfull (Flags: None)
-[Thread 1]: Send Successfull (Flags: URGENT)
-[Thread 3]: Barrier Passed
-[Thread 1]: Barrier Passed
-[Thread 3]: Received Message (length = 25): 'URGENT should arrive 1st'
-[Thread 3]: Received Message (length = 25): 'URGENT should arrive 2nd'
-[Thread 3]: Received Message (length = 18): 'should arrive 3rd'
-[Thread 3]: Received Message (length = 18): 'should arrive 4th'
-[Thread 3]: Barrier Destroyed
-[Thread 2]: Barrier Created
-[Thread 1]: Send Successfull (Flags: None)
-[Thread 2]: Send Successfull (Flags: URGENT)
-[Thread 2]: Send Successfull (Flags: None)
-[Thread 1]: Send Successfull (Flags: URGENT)
-[Thread 3]: Barrier Passed
-[Thread 2]: Barrier Passed
-[Thread 3]: Received Message (length = 25): 'URGENT should arrive 1st'
-[Thread 3]: Received Message (length = 25): 'URGENT should arrive 2nd'
-[Thread 3]: Received Message (length = 18): 'should arrive 3rd'
-[Thread 3]: Received Message (length = 18): 'should arrive 4th'
-[Thread 3]: Barrier Destroyed
-[Thread 1]: Broadcast Successfull (Flags: None)
+2: 1 CREATE_BARRIER 2
+[Thread 1]: Barrier 1 Created
+3: 3 BARRIER
+4: 1 SEND 3 should arrive 3rd <EVENT 3 0>
+[Thread 1]: Send Successfull: 'should arrive 3rd'
+5: 1 SEND 3 URGENT should arrive 2nd <EVENT 2 0>
+[Thread 1]: Send Successfull: 'URGENT should arrive 2nd'
+6: 1 SEND 3 should arrive 4th <EVENT 4 0>
+[Thread 1]: Send Successfull: 'should arrive 4th'
+7: 1 SEND 3 URGENT should arrive 1st <EVENT 1 0>
+[Thread 1]: Send Successfull: 'URGENT should arrive 1st'
+8: 1 BARRIER
+[Thread 3]: Barrier 1 Passed
+[Thread 1]: Barrier 1 Passed
+[Thread 3]: Received Message (length = 25): 'URGENT should arrive 1st' <EVENT 1 0>
+[Thread 3]: Received Message (length = 25): 'URGENT should arrive 2nd' <EVENT 2 0>
+[Thread 3]: Received Message (length = 18): 'should arrive 3rd' <EVENT 3 0>
+[Thread 3]: Received Message (length = 18): 'should arrive 4th' <EVENT 4 0>
+9: 3 DESTROY_BARRIER
+[Thread 3]: Barrier 1 Destroyed
+10: 2 CREATE_BARRIER 2
+[Thread 2]: Barrier 2 Created
+11: 3 BARRIER
+12: 1 SEND 3 should arrive 3rd <EVENT 13 0>
+[Thread 1]: Send Successfull: 'should arrive 3rd'
+13: 2 SEND 3 URGENT should arrive 2nd <EVENT 12 0>
+[Thread 2]: Send Successfull: 'URGENT should arrive 2nd'
+14: 2 SEND 3 should arrive 4th <EVENT 14 0>
+[Thread 2]: Send Successfull: 'should arrive 4th'
+15: 1 SEND 3 URGENT should arrive 1st <EVENT 11 0>
+[Thread 1]: Send Successfull: 'URGENT should arrive 1st'
+16: 2 BARRIER
+[Thread 3]: Barrier 2 Passed
+[Thread 2]: Barrier 2 Passed
+[Thread 3]: Received Message (length = 25): 'URGENT should arrive 1st' <EVENT 11 0>
+[Thread 3]: Received Message (length = 25): 'URGENT should arrive 2nd' <EVENT 12 0>
+[Thread 3]: Received Message (length = 18): 'should arrive 3rd' <EVENT 13 0>
+[Thread 3]: Received Message (length = 18): 'should arrive 4th' <EVENT 14 0>
+17: 3 DESTROY_BARRIER
+[Thread 3]: Barrier 2 Destroyed
+18: CLOSE
+[Thread 1]: Broadcast Successfull: 'FINISH'
 [Thread 2]: Received Message (length = 7): 'FINISH'
 [Thread 3]: Received Message (length = 7): 'FINISH'
 [Thread 1]: Unregistered (Thread ID = 1)
