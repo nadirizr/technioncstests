@@ -143,7 +143,8 @@ class ThreadsLogic:
 
             if not self.waiting_broadcasters[m.origin]:
               del self.waiting_broadcasters[m.origin]
-              self.finished_broadcasters.append((m.origin, m))
+              if m.is_broadcast:
+                self.finished_broadcasters.append((m.origin, m))
 
           delivered.append(m)
           self.messages_for_thread[t].remove(m)
