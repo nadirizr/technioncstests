@@ -65,6 +65,7 @@ class TestProgramRun(unittest.TestCase):
     
     def __init__(self, name):
         self.name = name
+        self.display_name = "<<< %s >>>" % self.name
         unittest.TestCase.__init__(self, "testRun")
         
     def id(self):
@@ -75,7 +76,7 @@ class TestProgramRun(unittest.TestCase):
         self.assertEquals(
             " ".join(real_out[0].split()),
             " ".join(expected_out[0].split()),
-            self.name + (": INIT line differs or missing in output:\n" +
+            self.display_name + (": INIT line differs or missing in output:\n" +
                 "real_out (file:'%s' line:1)\t: '%s'\n!=\n" +
                 "expected (file:'%s' line:1)\t: '%s'") % (
                 real_out_file, real_out[0],
@@ -85,19 +86,21 @@ class TestProgramRun(unittest.TestCase):
         self.assertEquals(
             " ".join(real_out[1].split()),
             " ".join(expected_out[1].split()),
-            self.name + (": Main registration line differs or missing in output:\n" +
-                "real_out (file:'%s' line:2)\t: '%s'\n!=\n" +
-                "expected (file:'%s' line:2)\t: '%s'") % (
-                real_out_file, real_out[0],
-                expected_out_file, expected_out[0]))
+            self.display_name +
+            (": Main registration line differs or missing in output:\n" +
+             "real_out (file:'%s' line:2)\t: '%s'\n!=\n" +
+             "expected (file:'%s' line:2)\t: '%s'") % (
+             real_out_file, real_out[0],
+             expected_out_file, expected_out[0]))
         self.assertEquals(
             " ".join(real_out[-1].split()),
             " ".join(expected_out[-1].split()),
-            self.name + (": Main unregistration line differs or missing in output:\n" +
-                "real_out (file:'%s' line:%d)\t: '%s'\n!=\n" +
-                "expected (file:'%s' line:%d)\t: '%s'") % (
-                real_out_file, len(real_out), real_out[-1],
-                expected_out_file, len(expected_out), expected_out[-1]))
+            self.display_name +
+            (": Main unregistration line differs or missing in output:\n" +
+             "real_out (file:'%s' line:%d)\t: '%s'\n!=\n" +
+             "expected (file:'%s' line:%d)\t: '%s'") % (
+             real_out_file, len(real_out), real_out[-1],
+             expected_out_file, len(expected_out), expected_out[-1]))
 
         # check other thread registration
         for i in range(2, len(expected_out)):
@@ -105,7 +108,8 @@ class TestProgramRun(unittest.TestCase):
                 break
             res = re.match("^\[Thread [0-9]+\]: (Registered)", real_out[i])
             self.assertEquals(res.group(1), "Registered",
-                self.name + ": Missing thread registration in output." +
+                self.display_name +
+                ": Missing thread registration in output." +
                 "Not all threads registered\n")
         # check other thread unregistration
         for i in range(2, len(expected_out)):
@@ -113,7 +117,8 @@ class TestProgramRun(unittest.TestCase):
                 break
             res = re.match("^\[Thread [0-9]+\]: (Unregistered)", real_out[-i])
             self.assertEquals(res.group(1), "Unregistered",
-                self.name + ": Missing thread unregistration in output." +
+                self.display_name +
+                ": Missing thread unregistration in output." +
                 "Not all threads unregistered\n")        
 
     def checkOutputLines(self, real_out_file, expected_out_file, real_out, expected_out):
@@ -140,15 +145,17 @@ class TestProgramRun(unittest.TestCase):
             self.assertEquals(
                 " ".join(real_out[i][1].split()),
                 " ".join(expected_out[i][1].split()),
-                self.name + (": Line differs or missing in SORTED output:\n" +
-                    "real_out (file:'%s' line:%d)\t: '%s'\n!=\n" +
-                    "expected (file:'%s' line:%d)\t: '%s'\n" +
-                    "This could mean that a message wasn't passed correctly " +
-                    "or that a barrier failed for some reason.\n") % (
-                    real_out_file, real_out[i][0], real_out[i][1],
-                    expected_out_file, expected_out[i][0], expected_out[i][1]))
+                self.display_name +
+                (": Line differs or missing in SORTED output:\n" +
+                 "real_out (file:'%s' line:%d)\t: '%s'\n!=\n" +
+                 "expected (file:'%s' line:%d)\t: '%s'\n" +
+                 "This could mean that a message wasn't passed correctly " +
+                 "or that a barrier failed for some reason.\n") % (
+                 real_out_file, real_out[i][0], real_out[i][1],
+                 expected_out_file, expected_out[i][0], expected_out[i][1]))
         self.assertEquals(len(expected_out), len(real_out),
-            self.name + ": Number of lines in expected output and actual output differ")
+            self.display_name +
+            ": Number of lines in expected output and actual output differ")
 
     def checkEvents(self, real_out_file, expected_out_file, real_out, expected_out):
         # collect the event information, and check if user events appear in the
@@ -177,7 +184,8 @@ class TestProgramRun(unittest.TestCase):
                   self.assertEquals(
                       (int(event_id) >= current_user_event),
                       True,
-                      self.name + (": User EVENT %d appeared after EVENT %d!\n" %
+                      self.display_name +
+                      (": User EVENT %d appeared after EVENT %d!\n" %
                         (int(event_id), current_user_event)) +
                         "This means the order of events in the test was not " +
                         "as it should have been even though it had to be!\n" +
@@ -218,7 +226,7 @@ class TestProgramRun(unittest.TestCase):
             (e, real_event, expected_event) = errors[0]
             self.assertEquals(
                 expected_event[1], real_event[1],
-                ("<<< %s >>>" % self.name) +
+                self.display_name +
                 (": There were %d/%d EVENTs not in order!\n" % (
                  len(errors), len(expected_events))) +
                 ("First EVENT %s not found or in incorrect order in output:\n" +
@@ -232,7 +240,7 @@ class TestProgramRun(unittest.TestCase):
 
         # finally, check if we have too many events in the real events
         self.assertEquals(len(expected_events), len(real_events),
-          self.name + ": Too many EVENTs found in real output")
+          self.display_name + ": Too many EVENTs found in real output")
     
     def testRun(self):
         print "(%s) ... " % self.name,
