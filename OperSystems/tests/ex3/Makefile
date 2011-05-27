@@ -76,9 +76,6 @@ make_dirs:
 
 # Test Targets
 test_extern: make_dirs clean extern_unittest zvi_test velich_test arik_test threads_process
-	./extern_unittest
-	./zvi_test > /dev/null
-	./velich_test
 
 test_all: make_dirs all_unittest zvi_test velich_test arik_test threads_process
 	./all_unittest

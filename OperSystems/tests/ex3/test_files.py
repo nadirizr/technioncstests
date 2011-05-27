@@ -236,11 +236,17 @@ class TestProgramRun(unittest.TestCase):
         if not_found_error or different_lengths_error or \
            error_count > (MAX_EVENT_ERROR_THRESHOLD * total_count):
             (e, real_event, expected_event) = errors[0]
+            special_message = ""
+            if not_found_error:
+                special_message = "Also, the following EVENT was not found:"
+            elif different_lengths_error:
+                special_message = "Also, at least one EVENT instance was missing."
             self.assertEquals(
                 expected_event[1], real_event[1],
                 self.display_name +
                 (": There were %d/%d EVENTs not in order!\n" % (
                  len(errors), len(expected_events))) +
+                special_message +
                 ("First EVENT %s not found or in incorrect order in output:\n" +
                  "real_out (file:'%s' line:%d)\t: Order is %s\n!=\n" +
                  "expected (file:'%s' line:%d)\t: Order is %s\n" +
