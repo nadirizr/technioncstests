@@ -1,0 +1,10 @@
+INIT 6
+1 CREATE_BARRIER 2
+1 BARRIER
+5 SEND 1 SYNC should arrive 1st <EVENT 1 0>
+4 SEND 5 SYNC should arrive 2nd <EVENT 2 0>
+3 SEND 4 SYNC should arrive 3rd <EVENT 3 0>
+2 SEND 3 SYNC should arrive 4th <EVENT 4 0>
+6 BARRIER
+6 DESTROY_BARRIER
+CLOSE
