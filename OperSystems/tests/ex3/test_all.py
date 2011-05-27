@@ -5,8 +5,6 @@ import os.path
 import sys
 import glob
 
-sys.exit(0)
-
 def usage_and_exit():
     print "Usage: python test_all.py [num of files] [size=small|medium|big|low-high]"
     print "                          [rerun|random|input] [test=testN] [clean] [help]"
@@ -26,7 +24,7 @@ def usage_and_exit():
     print "                      test=test387,test108,test1"
     print "       clean        - Cleans all of the files from the previous run"
     print
-    print "       DEFAULT: Run medium size random tests and unit tests, on 20 files."
+    print "       DEFAULT: Run medium size random tests and input tests, on 20 files."
     print
     print "       NOTES  : Assumes that this is the project directory, and that"
     print "                the file 'libmp.a' is there compiled."
@@ -82,6 +80,7 @@ for arg in sys.argv[1:]:
     
 # if no flags were given on input or random, do both by default
 if not INPUT and not RANDOM and not CLEAN and not SPECIFIC_TEST:
+    INPUT = True
     RANDOM = True
 
 # if rerun is on, set NUM_OF_FILES to be zero
