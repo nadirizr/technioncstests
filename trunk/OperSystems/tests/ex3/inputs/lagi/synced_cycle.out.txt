@@ -11,19 +11,23 @@ Main Thread Registered (6 Threads)
 3: 1 BARRIER
 4: 5 SEND 1 SYNC should arrive 1st <EVENT 1 0>
 5: 4 SEND 5 SYNC should arrive 2nd <EVENT 2 0>
-[Thread 5]: Received Message (length = 23): 'SYNC should arrive 2nd' <EVENT 2 0>
-[Thread 4]: Send Successfull: 'SYNC should arrive 2nd'
 6: 3 SEND 4 SYNC should arrive 3rd <EVENT 3 0>
-[Thread 4]: Received Message (length = 23): 'SYNC should arrive 3rd' <EVENT 3 0>
-[Thread 3]: Send Successfull: 'SYNC should arrive 3rd'
 7: 2 SEND 3 SYNC should arrive 4th <EVENT 4 0>
-[Thread 3]: Received Message (length = 23): 'SYNC should arrive 4th' <EVENT 4 0>
-[Thread 2]: Send Successfull: 'SYNC should arrive 4th'
 8: 6 BARRIER
 [Thread 1]: Barrier 1 Passed
 [Thread 6]: Barrier 1 Passed
 [Thread 1]: Received Message (length = 23): 'SYNC should arrive 1st' <EVENT 1 0>
 [Thread 5]: Send Successfull: 'SYNC should arrive 1st'
+[Thread 5]: Received Message (length = 23): 'SYNC should arrive 2nd' <EVENT 2 0>
+[Thread 4]: Send Successfull: 'SYNC should arrive 2nd'
+[Thread 4]: Received Message (length = 23): 'SYNC should arrive 3rd' <EVENT 3 0>
+[Thread 3]: Send Successfull: 'SYNC should arrive 3rd'
+[Thread 3]: Received Message (length = 23): 'SYNC should arrive 4th' <EVENT 4 0>
+[Thread 2]: Send Successfull: 'SYNC should arrive 4th'
+[Thread 5]: Broadcast Successfull: 'SYNC should arrive 1st'
+[Thread 4]: Broadcast Successfull: 'SYNC should arrive 2nd'
+[Thread 3]: Broadcast Successfull: 'SYNC should arrive 3rd'
+[Thread 2]: Broadcast Successfull: 'SYNC should arrive 4th'
 9: 6 DESTROY_BARRIER
 [Thread 6]: Barrier 1 Destroyed
 10: CLOSE
