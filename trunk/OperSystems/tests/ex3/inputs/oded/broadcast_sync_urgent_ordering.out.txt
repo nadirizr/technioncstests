@@ -1,0 +1,50 @@
+1: INIT 5
+Main Thread Registered (5 Threads)
+[Thread 1]: Registered (Thread ID = 1)
+[Thread 2]: Registered (Thread ID = 2)
+[Thread 3]: Registered (Thread ID = 3)
+[Thread 4]: Registered (Thread ID = 4)
+[Thread 5]: Registered (Thread ID = 5)
+2: 1 CREATE_BARRIER 3
+[Thread 1]: Barrier 1 Created
+3: 2 BARRIER
+4: 3 BARRIER
+5: 4 SEND 3 should arrive 4th <EVENT 4 0>
+[Thread 4]: Send Successfull: 'should arrive 4th'
+6: 1 SEND 3 URGENT should arrive 3rd <EVENT 3 0>
+[Thread 1]: Send Successfull: 'URGENT should arrive 3rd'
+7: 4 SEND 3 SYNC URGENT should arrive 2nd <EVENT 2 0>
+8: 5 BROADCAST should arrive 5th <EVENT 5 0>
+[Thread 5]: Broadcast Successfull: 'should arrive 5th'
+[Thread 1]: Received Message (length = 18): 'should arrive 5th' <EVENT 5 0>
+9: 1 BROADCAST SYNC URGENT should arrive 1st <EVENT 1 0>
+[Thread 5]: Received Message (length = 30): 'SYNC URGENT should arrive 1st' <EVENT 1 0>
+10: 5 BARRIER
+[Thread 2]: Barrier 1 Passed
+[Thread 3]: Barrier 1 Passed
+[Thread 5]: Barrier 1 Passed
+[Thread 2]: Received Message (length = 30): 'SYNC URGENT should arrive 1st' <EVENT 1 0>
+[Thread 3]: Received Message (length = 30): 'SYNC URGENT should arrive 1st' <EVENT 1 0>
+[Thread 3]: Received Message (length = 25): 'URGENT should arrive 3rd' <EVENT 3 0>
+[Thread 3]: Received Message (length = 18): 'should arrive 5th' <EVENT 5 0>
+[Thread 2]: Received Message (length = 18): 'should arrive 5th' <EVENT 5 0>
+[Thread 3]: Received Message (length = 30): 'SYNC URGENT should arrive 2nd' <EVENT 2 0>
+[Thread 4]: Send Successfull: 'SYNC URGENT should arrive 2nd'
+[Thread 4]: Received Message (length = 30): 'SYNC URGENT should arrive 1st' <EVENT 1 0>
+[Thread 3]: Received Message (length = 18): 'should arrive 4th' <EVENT 4 0>
+[Thread 4]: Received Message (length = 18): 'should arrive 5th' <EVENT 5 0>
+[Thread 1]: Broadcast Successfull: 'SYNC URGENT should arrive 1st'
+11: 3 DESTROY_BARRIER
+[Thread 3]: Barrier 1 Destroyed
+12: CLOSE
+[Thread 1]: Broadcast Successfull: 'FINISH'
+[Thread 2]: Received Message (length = 7): 'FINISH'
+[Thread 3]: Received Message (length = 7): 'FINISH'
+[Thread 4]: Received Message (length = 7): 'FINISH'
+[Thread 5]: Received Message (length = 7): 'FINISH'
+[Thread 1]: Unregistered (Thread ID = 1)
+[Thread 2]: Unregistered (Thread ID = 2)
+[Thread 3]: Unregistered (Thread ID = 3)
+[Thread 4]: Unregistered (Thread ID = 4)
+[Thread 5]: Unregistered (Thread ID = 5)
+Main Thread Unregistered
