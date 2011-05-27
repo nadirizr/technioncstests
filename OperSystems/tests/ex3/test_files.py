@@ -71,13 +71,23 @@ class TestProgramRun(unittest.TestCase):
         return "TestProgramRun.testRun(" + self.name + ")"
 
     def checkRegistration(self, real_out_file, expected_out_file, real_out, expected_out):
-        # check main registration
+        # check INIT line
         self.assertEquals(
             " ".join(real_out[0].split()),
             " ".join(expected_out[0].split()),
-            self.name + (": Main registration line differs or missing in output:\n" +
+            self.name + (": INIT line differs or missing in output:\n" +
                 "real_out (file:'%s' line:1)\t: '%s'\n!=\n" +
                 "expected (file:'%s' line:1)\t: '%s'") % (
+                real_out_file, real_out[0],
+                expected_out_file, expected_out[0]))
+
+        # check main registration and unregistration
+        self.assertEquals(
+            " ".join(real_out[1].split()),
+            " ".join(expected_out[1].split()),
+            self.name + (": Main registration line differs or missing in output:\n" +
+                "real_out (file:'%s' line:2)\t: '%s'\n!=\n" +
+                "expected (file:'%s' line:2)\t: '%s'") % (
                 real_out_file, real_out[0],
                 expected_out_file, expected_out[0]))
         self.assertEquals(
@@ -90,7 +100,7 @@ class TestProgramRun(unittest.TestCase):
                 expected_out_file, len(expected_out), expected_out[-1]))
 
         # check other thread registration
-        for i in range(1, len(expected_out)):
+        for i in range(2, len(expected_out)):
             if not re.match("^\[Thread [0-9]+\]: Registered", expected_out[i]):
                 break
             res = re.match("^\[Thread [0-9]+\]: (Registered)", real_out[i])
@@ -124,6 +134,8 @@ class TestProgramRun(unittest.TestCase):
                 continue
             if re.match("^\[Thread [0-9]+\]: Unregistered", expected_out[i][1]):
                 continue
+            if re.match("^[0-9]+: ", expected_out[i][1]):
+                continue
 
             self.assertEquals(
                 " ".join(real_out[i][1].split()),
@@ -146,6 +158,10 @@ class TestProgramRun(unittest.TestCase):
         current_user_event = 0
         for i in range(len(real_out)):
             r = real_out[i]
+            
+            if re.match("^[0-9]+: ", r):
+                continue
+
             res = re.search("<EVENT ([0-9a-zA-Z]+) ([0-9]+)>", r)
             if res:
                 # add the event for later comparison
@@ -157,19 +173,23 @@ class TestProgramRun(unittest.TestCase):
 
                 # if this is a user event, verify that the order between them is
                 # correct (going up)
-                if event_counter == 0:
+                if int(event_counter) == 0:
                   self.assertEquals(
-                      (event_counter == 0) and (event_id >= current_user_event),
+                      (int(event_id) >= current_user_event),
                       True,
                       self.name + (": User EVENT %d appeared after EVENT %d!\n" %
-                        (event_id, current_user_event)) +
+                        (int(event_id), current_user_event)) +
                         "This means the order of events in the test was not " +
                         "as it should have been even though it had to be!\n" +
                         "Maybe a barrier problem or a SEND_SYNC problem?\n")
-                  current_user_event = event_counter
+                  current_user_event = int(event_id)
                         
         for i in range(len(expected_out)):
             e = expected_out[i]
+            
+            if re.match("^[0-9]+: ", e):
+                continue
+
             res = re.search("<EVENT ([0-9a-zA-Z]+) ([0-9]+)>", e)
             if res:
                 event_id = res.group(1)
