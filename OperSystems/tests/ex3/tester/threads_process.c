@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +19,7 @@
 
 
 /*** Contex and Barriers ***/
+
 context_t* main_context;
 
 barrier_t* main_barrier;
@@ -27,6 +29,43 @@ pthread_cond_t main_barrier_cond;
 
 barrier_t* start_barrier;
 barrier_t* finish_barrier;
+
+pthread_mutex_t print_lock;
+
+
+/*** Utility Functions ***/
+
+#ifdef SYNC_PRINT
+#define START_PRINT pthread_mutex_lock(&print_lock);
+#define END_PRINT \
+    fflush(stdout); \
+    pthread_mutex_unlock(&print_lock);
+#else
+#define START_PRINT ;
+#define END_PRINT fflush(stdout);
+#endif
+
+int collectNumbersFromString(const char* str, int* numbers, int max_numbers) {
+  const char* current_str_pos = str;
+  char current_num_str[10];
+  int total_numbers = 0;
+  int current_num_int = 0;
+
+  while (sscanf(current_str_pos, "%d ", &current_num_int) == 1) {
+    numbers[total_numbers] = current_num_int;
+    ++total_numbers;
+    snprintf(current_num_str, sizeof(current_num_str), "%d ", current_num_int);
+    current_str_pos += strlen(current_num_str);
+  }
+  if (sscanf(current_str_pos, "%d", &current_num_int) == 1) {
+    numbers[total_numbers] = current_num_int;
+    ++total_numbers;
+  } else {
+    return -1;
+  }
+
+  return total_numbers;
+}
 
 
 /*** Process Threads ***/
@@ -109,28 +148,6 @@ int increaseEventCounter(char* message) {
   return event_counter;
 }
 
-int collectNumbersFromString(const char* str, int* numbers, int max_numbers) {
-  const char* current_str_pos = str;
-  char current_num_str[10];
-  int total_numbers = 0;
-  int current_num_int = 0;
-
-  while (sscanf(current_str_pos, "%d ", &current_num_int) == 1) {
-    numbers[total_numbers] = current_num_int;
-    ++total_numbers;
-    snprintf(current_num_str, sizeof(current_num_str), "%d ", current_num_int);
-    current_str_pos += strlen(current_num_str);
-  }
-  if (sscanf(current_str_pos, "%d", &current_num_int) == 1) {
-    numbers[total_numbers] = current_num_int;
-    ++total_numbers;
-  } else {
-    return -1;
-  }
-
-  return total_numbers;
-}
-
 
 /*** Handling Commands in Threads ***/
 
@@ -153,9 +170,10 @@ int thread_handle_create_barrier(int index, char* arguments, int line_num) {
   if (main_barrier == NULL) {
     pthread_mutex_unlock(&main_barrier_lock);
     
+    START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Barrier %d Creation Failed!\n",
            index + 1, line_num, main_barrier_counter);
-    fflush(stdout);
+    END_PRINT;
     return -1;
   }
 
@@ -163,8 +181,9 @@ int thread_handle_create_barrier(int index, char* arguments, int line_num) {
   ++main_barrier_counter;
   pthread_mutex_unlock(&main_barrier_lock);
 
+  START_PRINT;
   printf("[Thread %d]: Barrier %d Created\n", index + 1, main_barrier_counter);
-  fflush(stdout);
+  END_PRINT;
   return 0;
 }
 
@@ -179,9 +198,10 @@ int thread_handle_destroy_barrier(int index, char* arguments, int line_num) {
   pthread_mutex_unlock(&main_barrier_lock);
 
   /* Handle success. */
+  START_PRINT;
   printf("[Thread %d]: Barrier %d Destroyed\n",
          index + 1, main_barrier_counter);
-  fflush(stdout);
+  END_PRINT;
   return 0;
 }
 
@@ -193,15 +213,17 @@ int thread_handle_barrier(int index, char* arguments, int line_num) {
   
   /* Handle errors. */
   if (rc < 0) {
+    START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Barrier %d Failed (rc = %d)!\n",
            index + 1, line_num, main_barrier_counter, rc);
-    fflush(stdout);
+    END_PRINT;
     return rc;
   }
 
   /* Handle success. */
+  START_PRINT;
   printf("[Thread %d]: Barrier %d Passed\n", index + 1, main_barrier_counter);
-  fflush(stdout);
+  END_PRINT;
   return 0;
 }
 
@@ -269,22 +291,24 @@ int thread_handle_send(int index, char* arguments, int line_num) {
 
   /* Handle errors. */
   if (rc < 0) {
+    START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Send Failed (Flags:%s%s%s) (rc = %d)!\n",
           index + 1, line_num,
           (is_urgent  ? " URGENT" : ""),
           (is_sync    ? " SYNC"   : ""),
           (flags == 0 ? " None"   : ""),
           rc);
-    fflush(stdout);
+    END_PRINT;
     return -1;
   }
 
   /* Handle success. */
+  START_PRINT;
   printf("[Thread %d]: Send Successfull: '%s'%s%s\n",
          index + 1, message,
          (event != NULL ? " "   : ""),
          (event != NULL ? event : ""));
-  fflush(stdout);
+  END_PRINT;
   return 0;
 }
 
@@ -341,22 +365,24 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
 
   /* Handle errors. */
   if (rc < 0) {
+    START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Broadcast Failed (Flags:%s%s%s) (rc = %d)!\n",
           index + 1, line_num,
           (is_urgent  ? " URGENT" : ""),
           (is_sync    ? " SYNC"   : ""),
           (flags == 0 ? " None"   : ""),
           rc);
-    fflush(stdout);
+    END_PRINT;
     return -1;
   }
 
   /* Handle success. */
+  START_PRINT;
   printf("[Thread %d]: Broadcast Successfull: '%s'%s%s\n",
          index + 1, message,
          (event != NULL ? " "       : ""),
          (event != NULL ? event     : ""));
-  fflush(stdout);
+  END_PRINT;
   return 0;
 }
 
@@ -416,16 +442,19 @@ void thread_main(void* arg) {
   /* First thing we register ourselves. */
   my_index = add_myself_to_threads();
   if (my_index < 0) {
+    START_PRINT;
     printf("ERROR: thread %d couldn't be registered!\n", (int)pthread_self());
+    END_PRINT;
     pthread_exit((void*)-1);
     return;
   }
 
   /* Then we regiter ourselves to the context. */
   mp_register(main_context);
+  START_PRINT;
   printf("[Thread %d]: Registered (Thread ID = %d)\n",
          my_index + 1, (int)pthread_self());
-  fflush(stdout);
+  END_PRINT;
   
   /* Then we hold at the start barrier. */
   mp_barrier(main_context, start_barrier);
@@ -439,9 +468,10 @@ void thread_main(void* arg) {
       /* Find the actual command, and extract the line number. */
       line = strchr(buffer, '>');
       if (line == NULL) {
+        START_PRINT;
         printf("[Thread %d]: ERROR [line %d]: Line doesn't have command prefix!\n",
                my_index + 1, line_num);
-        fflush(stdout);
+        END_PRINT;
         pthread_exit((void*)ERROR_INVALID_LINE);
         return;
       }
@@ -451,9 +481,10 @@ void thread_main(void* arg) {
       /* Do the actual command and handle special return codes. */
       rc = thread_handle_command(my_index, line, line_num);
       if (rc == ERROR_INVALID_LINE) {
+        START_PRINT;
         printf("[Thread %d]: ERROR [line %d]: Invalid Line!\n",
                my_index + 1, line_num);
-        fflush(stdout);
+        END_PRINT;
         pthread_exit((void*)ERROR_INVALID_LINE);
         return;
       }
@@ -471,11 +502,12 @@ void thread_main(void* arg) {
       }
 
       /* Print the message, and if necessary the EVENT. */
+      START_PRINT;
       printf("[Thread %d]: Received Message (length = %d): '%s'%s%s\n",
              my_index + 1, strlen(buffer) + 1, buffer,
              (event != NULL ? " "   : ""),
              (event != NULL ? event : ""));
-      fflush(stdout);
+      END_PRINT;
 
       /* Check if we got the finish message. */
       if (EQUALS(buffer, "FINISH")) {
@@ -487,9 +519,10 @@ void thread_main(void* arg) {
 
   /* If we havn't finished nicely, we had an mp_recv failure. */
   if (!finished) {
+    START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Receive Failed (Flags: SYNC)!\n",
            my_index + 1, line_num);
-    fflush(stdout);
+    END_PRINT;
   }
 
   /* Wait at the finish barrier before ending. */
@@ -497,9 +530,10 @@ void thread_main(void* arg) {
 
   /* Unregister ourselves before dying. */
   mp_unregister(main_context);
+  START_PRINT;
   printf("[Thread %d]: Unregistered (Thread ID = %d)\n",
          my_index + 1, (int)pthread_self());
-  fflush(stdout);
+  END_PRINT;
   
   pthread_exit(0);
 }
@@ -523,8 +557,9 @@ int flush_main_message_queue(int num_line, const char* message_to_wait) {
                   &message_len, 0) == 0) && (message_len != 0)) {};
   if (message_len != 0) {
     /* If we got here, then there was an error in the mp_recv function. */
+    START_PRINT;
     printf("ERROR [line %d]: Receive Failed (Flags: None)!\n", num_line);
-    fflush(stdout);
+    END_PRINT;
     return 1;
   }
 
@@ -545,8 +580,9 @@ int hand_command_to_thread(int index, char* line, int line_num) {
   } else {
     --index;  /* index should be between 1 and num_threads in text. */
     if (index < 0 || index >= num_threads || threads[index] == NULL) {
+      START_PRINT;
       printf("ERROR [line %d]: Invalid thread index %d!\n", line_num, index + 1);
-      fflush(stdout);
+      END_PRINT;
       return -1;
     }
     target_id = threads[index]->tid;
@@ -570,19 +606,19 @@ int hand_command_to_thread(int index, char* line, int line_num) {
 
   if (is_broadcast) {
     /* Broadcast the command to all threads. */
-    fflush(stdout);
     if (mp_broadcast(main_context, buffer, buffer_len, SEND_SYNC) < 0) {
+      START_PRINT;
       printf("ERROR [line %d]: Error while broadcasting command!\n",line_num);
-      fflush(stdout);
+      END_PRINT;
       return -1;
     }
-    fflush(stdout);
   } else {
     /* Send the command to the thread. */
     if (mp_send(main_context, &target_id, buffer, buffer_len, SEND_SYNC) < 0) {
+      START_PRINT;
       printf("ERROR [line %d]: Error while sending command to thread %d!\n",
              line_num, index + 1);
-      fflush(stdout);
+      END_PRINT;
       return -1;
     }
   }
@@ -615,8 +651,9 @@ int parse(int line_num, char* line) {
 
   /* Print the line into the output. */
   if (line_num > 0) {
+    START_PRINT;
     printf("%d: %s", line_num, line);
-    fflush(stdout);
+    END_PRINT;
   }
 
   /* If the line is empty, or it is a comment, print it and ignore. */
@@ -635,7 +672,9 @@ int parse(int line_num, char* line) {
     /* Find the space character, and from it the line for the thread. */
     line_thread = strchr(line, ' ');
     if (line_thread == NULL) {
+      START_PRINT;
       printf("ERROR [line %d]: Line doesn't have a space as required!\n", line_num);
+      END_PRINT;
       return ERROR_INVALID_LINE;
     }
     line_thread[0] = '\0';
@@ -643,7 +682,9 @@ int parse(int line_num, char* line) {
 
     /* Now get the thread index and hand the command to it. */
     if (sscanf(line, "%d", &thread_index) != 1) {
+      START_PRINT;
       printf("ERROR [line %d]: Line doesn't start with thread number!\n", line_num);
+      END_PRINT;
       return ERROR_INVALID_LINE;
     }
 
@@ -669,20 +710,27 @@ int do_work(FILE* input) {
 
   /* Read from the input the number of threads to manage. */
   if (fgets(buffer, MAX_STRING_INPUT_SIZE, input) == NULL) {
+    START_PRINT;
     printf("ERROR [line 0]: Input error on INIT line!\n");
+    END_PRINT;
     return 1;
   }
   if (sscanf(buffer, "INIT %d", &requested_num_threads) != 1) {
+    START_PRINT;
     printf("ERROR [line 0]: First line is not INIT!\n");
+    END_PRINT;
     return 1;
   }
   if (requested_num_threads < 1 || requested_num_threads >= MAX_THREADS) {
+    START_PRINT;
     printf("ERROR [line 0]: Invalid number of threads on INIT!\n");
+    END_PRINT;
     return 1;
   }
   
+  START_PRINT;
   printf("1: INIT %d\n", requested_num_threads);
-  fflush(stdout);
+  END_PRINT;
 
   /* Initialize globals. */
   pthread_mutex_init(&threads_lock, NULL);
@@ -703,7 +751,9 @@ int do_work(FILE* input) {
 
   /* Register ourselves at the context. */
   mp_register(main_context);
+  START_PRINT;
   printf("Main Thread Registered (%d Threads)\n", requested_num_threads);
+  END_PRINT;
 
   /* Initialize all threads. */
   for (i = 0; i < requested_num_threads; ++i) {
@@ -747,7 +797,9 @@ int do_work(FILE* input) {
   pthread_cond_destroy(&main_barrier_cond);
 
   mp_unregister(main_context);
+  START_PRINT;
   printf("Main Thread Unregistered\n");
+  END_PRINT;
 
   mp_destroy(main_context);
   pthread_mutex_destroy(&threads_lock);

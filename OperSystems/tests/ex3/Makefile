@@ -6,6 +6,9 @@ MODULES = MAIN
 CC = gcc
 CXX = g++
 CCFLAGS = -I.. -g
+ifeq ($(SYNC_PRINT), 1)
+CCFLAGS += -DSYNC_PRINT
+endif
 LDFLAGS = -L.. -lmp -lpthread
 
 # Source Files
