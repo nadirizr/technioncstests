@@ -91,7 +91,6 @@ for arg in sys.argv[1:]:
 if not INPUT and not RANDOM and not CLEAN and not SPECIFIC_TEST and not OTHER:
     INPUT = True
     RANDOM = True
-    OTHER = True
 
 # if rerun is on, set NUM_OF_FILES to be zero
 if RERUN:
