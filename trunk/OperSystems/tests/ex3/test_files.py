@@ -18,7 +18,7 @@ TESTS_INPUT_SUFFIX = ".in.txt"
 TESTS_OUTPUT_SUFFIX = ".out.txt"
 TESTS_COMMANDS_SUFFIX = ".real.in.txt"
 
-MAX_EVENT_ERROR_THRESHOLD = 0.2
+MAX_EVENT_ERROR_THRESHOLD = 0.1
 
 def run_program(name):
     """
@@ -209,11 +209,23 @@ class TestProgramRun(unittest.TestCase):
         # make sure every event appears in both places, and that they are in
         # the same order in both
         errors = []
+        error_count = 0
+        total_count = 0
         not_found_error = False
+        different_lengths_error = False
         for e in expected_events.keys():
             expected_event = expected_events[e]
             real_event = real_events.get(e, [0, "<NOT FOUND>"])
+            total_count += len(expected_event[1])
             if expected_event[1] != real_event[1]:
+                if len(expected_event[1]) != len(real_event[1]):
+                    error_count += abs(
+                        len(expected_event[1]) - len(real_event[1]))
+                    different_lengths_error = True
+                else:
+                    error_count += \
+                        len([ie for ie in range(len(expected_event[1]))
+                             if expected_event[1][ie] != real_event[1][ie]]) / 2
                 errors.append((e, real_event, expected_event))
             if real_event[1] == "<NOT FOUND>":
                 not_found_error = True
@@ -221,8 +233,8 @@ class TestProgramRun(unittest.TestCase):
                 break
 
         # if we have too many event errors, fail
-        if not_found_error or \
-           len(errors) > (MAX_EVENT_ERROR_THRESHOLD * len(expected_events)):
+        if not_found_error or different_lengths_error or \
+           error_count > (MAX_EVENT_ERROR_THRESHOLD * total_count):
             (e, real_event, expected_event) = errors[0]
             self.assertEquals(
                 expected_event[1], real_event[1],
