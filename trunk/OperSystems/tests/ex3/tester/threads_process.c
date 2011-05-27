@@ -16,8 +16,6 @@
 #define ERROR_INVALID_LINE -10000
 #define FINISH_THREAD -9999
 
-#define TIMEOUT_BETWEEN_COMMANDS 0.2
-
 
 /*** Contex and Barriers ***/
 context_t* main_context;
@@ -662,7 +660,7 @@ int parse(int line_num, char* line) {
 
 /*** Main ***/
 
-int do_work() {
+int do_work(FILE* input) {
   int requested_num_threads = DEFAULT_NUM_THREADS;
   char buffer[MAX_STRING_INPUT_SIZE];
   pthread_t thread_id;
@@ -670,7 +668,7 @@ int do_work() {
   int rc = 0;
 
   /* Read from the input the number of threads to manage. */
-  if (fgets(buffer, MAX_STRING_INPUT_SIZE, stdin) == NULL) {
+  if (fgets(buffer, MAX_STRING_INPUT_SIZE, input) == NULL) {
     printf("ERROR [line 0]: Input error on INIT line!\n");
     return 1;
   }
@@ -716,7 +714,7 @@ int do_work() {
   mp_barrier(main_context, start_barrier);
 
   /* Start the command reading loop. */
-  for (i = 2; fgets(buffer, MAX_STRING_INPUT_SIZE, stdin) != NULL; ++i) {
+  for (i = 2; fgets(buffer, MAX_STRING_INPUT_SIZE, input) != NULL; ++i) {
     /* Read up any pending messages. */
     if (flush_main_message_queue(i, NULL) != 0) {
       return 1;
@@ -732,9 +730,6 @@ int do_work() {
       /* This means we are done so break. */
       break;
     }
-
-    /* Sleep a little to give threads time to process. */
-    sleep(TIMEOUT_BETWEEN_COMMANDS);
   }
 
   /* If we reach the end, wait for everyone to finish. */
@@ -761,5 +756,22 @@ int do_work() {
 }
 
 int main(int argc, char* argv[]) {
-  return do_work();
+  FILE* input = stdin;
+
+  if (argc > 2) {
+    printf("ERROR: Invalid number of arguments.\n");
+    printf("Usage: ./threads_process [<input file>]\n");
+    return 1;
+  }
+
+  if (argc == 2) {
+    input = fopen(argv[1], "r");
+    if (input == NULL) {
+      printf("ERROR: Couldn't open file for reading: '%s'\n", argv[1]);
+      printf("Usage: ./threads_process [<input file>]\n");
+      return 1;
+    }
+  }
+
+  return do_work(input);
 }
