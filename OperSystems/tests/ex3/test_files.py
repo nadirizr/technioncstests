@@ -36,8 +36,7 @@ def run_program(name):
     test_in_file = TESTS_DIR + os.sep + name + TESTS_INPUT_SUFFIX
     test_out_file = TEMP_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
     expected_out_file = TESTS_DIR + os.sep + name + TESTS_OUTPUT_SUFFIX
-    test_command = "cat %s | %s > %s" % (
-        test_in_file, PROGRAM_PATH, test_out_file)
+    test_command = "%s %s > %s" % (PROGRAM_PATH, test_in_file, test_out_file)
     
     # run the actual program
     os.system(test_command)
