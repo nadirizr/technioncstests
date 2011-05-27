@@ -1,0 +1,12 @@
+INIT 40
+1 CREATE_BARRIER 2
+2 BARRIER
+3 BROADCAST SYNC should arrive 2nd <EVENT 2 0>   
+3 BROADCAST should arrive 3-4th <EVENT 4 0>
+4 BROADCAST SYNC should arrive 3rd <EVENT 3 0> 
+2 BROADCAST should arrive 4-5th <EVENT 5 0>
+30 BROADCAST should arrive 4-5-6th <EVENT 6 0>
+2 BROADCAST SYNC URGENT should arrive 1st <EVENT 1 0>
+3 BARRIER
+1 DESTROY_BARRIER
+CLOSE
