@@ -4,9 +4,9 @@ INIT 5
 3 BARRIER
 4 SEND 3 should arrive 4th <EVENT 4 0>
 1 SEND 3 URGENT should arrive 3rd <EVENT 3 0>
-4 SEND 3 URGENT SYNC should arrive 2nd <EVENT 2 0>
+4 SEND 3 SYNC URGENT should arrive 2nd <EVENT 2 0>
 5 BROADCAST should arrive 5th <EVENT 5 0>
-2 BROADCAST SYNC URGENT should arrive 1st <EVENT 1 0>
+1 BROADCAST SYNC URGENT should arrive 1st <EVENT 1 0>
 5 BARRIER
 3 DESTROY_BARRIER
 CLOSE
