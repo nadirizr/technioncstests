@@ -138,7 +138,8 @@ class ThreadsLogic:
              m.destination in self.waiting_broadcasters:
             continue
 
-          if m.origin in self.waiting_broadcasters:
+          if m.origin in self.waiting_broadcasters and \
+             m.destination in self.waiting_broadcasters[m.origin]:
             self.waiting_broadcasters[m.origin].remove(m.destination)
 
             if not self.waiting_broadcasters[m.origin]:
