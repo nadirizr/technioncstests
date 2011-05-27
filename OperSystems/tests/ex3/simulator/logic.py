@@ -94,6 +94,8 @@ class ThreadsLogic:
 
     if not is_sync:
       return 0
+
+    self.waiting_broadcasters[thread_index] = [to]
     return 1
 
   def broadcast(self, thread_index, is_sync, is_urgent, message, event):
@@ -123,20 +125,30 @@ class ThreadsLogic:
 
   def deliverAllMessages(self):
     delivered = []
-    for (t, q) in self.messages_for_thread.items():
-      if t in self.waiting_at_barrier:
-        continue
+    changes = True
+    while changes:
+      changes = False
 
-      for m in q:
-        if m.is_broadcast and m.origin in self.waiting_broadcasters:
-          self.waiting_broadcasters[m.origin].remove(m.destination)
+      for (t, q) in self.messages_for_thread.items():
+        if t in self.waiting_at_barrier:
+          continue
 
-          if not self.waiting_broadcasters[m.origin]:
-            del self.waiting_broadcasters[m.origin]
-            self.finished_broadcasters.append((m.origin, m))
+        for m in q:
+          if m.destination in self.waiting_at_barrier or \
+             m.destination in self.waiting_broadcasters:
+            continue
 
-      delivered += q
-      self.messages_for_thread[t] = []
+          if m.origin in self.waiting_broadcasters:
+            self.waiting_broadcasters[m.origin].remove(m.destination)
+
+            if not self.waiting_broadcasters[m.origin]:
+              del self.waiting_broadcasters[m.origin]
+              self.finished_broadcasters.append((m.origin, m))
+
+          delivered.append(m)
+          self.messages_for_thread[t].remove(m)
+
+          changes = True
 
     return delivered
 
