@@ -1,0 +1,41 @@
+1: INIT 5
+Main Thread Registered (5 Threads)
+[Thread 1]: Registered (Thread ID = 1)
+[Thread 2]: Registered (Thread ID = 2)
+[Thread 3]: Registered (Thread ID = 3)
+[Thread 4]: Registered (Thread ID = 4)
+[Thread 5]: Registered (Thread ID = 5)
+2: 1 CREATE_BARRIER 0
+[Thread 1]: ERROR [line 2]: Barrier 0 Creation Failed!
+3: 1 CREATE_BARRIER -1
+[Thread 1]: ERROR [line 3]: Barrier 0 Creation Failed!
+4: 1 CREATE_BARRIER -100
+[Thread 1]: ERROR [line 4]: Barrier 0 Creation Failed!
+5: 1 CREATE_BARRIER 4
+[Thread 1]: Barrier 1 Created
+6: 1 BARRIER
+7: 2 BARRIER
+8: 3 BARRIER
+9: 4 BARRIER
+[Thread 1]: Barrier 1 Passed
+[Thread 2]: Barrier 1 Passed
+[Thread 3]: Barrier 1 Passed
+[Thread 4]: Barrier 1 Passed
+10: 5 BARRIER
+[Thread 5]: ERROR [line 10]: Barrier 1 Failed (rc = -1)!
+11: 4 BARRIER
+[Thread 4]: ERROR [line 11]: Barrier 1 Failed (rc = -1)!
+12: 5 DESTROY_BARRIER
+[Thread 5]: Barrier 1 Destroyed
+13: CLOSE
+[Thread 1]: Broadcast Successfull: 'FINISH'
+[Thread 2]: Received Message (length = 7): 'FINISH'
+[Thread 3]: Received Message (length = 7): 'FINISH'
+[Thread 4]: Received Message (length = 7): 'FINISH'
+[Thread 5]: Received Message (length = 7): 'FINISH'
+[Thread 1]: Unregistered (Thread ID = 1)
+[Thread 2]: Unregistered (Thread ID = 2)
+[Thread 3]: Unregistered (Thread ID = 3)
+[Thread 4]: Unregistered (Thread ID = 4)
+[Thread 5]: Unregistered (Thread ID = 5)
+Main Thread Unregistered
