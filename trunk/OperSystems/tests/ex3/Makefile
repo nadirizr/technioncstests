@@ -1,5 +1,5 @@
 # Main Targets
-TARGET = threads_process zvi_test velich_test arik_test
+TARGET = threads_process zvi_test velich_test arik_test dm
 MODULES = MAIN
 
 # Compiler Flags
@@ -19,6 +19,7 @@ EXTERN_UNITTEST_SRC = unittests/external_tests.c $(UNITTEST_SRC)
 ZVI_TEST_SRC = zvi/zvi_test.c
 VELICH_TEST_SRC = velich/mp_tester.c velich/mp_tester_library.c
 ARIK_TEST_SRC = arik/tst_mp.c
+DISPLAY_MESSAGES_SRC = display_messages.c
 
 # Object Files
 OBJ_DIR = objects
@@ -28,7 +29,8 @@ EXTERN_UNITTEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(EXTERN_UNITTEST_SRC
 ZVI_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(ZVI_TEST_SRC)},$(OBJ_DIR)/$(f)}
 VELICH_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(VELICH_TEST_SRC)},$(OBJ_DIR)/$(f)}
 ARIK_TEST_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(ARIK_TEST_SRC)},$(OBJ_DIR)/$(f)}
-ALL_OBJ_FILES =  $(ALL_UNITTEST_OBJ_FILES) $(THREADS_PROCESS_OBJ_FILES) $(ZVI_TEST_OBJ_FILES) $(VELICH_TEST_OBJ_FILES) $(ARIK_TEST_OBJ_FILES)
+DISPLAY_MESSAGES_OBJ_FILES = ${foreach f,${patsubst %.c,%.o,$(DISPLAY_MESSAGES_SRC)},$(OBJ_DIR)/$(f)}
+ALL_OBJ_FILES =  $(ALL_UNITTEST_OBJ_FILES) $(THREADS_PROCESS_OBJ_FILES) $(ZVI_TEST_OBJ_FILES) $(VELICH_TEST_OBJ_FILES) $(ARIK_TEST_OBJ_FILES) $(DISPLAY_MESSAGES_OBJ_FILES)
 TEST_JUNK = tmp random
 
 # Target Definitions
@@ -56,6 +58,9 @@ velich_test: $(VELICH_TEST_OBJ_FILES)
 arik_test: $(ARIK_TEST_OBJ_FILES)
 	$(CC) -o $@ $(ARIK_TEST_OBJ_FILES) $(LDFLAGS)
 
+dm: $(DISPLAY_MESSAGES_OBJ_FILES)
+	$(CC) -o $@ $(DISPLAY_MESSAGES_OBJ_FILES) $(LDFLAGS)
+
 # Build Targets
 all: make_dirs $(TARGET) 
 
@@ -75,9 +80,9 @@ make_dirs:
 	mkdir -p tmp
 
 # Test Targets
-test_extern: make_dirs clean extern_unittest zvi_test velich_test arik_test threads_process
+test_extern: make_dirs clean extern_unittest zvi_test velich_test arik_test threads_process dm
 
-test_all: make_dirs all_unittest zvi_test velich_test arik_test threads_process
+test_all: make_dirs all_unittest $(TARGET)
 	./all_unittest
 	./velich_test
 	./zvi_test > /dev/null && python valgrinder.py "./zvi_test > /dev/null"
