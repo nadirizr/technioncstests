@@ -1,0 +1,2 @@
+#!/bin/tcsh -f
+rm test* m* o*
