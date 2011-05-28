@@ -101,6 +101,9 @@ if RERUN:
 if SPECIFIC_TEST:
     NUM_OF_FILES = 0
 
+if (not RERUN) and (not SPECIFIC_TEST):
+    CLEAN = True
+
 if CLEAN:
     try:
         os.system("rm -rf ./random/*")
