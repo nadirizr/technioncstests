@@ -212,7 +212,7 @@ int thread_handle_barrier(int index, char* arguments, int line_num) {
   rc = mp_barrier(main_context, main_barrier);
   
   /* Handle errors. */
-  if (rc < 0) {
+  if (rc != 0) {
     START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Barrier %d Failed (rc = %d)!\n",
            index + 1, line_num, main_barrier_counter, rc);
@@ -290,7 +290,7 @@ int thread_handle_send(int index, char* arguments, int line_num) {
   }
 
   /* Handle errors. */
-  if (rc < 0) {
+  if (rc != 0) {
     START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Send Failed (Flags:%s%s%s) (rc = %d)!\n",
           index + 1, line_num,
@@ -364,7 +364,7 @@ int thread_handle_broadcast(int index, char* arguments, int line_num) {
   }
 
   /* Handle errors. */
-  if (rc < 0) {
+  if (rc != 0) {
     START_PRINT;
     printf("[Thread %d]: ERROR [line %d]: Broadcast Failed (Flags:%s%s%s) (rc = %d)!\n",
           index + 1, line_num,
