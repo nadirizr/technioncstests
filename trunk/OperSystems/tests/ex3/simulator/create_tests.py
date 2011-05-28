@@ -195,7 +195,7 @@ def createBroadcastSync():
 def createClose():
   command = ""
   if test_state.barrier_counter >= 0 and test_state.waiting_at_barrier:
-    while len(test_state.waiting_at_barrier) <= test_state.barrier_counter:
+    while len(test_state.waiting_at_barrier) < test_state.barrier_counter:
       command += createBarrier() + "\n"
     command += createDestroyBarrier() + "\n"
   return command + "CLOSE"
