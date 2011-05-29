@@ -5,6 +5,10 @@ import os.path
 import sys
 import glob
 
+kreich = False
+if os.environ["USER"] == "kreich":
+    kreich = True
+
 print
 
 def usage_and_exit():
@@ -123,18 +127,22 @@ TEST_UNITTESTS = "./extern_unittest"
 
 # run the test_files script on all files in all input dirs
 if INPUT:
-  print
-  print "========================"
-  print "Input Tests"
-  print "========================"
-  os.system(TEST_UNITTESTS)
-  input_dirs = glob.glob(INPUT_FILES_DIR + os.sep + "*")
-  for dir in input_dirs:
+    if kreich:
+        print "ERROR! Couldn't find test files!"
+        sys.exit(1)
     print
-    print "*** Tests from %s: ***" % dir
-    os.environ["THREADS_TESTS_DIR"] = dir
-    os.system(TEST_FILES_CMD)
-    del os.environ["THREADS_TESTS_DIR"]
+    print
+    print "========================"
+    print "Input Tests"
+    print "========================"
+    os.system(TEST_UNITTESTS)
+    input_dirs = glob.glob(INPUT_FILES_DIR + os.sep + "*")
+    for dir in input_dirs:
+        print
+        print "*** Tests from %s: ***" % dir
+        os.environ["THREADS_TESTS_DIR"] = dir
+        os.system(TEST_FILES_CMD)
+        del os.environ["THREADS_TESTS_DIR"]
 
 # run other people's tests
 if OTHER:
