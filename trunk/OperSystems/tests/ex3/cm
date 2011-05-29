@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python compare_data.py $1 $2
