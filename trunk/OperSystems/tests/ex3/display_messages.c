@@ -11,7 +11,12 @@ int print_message(FILE* source_stream, int num) {
   /* First extract the message length and verify it's value is correct. */
   char message_data[MAX_MESSAGE_SIZE];
   int data_length = 0;
+  int i;
   if (fread(&data_length, 2, 1, source_stream) <= 0) {
+    if (feof(source_stream)) {
+      return 1;
+    }
+
     printf("ERROR [Message %d]: Couldn't read message length.\n", num);
     return -1;
   }
@@ -40,10 +45,13 @@ int print_message(FILE* source_stream, int num) {
          (is_urgent ? " URGENT" : ""),
          (is_final  ? " FINAL"  : ""),
          ((!is_final && !is_urgent) ? " None" : ""));
-  printf("Data:\n%s\n", message_data + 4);
-  printf("================================================================\n");
+  for (i = 4; i < data_length; ++i) {
+    printf("<%d>", (unsigned int)message_data[i]);
+  }
+  printf("\n================================================================\n");
+  fflush(stdout);
 
-  return is_final;
+  return 0;
 }
 
 int main(int argc, char* argv[]) {

@@ -8,7 +8,7 @@ class MessageFile:
     self.file_path = file_path
     self.file = file(file_path, "r")
     self.lines = self.file.readlines()
-    self.lines = [l for l in self.lines if not l.startswith("="*60)]
+    self.lines = [l.strip() for l in self.lines if not l.startswith("="*60)]
     
     self.messages = []
     current_msg = ""
@@ -19,7 +19,7 @@ class MessageFile:
         continue
       current_msg += l
     if current_msg:
-      self.messages 
+      self.messages.append(current_msg)
 
   def get_messages(self):
     return self.messages
@@ -27,10 +27,8 @@ class MessageFile:
 file1 = None
 file2 = None
 if sys.argv[2:]:
-  if os.system("./dm %s > /tmp/dm1" % sys.argv[1]):
-    print "ERROR: Couldn't open File1: '%s'" % sys.argv[1]
-  if os.system("./dm %s > /tmp/dm2" % sys.argv[2]):
-    print "ERROR: Couldn't open File2: '%s'" % sys.argv[2]
+  os.system("./dm %s > /tmp/dm1" % sys.argv[1])
+  os.system("./dm %s > /tmp/dm2" % sys.argv[2])
 
   file1 = MessageFile("/tmp/dm1")
   file2 = MessageFile("/tmp/dm2")
