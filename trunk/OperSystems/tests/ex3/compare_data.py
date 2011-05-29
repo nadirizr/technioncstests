@@ -40,11 +40,17 @@ else:
 
 messages1 = file1.get_messages()
 messages2 = file2.get_messages()
-missing_in_file2 = [i+1 for i in range(len(messages1)) if messages1[i] in messages2]
-missing_in_file1 = [i+1 for i in range(len(messages2)) if messages2[i] in messages1]
+missing_in_file2 = [i+1 for i in range(len(messages1)) if messages1[i] not in messages2]
+missing_in_file1 = [i+1 for i in range(len(messages2)) if messages2[i] not in messages1]
 
-print "File1 ('%s'): %d Total Messages" % (sys.argv[1], len(missing_in_file1))
-print "File2 ('%s'): %d Total Messages" % (sys.argv[2], len(missing_in_file2))
+print "File1 ('%s') Total Messages: %d" % (sys.argv[1], len(messages1))
+print "File2 ('%s') Total Messages: %d" % (sys.argv[2], len(messages2))
 print
+
+if not missing_in_file1 and not missing_in_file2:
+  print "Files are Equal!"
+  sys.exit(0)
+
 print "Messages in File1 that are NOT in File2:\n%s" % ", ".join([str(i) for i in missing_in_file2])
 print "Messages in File2 that are NOT in File1:\n%s" % ", ".join([str(i) for i in missing_in_file1])
+sys.exit(1)
