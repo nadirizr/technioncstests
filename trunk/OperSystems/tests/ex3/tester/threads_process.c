@@ -809,6 +809,7 @@ int do_work(FILE* input) {
 
 int main(int argc, char* argv[]) {
   FILE* input = stdin;
+  int rc = 0;
 
   if (argc > 2) {
     printf("ERROR: Invalid number of arguments.\n");
@@ -825,5 +826,11 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  return do_work(input);
+  rc = do_work(input);
+
+  if (input != stdin) {
+    fclose(input);
+  }
+
+  return rc;
 }
