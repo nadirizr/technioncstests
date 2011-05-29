@@ -5,10 +5,6 @@ import os.path
 import sys
 import glob
 
-kreich = False
-if os.environ["USER"] == "kreich":
-    kreich = True
-
 print
 
 def usage_and_exit():
@@ -127,9 +123,6 @@ TEST_UNITTESTS = "./extern_unittest"
 
 # run the test_files script on all files in all input dirs
 if INPUT:
-    if kreich:
-        print "ERROR! Couldn't find test files! BITCH!"
-        sys.exit(1)
     print
     print
     print "========================"
