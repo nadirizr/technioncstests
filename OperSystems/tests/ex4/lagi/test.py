@@ -3,6 +3,7 @@
 import sys
 import os
 import commands
+import errno
 
 MAX_DEVS = 3
 
@@ -33,6 +34,8 @@ def checkFilesExist(files):
       return False
   return True
 
+
+
 def test(test_name, cond):
   if not run_test(test_name, cond):
     sys.exit(1)
@@ -61,20 +64,56 @@ def assertDriver(msg, max_devs, devs):
              expected)
   driver.close()
 
+def assertOpenFails(name, device, perm, expected_err):
+  startTest(name)
+  err = _assertOpenFails(device, perm, expected_err)
+  if err:
+    failed(err)
+    sys.exit(1)
+  else:
+    passed()
+  
+def _assertOpenFails(device, perm, expected_err):
+  try:
+    os.open(device, perm)
+    return "Open was supposed to fail"
+  except Exception, e:
+    if e.errno == expected_err:
+      return None
+    return "Expected errno [%d] but was [%d]" % (expected_err, e.errno)
+
+def mknod(name, major, minor):
+  if os.path.exists(name):
+    os.remove(name)
+  commands.getoutput("mknod %s c %s %s" % (name, major, minor))
+
 def testEquals(test_name, actual, expected):
-  if not run_test(test_name, actual == expected):
-    print "  Expected: %s, Actual: %s" % (expected, actual)
+  if not run_test(test_name, actual == expected, "Expected: %s, Actual: %s" % (expected, actual)):
     sys.exit(1)
     
-def run_test(test_name, cond):
-  print test_name, '.' * (60 - len(test_name)),
+def run_test(test_name, cond, msg=""):
+  startTest(test_name)
   if not cond:
-    print "FAIL"
+    failed(msg)
     return False
   else:
-    print "OK"
+    passed()
     return True
 
+def startTest(name):
+  print name, '.' * (60 - len(name)),
+  
+def failed(msg):
+  print "FAIL"
+  print msg
+
+def passed():
+  print "OK"
+  return True
+
+######################################################
+# Actual code
+  
 # Check whether a module already exists
 o = commands.getoutput('lsmod | grep vsf')
 if '' != o:
@@ -129,9 +168,8 @@ major = commands.getoutput('cat /proc/devices | grep vsf | cut -d" " -f1')
 test("Device appears in devices list",
      major != '')
 # Create the nod
-if os.path.exists('vsf_cntrl'):
-  os.remove('vsf_cntrl')
-commands.getoutput("mknod vsf_cntrl c %s 0" % major)
+mknod("vsf_cntrl", major, "0")
+
 # compile the helper file
 if not os.path.exists('fops'):
   o = commands.getoutput("gcc -o fops -I../.. fileops.c")
@@ -150,6 +188,18 @@ assertCreateFail(read_minor=252, write_minor=255, rc=-1, msg="Test create with r
 assertCreateFail(read_minor=252, write_minor=254, rc=-1, msg="Test create with read=252 and write=254 minors fails")
 assertCreateFail(read_minor=254, write_minor=253, rc=-1, msg="Test create with read=254 and write=253 minors fails")
 assertCreateFail(read_minor=255, write_minor=253, rc=-1, msg="Test create with read=255 and write=253 minors fails")
+
+# Check open permissions
+mknod("vsf_read254", major, "254")
+assertOpenFails("Test open reader with WRONLY fails", "vsf_read254", os.O_WRONLY, errno.EPERM)
+assertOpenFails("Test open reader with RDWR fails", "vsf_read254", os.O_RDWR, errno.EPERM)
+assertOpenFails("Test open reader with APPEND fails", "vsf_read254", os.O_APPEND, errno.EPERM)
+assertOpenFails("Test open reader with RDONLY|CREAT fails", "vsf_read254", os.O_RDONLY|os.O_CREAT, errno.EPERM)
+mknod("vsf_write255", major, "255")
+assertOpenFails("Test open writer with RDONLY fails", "vsf_write255", os.O_RDONLY, errno.EPERM)
+assertOpenFails("Test open writer with RDWR fails", "vsf_write255", os.O_RDWR, errno.EPERM)
+assertOpenFails("Test open writer with APPEND fails", "vsf_write255", os.O_APPEND, errno.EPERM)
+assertOpenFails("Test open writer with WRONLY|CREAT fails", "vsf_write255", os.O_WRONLY|os.O_CREAT, errno.EPERM)
 
 # Check removing the vsf works
 testEquals("Test rmmod works",
