@@ -238,8 +238,13 @@ finally:
   # Removing the vsf
   commands.getoutput('rmmod vsf')
 
-  os.remove('slave')
-  os.remove('fops')
-  os.remove('vsf_read254')
-  os.remove('vsf_write255')
-  os.remove('vsf_cntrl')
+  if os.path.exists('slave'):
+    os.remove('slave')
+  if os.path.exists('fops'):
+    os.remove('fops')
+  if os.path.exists('vsf_read254'):
+    os.remove('vsf_read254')
+  if os.path.exists('vsf_write255'):
+    os.remove('vsf_write255')
+  if os.path.exists('vsf_cntrl'):
+    os.remove('vsf_cntrl')
