@@ -93,12 +93,29 @@ test("Test vsf appears in lsmod",
 # Check vsf driver appears and has 10 as the max vsf
 test("Test vsf driver exists",
      commands.getoutput('ls -l /proc/driver/vsf').startswith("-r--------"))
-driver = os.open('/proc/driver/vsf', os.O_RDONLY)
+driver = open('/proc/driver/vsf', 'r')
 testEquals("Check new vsf driver",
-           os.read(driver, 100),
-           '10\n')
-os.close(driver)
+           driver.readlines(),
+           ['10\n'])
+driver.close()
+
 # Check removing the vsf works
 testEquals("Test rmmod works",
            commands.getoutput('rmmod vsf'),
            '')
+           
+# Check inserting a module with parameter 0 fails
+test("Test insmod with param = 0",
+     commands.getoutput('insmod ../../vsf.o max_vsf_devices=0').find('incorrect module parameters') != -1)
+     
+# Check inserting a module with parameter 1000001
+test("Test insmod with param = 1000001",
+     commands.getoutput('insmod ../../vsf.o max_vsf_devices=1000001').find('incorrect module parameters') != -1)
+     
+# Check inserting with 1000000 works
+testEquals("Test insmod with param = 1000000 works",
+           commands.getoutput('insmod ../../vsf.o max_vsf_devices=1000000'),
+           '')
+
+# Removing the vsf
+commands.getoutput('rmmod vsf')
