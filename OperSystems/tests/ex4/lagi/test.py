@@ -123,116 +123,123 @@ def passed():
 
 ######################################################
 # Actual code
-  
-# Check whether a module already exists
-o = commands.getoutput('lsmod | grep vsf')
-if '' != o:
-  print "There's a module running!"
 
-  # Try to remove the running module
-  print "Trying to remove the module: ",
-  o = commands.getoutput('rmmod vsf')
+try:
+  # Check whether a module already exists
+  o = commands.getoutput('lsmod | grep vsf')
   if '' != o:
-    print o
-    print "Failed to remove the module, please remove it manually and run ",
-    print "the test again"
-  else:
-    print "Done"
+    print "There's a module running!"
 
-# Now try to add the module
-# First search for the files and compile them
-if options.should_compile:
-  if not checkFilesExist(['../../Makefile', '../../vsf.c', '../../vsf.h']):
+    # Try to remove the running module
+    print "Trying to remove the module: ",
+    o = commands.getoutput('rmmod vsf')
+    if '' != o:
+      print o
+      print "Failed to remove the module, please remove it manually and run ",
+      print "the test again"
+    else:
+      print "Done"
+
+  # Now try to add the module
+  # First search for the files and compile them
+  if options.should_compile:
+    if not checkFilesExist(['../../Makefile', '../../vsf.c', '../../vsf.h']):
+      sys.exit(1)
+    
+    if os.path.exists('../../vsf.o'):
+      os.remove('../../vsf.o')
+    commands.getoutput('cd ../.. && make')
+
+  # Verify that adding the module with no parameter fails
+  if not checkFilesExist(['../../vsf.o']):
+    print "Compile failid!"
     sys.exit(1)
+
+  # Check inserting a module with no parameter
+  test("Test insmod without param",
+       commands.getoutput('insmod ../../vsf.o').find('incorrect module parameters') != -1)
+
+  # Check inserting actually works
+  testEquals("Test insmod works",
+             commands.getoutput('insmod ../../vsf.o max_vsf_devices=%d' % MAX_DEVS),
+             '')
+
+  # Check vsf appears in lsmod
+  test("Test vsf appears in lsmod",
+       commands.getoutput('lsmod | grep vsf').startswith('vsf'))
   
-  if os.path.exists('../../vsf.o'):
-    os.remove('../../vsf.o')
-  commands.getoutput('cd ../.. && make')
-
-# Verify that adding the module with no parameter fails
-if not checkFilesExist(['../../vsf.o']):
-  print "Compile failid!"
-  sys.exit(1)
-
-# Check inserting a module with no parameter
-test("Test insmod without param",
-     commands.getoutput('insmod ../../vsf.o').find('incorrect module parameters') != -1)
-
-# Check inserting actually works
-testEquals("Test insmod works",
-           commands.getoutput('insmod ../../vsf.o max_vsf_devices=%d' % MAX_DEVS),
-           '')
-
-# Check vsf appears in lsmod
-test("Test vsf appears in lsmod",
-     commands.getoutput('lsmod | grep vsf').startswith('vsf'))
-
-# Check vsf driver appears and has the correct max vsf
-if not commands.getoutput('ls -l /proc/driver/vsf').startswith("-r--------"):
-  print "Missing vsf file or bad permissions"
-  sys.exit(1)
-assertDriver("Test vsf driver exists", 3, [])
-
-# Now lets create some nodes and play with them
-major = commands.getoutput('cat /proc/devices | grep vsf | cut -d" " -f1')
-test("Device appears in devices list",
-     major != '')
-# Create the nod
-mknod("vsf_cntrl", major, "0")
-
-# compile the helper file
-if not os.path.exists('fops'):
-  o = commands.getoutput("gcc -o fops -I../.. fileops.c")
-  if o != '':
-    print "Couldn't compile fileops.c:\n%s" % o
+  # Check vsf driver appears and has the correct max vsf
+  if not commands.getoutput('ls -l /proc/driver/vsf').startswith("-r--------"):
+    print "Missing vsf file or bad permissions"
     sys.exit(1)
+  assertDriver("Test vsf driver exists", 3, [])
+  
+  # Now lets create some nodes and play with them
+  major = commands.getoutput('cat /proc/devices | grep vsf | cut -d" " -f1')
+  test("Device appears in devices list",
+       major != '')
+  # Create the nod
+  mknod("vsf_cntrl", major, "0")
 
-assertCreateFail(read_minor=0, write_minor=1, rc=-1, msg="Test create with read minor 0 fails")
-assertCreateFail(read_minor=1, write_minor=0, rc=-1, msg="Test create with write minor 0 fails")
-assertCreateFail(read_minor=10, write_minor=10, rc=-1, msg="Test create with same read and write minors fails")
-assertCreate(read_minor=254, write_minor=255, msg="Test create with read=254 and write=255 minors")
-assertDriver("Test 1 dev in driver", 3, [(254,0, 255,0)])
+  # compile the helper file
+  if not os.path.exists('fops'):
+    o = commands.getoutput("gcc -o fops -I../.. fileops.c")
+    if o != '':
+      print "Couldn't compile fileops.c:\n%s" % o
+      sys.exit(1)
+  
+  assertCreateFail(read_minor=0, write_minor=1, rc=-1, msg="Test create with read minor 0 fails")
+  assertCreateFail(read_minor=1, write_minor=0, rc=-1, msg="Test create with write minor 0 fails")
+  assertCreateFail(read_minor=10, write_minor=10, rc=-1, msg="Test create with same read and write minors fails")
+  assertCreate(read_minor=254, write_minor=255, msg="Test create with read=254 and write=255 minors")
+  assertDriver("Test 1 dev in driver", 3, [(254,0, 255,0)])
+  
+  # Check taken minors
+  assertCreateFail(read_minor=252, write_minor=255, rc=-1, msg="Test create with read=252 and write=255 minors fails")
+  assertCreateFail(read_minor=252, write_minor=254, rc=-1, msg="Test create with read=252 and write=254 minors fails")
+  assertCreateFail(read_minor=254, write_minor=253, rc=-1, msg="Test create with read=254 and write=253 minors fails")
+  assertCreateFail(read_minor=255, write_minor=253, rc=-1, msg="Test create with read=255 and write=253 minors fails")
+  
+  # Check open permissions
+  mknod("vsf_read254", major, "254")
+  assertOpenFails("Test open reader with WRONLY fails", "vsf_read254", os.O_WRONLY, errno.EPERM)
+  assertOpenFails("Test open reader with RDWR fails", "vsf_read254", os.O_RDWR, errno.EPERM)
+  assertOpenFails("Test open reader with APPEND fails", "vsf_read254", os.O_APPEND, errno.EPERM)
+  assertOpenFails("Test open reader with RDONLY|CREAT fails", "vsf_read254", os.O_RDONLY|os.O_CREAT, errno.EPERM)
+  assertOpens("Test open reader with RDONLY", "vsf_read254", os.O_RDONLY)
+  #assertDriver("Test 1 reader in driver", 3, [(254,1, 255,0)])
+  
+  mknod("vsf_write255", major, "255")
+  assertOpenFails("Test open writer with RDONLY fails", "vsf_write255", os.O_RDONLY, errno.EPERM)
+  assertOpenFails("Test open writer with RDWR fails", "vsf_write255", os.O_RDWR, errno.EPERM)
+  assertOpenFails("Test open writer with APPEND fails", "vsf_write255", os.O_APPEND, errno.EPERM)
+  assertOpenFails("Test open writer with WRONLY|CREAT fails", "vsf_write255", os.O_WRONLY|os.O_CREAT, errno.EPERM)
+  assertOpens("Test open writer with WRONLY", "vsf_write255", os.O_WRONLY)
+  #assertDriver("Test 1 reader 1 writer in driver", 3, [(254,1, 255,1)])
 
-# Check taken minors
-assertCreateFail(read_minor=252, write_minor=255, rc=-1, msg="Test create with read=252 and write=255 minors fails")
-assertCreateFail(read_minor=252, write_minor=254, rc=-1, msg="Test create with read=252 and write=254 minors fails")
-assertCreateFail(read_minor=254, write_minor=253, rc=-1, msg="Test create with read=254 and write=253 minors fails")
-assertCreateFail(read_minor=255, write_minor=253, rc=-1, msg="Test create with read=255 and write=253 minors fails")
-
-# Check open permissions
-mknod("vsf_read254", major, "254")
-assertOpenFails("Test open reader with WRONLY fails", "vsf_read254", os.O_WRONLY, errno.EPERM)
-assertOpenFails("Test open reader with RDWR fails", "vsf_read254", os.O_RDWR, errno.EPERM)
-assertOpenFails("Test open reader with APPEND fails", "vsf_read254", os.O_APPEND, errno.EPERM)
-assertOpenFails("Test open reader with RDONLY|CREAT fails", "vsf_read254", os.O_RDONLY|os.O_CREAT, errno.EPERM)
-assertOpens("Test open reader with RDONLY", "vsf_read254", os.O_RDONLY)
-#assertDriver("Test 1 reader in driver", 3, [(254,1, 255,0)])
-
-mknod("vsf_write255", major, "255")
-assertOpenFails("Test open writer with RDONLY fails", "vsf_write255", os.O_RDONLY, errno.EPERM)
-assertOpenFails("Test open writer with RDWR fails", "vsf_write255", os.O_RDWR, errno.EPERM)
-assertOpenFails("Test open writer with APPEND fails", "vsf_write255", os.O_APPEND, errno.EPERM)
-assertOpenFails("Test open writer with WRONLY|CREAT fails", "vsf_write255", os.O_WRONLY|os.O_CREAT, errno.EPERM)
-assertOpens("Test open writer with WRONLY", "vsf_write255", os.O_WRONLY)
-#assertDriver("Test 1 reader 1 writer in driver", 3, [(254,1, 255,1)])
-
-# Check removing the vsf works
-testEquals("Test rmmod works",
-           commands.getoutput('rmmod vsf'),
-           '')
+  # Check removing the vsf works
+  testEquals("Test rmmod works",
+             commands.getoutput('rmmod vsf'),
+             '')
            
-# Check inserting a module with parameter 0 fails
-test("Test insmod with param = 0",
-     commands.getoutput('insmod ../../vsf.o max_vsf_devices=0').find('incorrect module parameters') != -1)
-     
-# Check inserting a module with parameter 1000001
-test("Test insmod with param = 1000001",
-     commands.getoutput('insmod ../../vsf.o max_vsf_devices=1000001').find('incorrect module parameters') != -1)
-     
-# Check inserting with 1000000 works
-testEquals("Test insmod with param = 1000000 works",
-           commands.getoutput('insmod ../../vsf.o max_vsf_devices=1000000'),
-           '')
+  # Check inserting a module with parameter 0 fails
+  test("Test insmod with param = 0",
+       commands.getoutput('insmod ../../vsf.o max_vsf_devices=0').find('incorrect module parameters') != -1)
+       
+  # Check inserting a module with parameter 1000001
+  test("Test insmod with param = 1000001",
+       commands.getoutput('insmod ../../vsf.o max_vsf_devices=1000001').find('incorrect module parameters') != -1)
+       
+  # Check inserting with 1000000 works
+  testEquals("Test insmod with param = 1000000 works",
+             commands.getoutput('insmod ../../vsf.o max_vsf_devices=1000000'),
+             '')
+finally:
+  # Removing the vsf
+  commands.getoutput('rmmod vsf')
 
-# Removing the vsf
-commands.getoutput('rmmod vsf')
+  os.remove('slave')
+  os.remove('fops')
+  os.remove('vsf_read254')
+  os.remove('vsf_write255')
+  os.remove('vsf_cntrl')
