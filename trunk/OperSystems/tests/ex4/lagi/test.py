@@ -6,6 +6,8 @@ import commands
 import errno
 import time
 
+commands.getoutput('chmod u+x check_driver.py')
+
 MAX_DEVS = 3
 
 USAGE = "USAGE:\n\
