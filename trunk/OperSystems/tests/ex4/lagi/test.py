@@ -4,6 +4,8 @@ import sys
 import os
 import commands
 
+MAX_DEVS = 3
+
 USAGE = "USAGE:\n\
 %s [flags]\n\
   -NoCompile - prevents the test from compiling the code" % (sys.argv[0])
@@ -34,6 +36,30 @@ def checkFilesExist(files):
 def test(test_name, cond):
   if not run_test(test_name, cond):
     sys.exit(1)
+
+def assertCreateFail(read_minor, write_minor, rc, msg):
+  testEquals(msg,
+             commands.getoutput("./fops C %d %d" % (read_minor, write_minor)),
+             "Failed to create VSF for [read_minor = %d, write_minor = %d]: RC = %d" % (read_minor, write_minor, rc))
+    
+def assertCreate(read_minor, write_minor, msg):
+  testEquals(msg,
+             commands.getoutput("./fops C %d %d" % (read_minor, write_minor)),
+             "Created VSF for [read_minor = %d, write_minor = %d]" % (read_minor, write_minor))
+    
+def assertDriver(msg, max_devs, devs):
+  driver = open('/proc/driver/vsf', 'r')
+  expected = ["%d\n" % MAX_DEVS]
+  for dev in devs:
+    if len(dev) == 4:
+      expected.append("%d(%d) %d(%d) *\n" % dev)
+    else:
+      expected.append("%d(%d) %d(%d) %s:%d\n" % dev)
+      
+  testEquals(msg,
+             driver.readlines(),
+             expected)
+  driver.close()
 
 def testEquals(test_name, actual, expected):
   if not run_test(test_name, actual == expected):
@@ -85,20 +111,39 @@ test("Test insmod without param",
 
 # Check inserting actually works
 testEquals("Test insmod works",
-           commands.getoutput('insmod ../../vsf.o max_vsf_devices=10'),
+           commands.getoutput('insmod ../../vsf.o max_vsf_devices=%d' % MAX_DEVS),
            '')
+
 # Check vsf appears in lsmod
 test("Test vsf appears in lsmod",
      commands.getoutput('lsmod | grep vsf').startswith('vsf'))
-# Check vsf driver appears and has 10 as the max vsf
-test("Test vsf driver exists",
-     commands.getoutput('ls -l /proc/driver/vsf').startswith("-r--------"))
-driver = open('/proc/driver/vsf', 'r')
-testEquals("Check new vsf driver",
-           driver.readlines(),
-           ['10\n'])
-driver.close()
 
+# Check vsf driver appears and has the correct max vsf
+if not commands.getoutput('ls -l /proc/driver/vsf').startswith("-r--------"):
+  print "Missing vsf file or bad permissions"
+  sys.exit(1)
+assertDriver("Test vsf driver exists", 3, [])
+
+# Now lets create some nodes and play with them
+major = commands.getoutput('cat /proc/devices | grep vsf | cut -d" " -f1')
+test("Device appears in devices list",
+     major != '')
+# Create the nod
+if os.path.exists('vsf_cntrl'):
+  os.remove('vsf_cntrl')
+commands.getoutput("mknod vsf_cntrl c %s 0" % major)
+# compile the helper file
+if not os.path.exists('fops'):
+  o = commands.getoutput("gcc -o fops -I../.. fileops.c")
+  if o != '':
+    print "Couldn't compile fileops.c:\n%s" % o
+    sys.exit(1)
+
+assertCreateFail(read_minor=0, write_minor=1, rc=-1, msg="Test create with read minor 0 fails")
+assertCreateFail(read_minor=1, write_minor=0, rc=-1, msg="Test create with write minor 0 fails")
+assertCreateFail(read_minor=10, write_minor=10, rc=-1, msg="Test create with same read and write minors fails")
+assertCreate(read_minor=254, write_minor=255, msg="Test create with read=254 and write=255 minors")
+assertDriver("Test 1 dev in driver", 3, [(254,0, 255,0)])
 # Check removing the vsf works
 testEquals("Test rmmod works",
            commands.getoutput('rmmod vsf'),
