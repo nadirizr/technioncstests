@@ -144,6 +144,13 @@ assertCreateFail(read_minor=1, write_minor=0, rc=-1, msg="Test create with write
 assertCreateFail(read_minor=10, write_minor=10, rc=-1, msg="Test create with same read and write minors fails")
 assertCreate(read_minor=254, write_minor=255, msg="Test create with read=254 and write=255 minors")
 assertDriver("Test 1 dev in driver", 3, [(254,0, 255,0)])
+
+# Check taken minors
+assertCreateFail(read_minor=252, write_minor=255, rc=-1, msg="Test create with read=252 and write=255 minors fails")
+assertCreateFail(read_minor=252, write_minor=254, rc=-1, msg="Test create with read=252 and write=254 minors fails")
+assertCreateFail(read_minor=254, write_minor=253, rc=-1, msg="Test create with read=254 and write=253 minors fails")
+assertCreateFail(read_minor=255, write_minor=253, rc=-1, msg="Test create with read=255 and write=253 minors fails")
+
 # Check removing the vsf works
 testEquals("Test rmmod works",
            commands.getoutput('rmmod vsf'),
