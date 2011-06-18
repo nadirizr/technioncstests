@@ -4,6 +4,7 @@ import sys
 import os
 import commands
 import errno
+import time
 
 MAX_DEVS = 3
 
@@ -51,18 +52,25 @@ def assertCreate(read_minor, write_minor, msg):
              "Created VSF for [read_minor = %d, write_minor = %d]" % (read_minor, write_minor))
     
 def assertDriver(msg, max_devs, devs):
-  driver = open('/proc/driver/vsf', 'r')
-  expected = ["%d\n" % MAX_DEVS]
+  startTest(msg)
+  
+  tmp = open('expected', 'w')
+  lines = [str(max_devs) + '\n']
   for dev in devs:
-    if len(dev) == 4:
-      expected.append("%d(%d) %d(%d) *\n" % dev)
-    else:
-      expected.append("%d(%d) %d(%d) %s:%d\n" % dev)
-      
-  testEquals(msg,
-             driver.readlines(),
-             expected)
-  driver.close()
+    lines.append(dev + '\n')
+  tmp.writelines(lines)
+  tmp.close()
+
+  commands.getoutput('./check_driver.py expected')
+  time.sleep(0.25)
+  out = open('expected.result', 'r').read()
+  os.remove('expected')
+  os.remove('expected.result')
+  if out == 'Ok':
+    passed()
+  else:
+    failed(out)
+    sys.exit(1)
 
 def validateSlave():
   commands.getoutput('gcc -o slave slave.c')
@@ -192,7 +200,7 @@ try:
   assertCreateFail(read_minor=1, write_minor=0, rc=-1, msg="Test create with write minor 0 fails")
   assertCreateFail(read_minor=10, write_minor=10, rc=-1, msg="Test create with same read and write minors fails")
   assertCreate(read_minor=254, write_minor=255, msg="Test create with read=254 and write=255 minors")
-  assertDriver("Test 1 dev in driver", 3, [(254,0, 255,0)])
+  assertDriver("Test 1 dev in driver", 3, ['254(0) 255(0) *'])
   
   # Check taken minors
   assertCreateFail(read_minor=252, write_minor=255, rc=-1, msg="Test create with read=252 and write=255 minors fails")
