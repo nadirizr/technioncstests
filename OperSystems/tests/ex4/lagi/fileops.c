@@ -32,13 +32,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   
-  if (params.read_minor < 1 || params.read_minor > 255 ||
-      params.write_minor < 1 || params.write_minor > 255) {
-    printf("ERROR: Minors must be in range [1,255]\n");
-    printf("Usage: %s <command> <read minor> <write minor>\n", argv[0]);
-    return 1;
-  }
-  
   fd = open("vsf_cntrl", O_RDONLY);
   if (strcmp(argv[1], "C") == 0) {
     rc = ioctl(fd, VSF_CREATE, (unsigned long)(&params));
