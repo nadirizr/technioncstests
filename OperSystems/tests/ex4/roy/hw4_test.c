@@ -275,7 +275,82 @@ int CALCULATE_ITERATIONS(int size)
 		}																																		\
 	} while(0)
 
-#define INTERRUPT_READ(fd,size,passed_tests,total_tests)														\
+#define INVALID_WRITE_READ(fd_read,fd_write,passed_tests,total_tests)											\
+	do {																										\
+		struct sched_param param;																				\
+		int result;																								\
+		param.sched_priority = 10;																				\
+		sched_setscheduler(getpid(),SCHED_FIFO,&param);															\
+		fork_res = fork();																						\
+		if(fork_res)																							\
+		{																										\
+			int status;																							\
+			char message[MAX_LENGTH];																			\
+			char buffer[1000];																					\
+			result = write(fd_write,NULL, 1000);																\
+			sprintf(message,"Trying to write a null buffer to VSF with file descriptor = %d",fd_write);			\
+			LOG_RESULT(message,"EINVAL",result,passed_tests,(result < 0) && (errno == EINVAL));					\
+			result = write(fd_write,buffer, 1000);																\
+			sprintf(message,"Trying to write a valid buffer to VSF with file descriptor = %d",fd_write);		\
+			LOG_RESULT(message,"1000",result,passed_tests,(result == 1000));									\
+			waitpid(fork_res,&status,0);																		\
+			passed_tests += WEXITSTATUS(status);																\
+			total_tests += 3;																					\
+			sched_setscheduler(getpid(),SCHED_OTHER,&param);													\
+		}																										\
+		else																									\
+		{																										\
+			int child_passed_tests = 0;																			\
+			sched_setscheduler(getpid(),SCHED_OTHER,&param);													\
+			sched_yield();																						\
+			char message[MAX_LENGTH];																			\
+			char buffer[1000];																					\
+			result = read(fd_read,buffer, 1000);																\
+			sprintf(message,"Trying to read a valid buffer from VSF with file descriptor = %d",fd_read);		\
+			LOG_RESULT(message,"1000",result,child_passed_tests,(result == 1000));								\
+			return child_passed_tests;																			\
+		}																										\
+	} while(0)
+
+
+#define INVALID_READ_WRITE(fd_read,fd_write,passed_tests,total_tests)											\
+	do {																										\
+		struct sched_param param;																				\
+		int result;																								\
+		param.sched_priority = 10;																				\
+		sched_setscheduler(getpid(),SCHED_FIFO,&param);															\
+		fork_res = fork();																						\
+		if(fork_res)																							\
+		{																										\
+			int status;																							\
+			char message[MAX_LENGTH];																			\
+			char buffer[1000];																					\
+			result = read(fd_read,NULL, 1000);																	\
+			sprintf(message,"Trying to read a null buffer from VSF with file descriptor = %d",fd_read);			\
+			LOG_RESULT(message,"EINVAL",result,passed_tests,(result < 0) && (errno == EINVAL));					\
+			result = read(fd_read,buffer, 1000);																\
+			sprintf(message,"Trying to read a valid buffer from VSF with file descriptor = %d",fd_read);		\
+			LOG_RESULT(message,"1000",result,passed_tests,(result == 1000));									\
+			waitpid(fork_res,&status,0);																		\
+			passed_tests += WEXITSTATUS(status);																\
+			total_tests += 3;																					\
+			sched_setscheduler(getpid(),SCHED_OTHER,&param);													\
+		}																										\
+		else																									\
+		{																										\
+			int child_passed_tests = 0;																			\
+			sched_setscheduler(getpid(),SCHED_OTHER,&param);													\
+			sched_yield();																						\
+			char message[MAX_LENGTH];																			\
+			char buffer[1000];																					\
+			result = write(fd_write,buffer, 1000);																\
+			sprintf(message,"Trying to write a valid buffer to VSF with file descriptor = %d",fd_write);		\
+			LOG_RESULT(message,"1000",result,child_passed_tests,(result == 1000));								\
+			return child_passed_tests;																			\
+		}																										\
+	} while(0)
+
+#define INTERRUPT_READ(fd,size,passed_tests,total_tests)										\
 	do {																						\
 		struct sched_param param;																\
 		param.sched_priority = 10;																\
@@ -283,7 +358,7 @@ int CALCULATE_ITERATIONS(int size)
 		fork_res = fork();																		\
 		if(fork_res)																			\
 		{																						\
-			READ_VSF(fd,size,"EINTR",0,"",result && (errno == EINTR),passed_tests,total_tests);				\
+			READ_VSF(fd,size,"EINTR",0,"",result && (errno == EINTR),passed_tests,total_tests);	\
 			sched_setscheduler(getpid(),SCHED_OTHER,&param);									\
 		}																						\
 		else																					\
@@ -296,26 +371,26 @@ int CALCULATE_ITERATIONS(int size)
 		}																						\
 	} while(0)
 
-#define INTERRUPT_WRITE(fd,size,passed_tests,total_tests)																\
-	do {																						\
-		struct sched_param param;																\
-		param.sched_priority = 10;																\
-		sched_setscheduler(getpid(),SCHED_FIFO,&param);											\
-		fork_res = fork();																		\
-		if(fork_res)																			\
-		{																						\
-			char buffer[size];																	\
-			WRITE_VSF(fd,buffer,size,"EINTR",0,result && (errno == EINTR),passed_tests,total_tests);		\
-			sched_setscheduler(getpid(),SCHED_OTHER,&param);									\
-		}																						\
-		else																					\
-		{																						\
-			sched_setscheduler(getpid(),SCHED_OTHER,&param);									\
-			sched_yield();																		\
-			kill(getppid(),SIGSTOP);															\
-			kill(getppid(),SIGCONT);															\
-			return 0;																			\
-		}																						\
+#define INTERRUPT_WRITE(fd,size,passed_tests,total_tests)												\
+	do {																								\
+		struct sched_param param;																		\
+		param.sched_priority = 10;																		\
+		sched_setscheduler(getpid(),SCHED_FIFO,&param);													\
+		fork_res = fork();																				\
+		if(fork_res)																					\
+		{																								\
+			char buffer[size];																			\
+			WRITE_VSF(fd,buffer,size,"EINTR",0,result && (errno == EINTR),passed_tests,total_tests);	\
+			sched_setscheduler(getpid(),SCHED_OTHER,&param);											\
+		}																								\
+		else																							\
+		{																								\
+			sched_setscheduler(getpid(),SCHED_OTHER,&param);											\
+			sched_yield();																				\
+			kill(getppid(),SIGSTOP);																	\
+			kill(getppid(),SIGCONT);																	\
+			return 0;																					\
+		}																								\
 	} while(0)
 
 #define READ_SIMULTANEOUSLY(fd_read,fd_write,size,passed_tests,total_tests)																					\
@@ -838,12 +913,28 @@ int test_read_and_write_functionality()
 	BLOCKING_READ_WRITE(fd_read,fd_write,10,passed_tests,total_tests);
 	BLOCKING_READ_WRITE(fd_read,fd_write,10,passed_tests,total_tests);
 
+	/***************************************************/
+	/* Part4: Test read/write with invalid read buffer */
+	/***************************************************/
+	LOG_MESSAGE("");
+	LOG_MESSAGE("Part 4 - Test read/write with invalid read buffer:");
+	LOG_MESSAGE("--------------------------------------------------");
+	INVALID_READ_WRITE(fd_read,fd_write,passed_tests,total_tests);
+
+	/****************************************************/
+	/* Part5: Test read/write with invalid write buffer */
+	/****************************************************/
+	LOG_MESSAGE("");
+	LOG_MESSAGE("Part 5 - Test read/write with invalid write buffer:");
+	LOG_MESSAGE("---------------------------------------------------");
+	INVALID_WRITE_READ(fd_read,fd_write,passed_tests,total_tests);
+
 	/***********************************/
-	/* Part4: Trying to interrupt read */
+	/* Part6: Trying to interrupt read */
 	/***********************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 4 - Trying to interrupt read:");
+	LOG_MESSAGE("Part 6 - Trying to interrupt read:");
 	LOG_MESSAGE("----------------------------------");
 	INTERRUPT_READ(fd_read,400,passed_tests,total_tests);
 	INTERRUPT_READ(fd_read,400,passed_tests,total_tests);
@@ -851,11 +942,11 @@ int test_read_and_write_functionality()
 	INTERRUPT_READ(fd_read,400,passed_tests,total_tests);
 
 	/************************************/
-	/* Part5: Trying to interrupt write */
+	/* Part7: Trying to interrupt write */
 	/************************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 5 - Trying to interrupt write:");
+	LOG_MESSAGE("Part 7 - Trying to interrupt write:");
 	LOG_MESSAGE("-----------------------------------");
 	INTERRUPT_WRITE(fd_write,400,passed_tests,total_tests);
 	INTERRUPT_WRITE(fd_write,400,passed_tests,total_tests);
@@ -863,11 +954,11 @@ int test_read_and_write_functionality()
 	INTERRUPT_WRITE(fd_write,400,passed_tests,total_tests);
 
 	/****************************************/
-	/*  Part6: Trying to read simultaneously */
+	/*  Part8: Trying to read simultaneously */
 	/****************************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 6 - Trying to read simultaneously:");
+	LOG_MESSAGE("Part 8 - Trying to read simultaneously:");
 	LOG_MESSAGE("---------------------------------------");
 
 	READ_SIMULTANEOUSLY(fd_read,fd_write,1000,passed_tests,total_tests);
@@ -876,11 +967,11 @@ int test_read_and_write_functionality()
 	READ_SIMULTANEOUSLY(fd_read,fd_write,1000,passed_tests,total_tests);
 	READ_SIMULTANEOUSLY(fd_read,fd_write,1000,passed_tests,total_tests);
 	/*****************************************/
-	/* Part7: Trying to write simultaneously */
+	/* Part9: Trying to write simultaneously */
 	/*****************************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 7 - Trying to write simultaneously:");
+	LOG_MESSAGE("Part 9 - Trying to write simultaneously:");
 	LOG_MESSAGE("----------------------------------------");
 
 	WRITE_SIMULTANEOUSLY(fd_read,fd_write,1000,passed_tests,total_tests);
@@ -890,29 +981,29 @@ int test_read_and_write_functionality()
 	WRITE_SIMULTANEOUSLY(fd_read,fd_write,1000,passed_tests,total_tests);
 
 	/**********************************************************/
-	/* Part8: Trying to transfer a packet of size 4KB exactly */
+	/* Part10: Trying to transfer a packet of size 4KB exactly */
 	/**********************************************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 8 - Trying to transfer a packet of size 4KB exactly:");
-	LOG_MESSAGE("---------------------------------------------------------");
+	LOG_MESSAGE("Part 10 - Trying to transfer a packet of size 4KB exactly:");
+	LOG_MESSAGE("----------------------------------------------------------");
 	WRITE_READ(fd_read,fd_write,ONE_PAGE_BUFFER_LENGTH,passed_tests,total_tests);
 
 	/**************************************************************/
-	/* Part9: Trying to transfer a packet of size 4KB + 1 exactly */
+	/* Part11: Trying to transfer a packet of size 4KB + 1 exactly */
 	/**************************************************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 9 - Trying to transfer a packet of size 4KB + 1 exactly:");
+	LOG_MESSAGE("Part 11 - Trying to transfer a packet of size 4KB + 1 exactly:");
 	LOG_MESSAGE("--------------------------------------------------------------");
 	WRITE_READ(fd_read,fd_write,ONE_PAGE_BUFFER_LENGTH + 1,passed_tests,total_tests);
 
 	/***********************************************************/
-	/* Part10: Trying to transfer packets much bigger than 4KB */
+	/* Part12: Trying to transfer packets much bigger than 4KB */
 	/***********************************************************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 10 - Trying to transfer packets much bigger than 4KB:");
+	LOG_MESSAGE("Part 12 - Trying to transfer packets much bigger than 4KB:");
 	LOG_MESSAGE("----------------------------------------------------------");
 	WRITE_READ(fd_read,fd_write,10000,passed_tests,total_tests);
 	READ_WRITE(fd_read,fd_write,30000,passed_tests,total_tests);
@@ -922,11 +1013,11 @@ int test_read_and_write_functionality()
 	READ_WRITE(fd_read,fd_write,2000000,passed_tests,total_tests);
 
 	/*******************/
-	/* Part11: Cleanup */
+	/* Part13: Cleanup */
 	/*******************/
 
 	LOG_MESSAGE("");
-	LOG_MESSAGE("Part 11 - Cleanup:");
+	LOG_MESSAGE("Part 13 - Cleanup:");
 	LOG_MESSAGE("------------------");
 
 	FREE_VSF(fd_controller,1,2,"0",!result,passed_tests,total_tests);
