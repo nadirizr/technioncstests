@@ -201,7 +201,7 @@ try:
   
   # Check vsf driver appears and has the correct max vsf
   if not commands.getoutput('ls -l /proc/driver/vsf').startswith("-r--------"):
-    print "Missing vsf file or bad permissions"
+    print "/proc/driver/vsf isn't found or has bad permissions (expected only read for user)"
     sys.exit(1)
   assertDriver("Test vsf driver exists", 3, [])
   
