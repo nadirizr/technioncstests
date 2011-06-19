@@ -1,0 +1,5 @@
+$(command chmod +x *.sh)
+all:
+	gcc reader.c -o reader
+	gcc writer.c -o writer
+	gcc ioctl.c -o ioctl
