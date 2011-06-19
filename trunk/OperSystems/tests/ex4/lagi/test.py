@@ -52,16 +52,20 @@ def assertCreate(read_minor, write_minor, msg):
   testEquals(msg,
              commands.getoutput("./fops C %d %d" % (read_minor, write_minor)),
              "Created VSF for [read_minor = %d, write_minor = %d]" % (read_minor, write_minor))
-    
-def assertDriver(msg, max_devs, devs):
-  startTest(msg)
-  
+
+def writeExpected(max_devs, devs):
   tmp = open('expected', 'w')
   lines = [str(max_devs) + '\n']
   for dev in devs:
     lines.append(dev + '\n')
   tmp.writelines(lines)
   tmp.close()
+  
+    
+def assertDriver(msg, max_devs, devs):
+  startTest(msg)
+  
+  writeExpected(max_devs, devs)
 
   commands.getoutput('./check_driver.py expected')
   time.sleep(0.25)
@@ -96,11 +100,28 @@ def _assertOpenFails(device, perm, expected_err):
       return None
     return "Expected errno [%d] but was [%s]" % (expected_err, err)
   
-def assertOpens(name, device, perm):
+def remove(files):
+  for file in files:
+    if os.path.exists(file):
+      os.remove(file)
+  
+def assertOpens(name, device, perm, max_devs, devs):
   validateSlave()
-  testEquals(name,
-             commands.getoutput("./slave %s %s" % (device, perm)),
-             "0");
+  startTest(name)
+  writeExpected(max_devs, devs)
+  flag = commands.getoutput("./slave %s %s expected" % (device, perm))
+  if flag != "0":
+    remove(['expected', 'expected.result'])
+    failed("Flag was: %s" % flag)
+  res = open('expected.result', 'r').read()
+  if res != 'Ok':
+    remove(['expected', 'expected.result'])
+    failed(res)
+  remove(['expected', 'expected.result'])
+  passed()
+  
+  
+    
 
 def mknod(name, major, minor):
   if os.path.exists(name):
@@ -216,16 +237,14 @@ try:
   assertOpenFails("Test open reader with RDWR fails", "vsf_read254", os.O_RDWR, errno.EPERM)
   assertOpenFails("Test open reader with APPEND fails", "vsf_read254", os.O_APPEND, errno.EPERM)
   assertOpenFails("Test open reader with RDONLY|CREAT fails", "vsf_read254", os.O_RDONLY|os.O_CREAT, errno.EPERM)
-  assertOpens("Test open reader with RDONLY", "vsf_read254", os.O_RDONLY)
-  #assertDriver("Test 1 reader in driver", 3, [(254,1, 255,0)])
+  assertOpens("Test open reader with RDONLY", "vsf_read254", os.O_RDONLY, 3, ['254(1) 255(0) *'])
   
   mknod("vsf_write255", major, "255")
   assertOpenFails("Test open writer with RDONLY fails", "vsf_write255", os.O_RDONLY, errno.EPERM)
   assertOpenFails("Test open writer with RDWR fails", "vsf_write255", os.O_RDWR, errno.EPERM)
   assertOpenFails("Test open writer with APPEND fails", "vsf_write255", os.O_APPEND, errno.EPERM)
   assertOpenFails("Test open writer with WRONLY|CREAT fails", "vsf_write255", os.O_WRONLY|os.O_CREAT, errno.EPERM)
-  assertOpens("Test open writer with WRONLY", "vsf_write255", os.O_WRONLY)
-  #assertDriver("Test 1 reader 1 writer in driver", 3, [(254,1, 255,1)])
+  assertOpens("Test open writer with WRONLY", "vsf_write255", os.O_WRONLY, 3, ['254(1) 255(1) *'])
 
   # Check removing the vsf works
   testEquals("Test rmmod works",
