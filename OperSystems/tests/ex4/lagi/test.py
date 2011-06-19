@@ -244,7 +244,7 @@ try:
   assertOpenFails("Test open writer with RDWR fails", "vsf_write255", os.O_RDWR, errno.EPERM)
   assertOpenFails("Test open writer with APPEND fails", "vsf_write255", os.O_APPEND, errno.EPERM)
   assertOpenFails("Test open writer with WRONLY|CREAT fails", "vsf_write255", os.O_WRONLY|os.O_CREAT, errno.EPERM)
-  assertOpens("Test open writer with WRONLY", "vsf_write255", os.O_WRONLY, 3, ['254(1) 255(1) *'])
+  assertOpens("Test open writer with WRONLY", "vsf_write255", os.O_WRONLY, 3, ['254(0) 255(1) *'])
 
   # Check removing the vsf works
   testEquals("Test rmmod works",
