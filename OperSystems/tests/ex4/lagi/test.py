@@ -174,7 +174,7 @@ try:
   # Now try to add the module
   # First search for the files and compile them
   if options.should_compile:
-    if not checkFilesExist(['../../Makefile', '../../vsf.c', '../../vsf.h']):
+    if not checkFilesExist(['../../Makefile', '../../vsf.h']):
       sys.exit(1)
     
     if os.path.exists('../../vsf.o'):
