@@ -1,0 +1,6 @@
+1 STRING "" 100%
+2 STRING "abc" 100%
+5 STRING "a
+b
+c" 100%
+6 STRING "\" 100%

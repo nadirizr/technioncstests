@@ -4,3 +4,6 @@
 3 COMMENT /*****/ 100%
 4 COMMENT /*a*a/a*/ 100%
 5 COMMENT /*/*a*/ 100%
+8 COMMENT /*a
+b
+c*/ 100%
