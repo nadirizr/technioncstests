@@ -7,18 +7,18 @@ rm -f a.out lex.yy.c
 flex ../hw1.lex
 g++ lex.yy.c ../hw1.cpp
 
-# run the staff test and diff
-echo "Running staff test..."
-./a.out < staff/t1.in > staff/t1.res
-diff staff/t1.res staff/t1.out
+# Run the tests
+tests=( "staff/t1" "lagi_tests/comment_test" "from_forum/t6" )
 
-# run our tests
-echo "Running Lagi's comment test..."
-./a.out < lagi_tests/comment_test.in > lagi_tests/comment_test.res
-diff lagi_tests/comment_test.res lagi_tests/comment_test.out
-
-# run forum test
-#echo "Running forum tests..."
-#./a.out < from_forum/t6.in > from_forum/t6.res
-#diff from_forum/t6.res from_forum/t6.out
+for test in ${tests[@]}
+do
+  echo -n "Running test $test ..."
+  ./a.out < $test.in > $test.res
+  diff $test.res $test.out > $test.diff
+  if [ -s $test.diff ]; then
+    echo "FAILED (see $test.diff)"
+  else
+    echo "OK"
+  fi
+done
 
