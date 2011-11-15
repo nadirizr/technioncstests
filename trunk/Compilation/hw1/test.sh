@@ -11,7 +11,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the tests
-tests=( "staff/t1" "lagi_tests/real_test" "lagi_tests/string_test" "lagi_tests/comment_test" "from_forum/t6" )
+tests=( "staff/t1" "dan_tests/dan" "lagi_tests/real_test" "lagi_tests/string_test" "lagi_tests/comment_test" "from_forum/t6" )
 
 for test in ${tests[@]}
 do
