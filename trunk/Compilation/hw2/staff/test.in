@@ -1,0 +1,13 @@
+int a = 3;
+NIS b;
+{
+	AGORA c = 10 NIS;
+	if (c > 300 AGORA )
+		NIS d = b+c;
+}
+
+while (true){
+	if(true){
+		break;
+	}
+}
