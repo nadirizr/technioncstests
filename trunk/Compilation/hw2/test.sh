@@ -13,7 +13,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the tests
-tests=( "staff/test" )
+tests=( "staff/test" "dan_lagi/test_define_var_that_is_already_in_the_scope" )
 
 for test in ${tests[@]}
 do
