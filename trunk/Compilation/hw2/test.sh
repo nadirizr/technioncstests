@@ -14,8 +14,13 @@ fi
 
 # Run the tests
 tests=( "tests/staff/test"
-        "tests/dan_lagi/test_define_var_that_is_already_in_the_scope"
-        "tests/dan_lagi/test_cant_use_undefined_var" )
+        "tests/dan_lagi/test_assign_int_to_bool"
+        "tests/dan_lagi/test_convert_int_to_bool"
+        "tests/dan_lagi/test_assign_int_to_bool_var"
+      )
+#        "tests/dan_lagi/test_bool_conversion"
+#        "tests/dan_lagi/test_define_var_that_is_already_in_the_scope"
+#        "tests/dan_lagi/test_cant_use_undefined_var" )
 
 for test in ${tests[@]}
 do
