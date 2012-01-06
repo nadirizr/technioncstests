@@ -1,0 +1,32 @@
+int a;
+b = 6;
+if (true) {
+  int b;
+  b = 1;
+}
+b = 1;
+{
+  {
+    AGORA b;
+    {
+      a = 1;
+      NIS n;
+      print b;
+      print n;
+    }
+    print a;
+    print b;
+    print n;
+  }
+  b =
+        1;
+  print a;
+  print b;
+  print n;
+}
+print a;
+print
+  b;
+print 
+n
+;

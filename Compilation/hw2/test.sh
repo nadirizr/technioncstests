@@ -13,15 +13,17 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the tests
-tests=( "staff/test" "dan_lagi/test_define_var_that_is_already_in_the_scope" )
+tests=( "tests/staff/test"
+        "tests/dan_lagi/test_define_var_that_is_already_in_the_scope"
+        "tests/dan_lagi/test_cant_use_undefined_var" )
 
 for test in ${tests[@]}
 do
-  echo -n "Running test tests/$test ..."
-  ./a.out < tests/$test.in > tests/$test.res
-  diff tests/$test.res tests/$test.out > tests/$test.diff
-  if [ -s tests/$test.diff ]; then
-    echo "FAILED (see tests/$test.diff)"
+  echo -n "Running test $test ... "
+  ./a.out < $test.in > $test.res
+  diff $test.res $test.out > $test.diff
+  if [ -s $test.diff ]; then
+    echo "FAILED (see $test.diff)"
   else
     echo "OK"
   fi

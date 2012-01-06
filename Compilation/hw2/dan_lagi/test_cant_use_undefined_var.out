@@ -1,0 +1,17 @@
+line 2: variable b is not defined
+-- end scope --
+var:b:1:INT
+line 7: variable b is not defined
+-- end scope --
+var:n:2:NIS
+line 19: variable n is not defined
+-- end scope --
+var:b:1:AGORA
+line 22: variable b is not defined
+line 24: variable b is not defined
+line 25: variable n is not defined
+-- end scope --
+line 29: variable b is not defined
+line 32: variable n is not defined
+-- end scope --
+var:a:0:INT
