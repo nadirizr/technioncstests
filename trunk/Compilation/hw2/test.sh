@@ -14,11 +14,22 @@ fi
 
 # Run the tests
 tests=( "tests/staff/test"
+
         "tests/dan_lagi/test_assign_int_to_bool"
         "tests/dan_lagi/test_convert_int_to_bool"
         "tests/dan_lagi/test_assign_int_to_bool_var"
+        "tests/dan_lagi/test_assign_nis_to_bool_var"
+        "tests/dan_lagi/test_assign_agora_to_bool_var"
+	
+        "tests/dan_lagi/test_assign_bool_to_int_var"
+        "tests/dan_lagi/test_assign_bool_to_nis_var"
+        "tests/dan_lagi/test_assign_bool_to_agora_var"
+
+        "tests/dan_lagi/test_div_int_by_agora"
+        "tests/dan_lagi/test_div_int_by_nis"
+        "tests/dan_lagi/test_div_int_by_bool"
+        "tests/dan_lagi/test_assign_int_mult_agora_to_int"
       )
-#        "tests/dan_lagi/test_bool_conversion"
 #        "tests/dan_lagi/test_define_var_that_is_already_in_the_scope"
 #        "tests/dan_lagi/test_cant_use_undefined_var" )
 

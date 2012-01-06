@@ -1,0 +1,3 @@
+NIS a;
+bool b;
+a = b;
