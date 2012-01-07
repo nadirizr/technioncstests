@@ -2,18 +2,16 @@
 
 # compile
 cd ..
-#make
-#if [ $? -ne 0 ]; then
-#  echo "Compile of hw4.lex or hw4.ypp failed!"
-#  exit 1
-#fi
+make
+if [ $? -ne 0 ]; then
+  echo "Compile of hw4.lex or hw4.ypp failed!"
+  exit 1
+fi
 
 # Run the tests
 test_dirs=( "tests/staff/"
             "tests/dan_lagi/"
           )
-#        "tests/dan_lagi/test_define_var_that_is_already_in_the_scope"
-#        "tests/dan_lagi/test_cant_use_undefined_var" )
 
 for test_dir in ${test_dirs[@]}
 do
