@@ -2,7 +2,7 @@ int a;
 {
 	{
 		while (true) 
-		while (false) {}
+		  while (false) {print "a";}
 		while (true) int a;
 		while (true) print a;
 	}
