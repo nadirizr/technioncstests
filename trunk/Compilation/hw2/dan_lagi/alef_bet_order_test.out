@@ -1,0 +1,11 @@
+-- end scope --
+var:A:6:BOOL
+var:C:5:NIS
+var:b:4:INT
+-- end scope --
+var:abc:2:AGORA
+var:abd:3:NIS
+var:bibi:4:INT
+-- end scope --
+var:a:0:INT
+var:b:1:INT

@@ -1,0 +1,6 @@
+NIS a = 10 AGORA;
+a = 5 AGORA;
+AGORA b = 2 NIS;
+b = 4 NIS;
+b = a;
+a = b;

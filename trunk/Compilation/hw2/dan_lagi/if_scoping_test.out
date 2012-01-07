@@ -1,0 +1,15 @@
+-- end scope --
+-- end scope --
+-- end scope --
+var:a:1:INT
+-- end scope --
+-- end scope --
+var:b:1:BOOL
+-- end scope --
+var:a:1:AGORA
+-- end scope --
+var:a:1:NIS
+-- end scope --
+-- end scope --
+-- end scope --
+var:a:0:INT

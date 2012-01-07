@@ -1,0 +1,8 @@
+int a;
+NIS b;
+AGORA c = 20 AGORA;
+bool d;
+input a;
+input b;
+input c;
+input d;
