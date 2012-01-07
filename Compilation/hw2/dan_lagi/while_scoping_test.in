@@ -1,0 +1,9 @@
+int a;
+{
+	{
+		while (true) 
+		while (false) {}
+		while (true) int a;
+		while (true) print a;
+	}
+}

@@ -1,46 +1,33 @@
 #!/bin/bash
 
-# clean up
-#rm -f a.out lex.yy.c source.tab.cpp source.tab.hpp
-
 # compile
 cd ..
-make
-if [ $? -ne 0 ]; then
-  echo "Compile of hw4.lex or hw4.ypp failed!"
-  exit 1
-fi
+#make
+#if [ $? -ne 0 ]; then
+#  echo "Compile of hw4.lex or hw4.ypp failed!"
+#  exit 1
+#fi
 
 # Run the tests
-tests=( "tests/staff/test"
-
-        "tests/dan_lagi/test_assign_int_to_bool"
-        "tests/dan_lagi/test_convert_int_to_bool"
-        "tests/dan_lagi/test_assign_int_to_bool_var"
-        "tests/dan_lagi/test_assign_nis_to_bool_var"
-        "tests/dan_lagi/test_assign_agora_to_bool_var"
-	
-        "tests/dan_lagi/test_assign_bool_to_int_var"
-        "tests/dan_lagi/test_assign_bool_to_nis_var"
-        "tests/dan_lagi/test_assign_bool_to_agora_var"
-
-        "tests/dan_lagi/test_div_int_by_agora"
-        "tests/dan_lagi/test_div_int_by_nis"
-        "tests/dan_lagi/test_div_int_by_bool"
-        "tests/dan_lagi/test_assign_int_mult_agora_to_int"
-      )
+test_dirs=( "tests/staff/"
+            "tests/dan_lagi/"
+          )
 #        "tests/dan_lagi/test_define_var_that_is_already_in_the_scope"
 #        "tests/dan_lagi/test_cant_use_undefined_var" )
 
-for test in ${tests[@]}
+for test_dir in ${test_dirs[@]}
 do
-  echo -n "Running test $test ... "
-  ./hw4 < $test.in > $test.res
-  diff $test.res $test.out > $test.diff
-  if [ -s $test.diff ]; then
-    echo "FAILED (see $test.diff)"
-  else
-    echo "OK"
-  fi
+  for test_file in `ls ${test_dir}*.in`
+  do
+    test="${test_file:0:${#test_file}-3}"
+    echo -n "Running test ${test} ... "
+    ./hw4 < $test.in > $test.res
+    diff $test.res $test.out > $test.diff
+    if [ -s $test.diff ]; then
+      echo "FAILED (see $test.diff)"
+    else
+      echo "OK"
+    fi
+  done
 done
 

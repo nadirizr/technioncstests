@@ -1,0 +1,7 @@
+while (true) while (false)
+{
+	break;
+	if (true) break; else break;
+	while (false) break;
+	break;
+}

@@ -1,0 +1,12 @@
+int a;
+int b = 10;
+{
+	AGORA abc;
+	NIS abd;
+	{
+		int b;
+		NIS C;
+		bool A;
+	}
+	int bibi;
+}

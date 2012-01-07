@@ -1,0 +1,11 @@
+int a;
+{
+	{
+		if (true) 
+		  if (false) {print a;} else {print a;}
+		if (true) int a;
+		if (true) {print a;} else bool b;
+		if (true) print a; else print a;
+		if (true) AGORA a; else NIS a;
+	}
+}
