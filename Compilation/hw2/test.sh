@@ -6,9 +6,8 @@
 # compile
 cd ..
 make
-#`bison -d ../hw2.ypp` && `flex ../hw2.lex` && `g++ lex.yy.c ../hw2.tab.cpp`
 if [ $? -ne 0 ]; then
-  echo "Compile of hw2.lex or hw2.ypp failed!"
+  echo "Compile of hw4.lex or hw4.ypp failed!"
   exit 1
 fi
 
@@ -36,7 +35,7 @@ tests=( "tests/staff/test"
 for test in ${tests[@]}
 do
   echo -n "Running test $test ... "
-  ./a.out < $test.in > $test.res
+  ./hw4 < $test.in > $test.res
   diff $test.res $test.out > $test.diff
   if [ -s $test.diff ]; then
     echo "FAILED (see $test.diff)"
