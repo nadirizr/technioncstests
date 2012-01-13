@@ -4,7 +4,7 @@
 cd ..
 make
 if [ $? -ne 0 ]; then
-  echo "Compile of hw4.lex or hw4.ypp failed!"
+  echo "Compile of hw5.lex or hw5.ypp failed!"
   exit 1
 fi
 
@@ -19,7 +19,7 @@ do
   do
     test="${test_file:0:${#test_file}-3}"
     echo -n "Running test ${test} ... "
-    ./hw4 < $test.in > $test.res
+    ./hw5 < $test.in > $test.res
     diff $test.res $test.out > $test.diff
     if [ -s $test.diff ]; then
       echo "FAILED (see $test.diff)"
