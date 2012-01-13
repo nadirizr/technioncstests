@@ -1,0 +1,9 @@
+AGORA x = 300 AGORA;
+NIS y = 500 AGORA;
+NIS z;
+
+z = y + x ;
+print z;
+if(z > 7 NIS)
+	print "ok";
+
