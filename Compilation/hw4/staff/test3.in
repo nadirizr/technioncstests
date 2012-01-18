@@ -1,0 +1,25 @@
+NIS sA = 200 AGORA;
+{
+	AGORA sB = 5 NIS ;
+	{
+		int sC = sA/sB;
+		{
+			NIS sD = sA+sB/sC;
+			{
+				AGORA sE = sC*sA;
+				{
+					NIS sF = sA+sB+sD+sE/sC;
+					{
+						int sG = sF/sE;
+					}
+				}
+			}
+		}
+	}
+}
+
+AGORA a = 1000 AGORA;
+NIS b = 10 NIS;
+NIS c = 2000 AGORA;
+a = c + b;
+x = 100;

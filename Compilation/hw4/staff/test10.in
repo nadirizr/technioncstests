@@ -1,0 +1,13 @@
+NIS x;
+bool b;
+while(b){
+	NIS a = 10 NIS;
+	NIS b = 100 AGORA;
+	if (a <= b){
+		print x;
+	}
+}
+int y;
+while(y){
+	print y;
+}

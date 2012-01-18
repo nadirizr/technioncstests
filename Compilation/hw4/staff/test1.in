@@ -1,0 +1,14 @@
+int x = 1;
+bool b = x > 1;
+while ( true and b){
+	int z = 10;
+	while( false or b){
+		int y;
+		input y;
+		if ( y >= x and y <= z){
+			print "impossible" ;		
+		}
+	}
+}
+NIS y = 100 NIS;
+%num = 10; 

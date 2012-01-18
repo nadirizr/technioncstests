@@ -1,0 +1,11 @@
+-- end scope --
+-- end scope --
+var:b:1:NIS
+var:i:3:INT
+var:x:2:AGORA
+-- end scope --
+var:new:1:NIS
+-- end scope --
+-- end scope --
+-- end scope --
+line 24: syntax error

@@ -1,0 +1,13 @@
+-- end scope --
+var:sG:6:INT
+-- end scope --
+var:sF:5:NIS
+-- end scope --
+var:sE:4:AGORA
+-- end scope --
+var:sD:3:NIS
+-- end scope --
+var:sC:2:INT
+-- end scope --
+var:sB:1:AGORA
+line 25: variable x is not defined

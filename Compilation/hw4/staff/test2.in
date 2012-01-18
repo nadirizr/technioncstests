@@ -1,0 +1,23 @@
+NIS a = 10 NIS;
+if (a > 11 NIS){
+	NIS b = 11 NIS; 
+	AGORA x = 100 AGORA;
+	int i = 0;	
+	while (x < b ){
+		x = x + 1 AGORA;
+		print i;
+		i = i+1;
+	}
+}
+
+{
+	while (true){
+		while(false){
+			while(true or false)
+				NIS new = 0 AGORA;		
+		}
+	}  	
+}
+
+int new = 4;
+int bad = 6

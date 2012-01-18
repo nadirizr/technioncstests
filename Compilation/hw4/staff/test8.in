@@ -1,0 +1,4 @@
+int a;
+AGORA b = 10 AGORA;
+AGORA c = b - 100 AGORA;
+c = a - 10 AGORA; 
