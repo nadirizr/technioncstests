@@ -1,0 +1,13 @@
+-- end scope --
+var:x:1:INT
+var:y:2:NIS
+-- end scope --
+var:x:2:INT
+-- end scope --
+var:x:1:INT
+-- end scope --
+var:f:1:INT
+-- end scope --
+var:e:1:INT
+-- end scope --
+var:g:0:AGORA

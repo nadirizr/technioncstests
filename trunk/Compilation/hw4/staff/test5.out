@@ -1,0 +1,6 @@
+-- end scope --
+-- end scope --
+-- end scope --
+var:x:0:INT
+var:y:1:INT
+line 25: type mismatch

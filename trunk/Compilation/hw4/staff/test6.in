@@ -1,0 +1,22 @@
+if ( not true){
+	print "this will not happen";  
+}
+
+if (not false){
+	print "hello";  
+}
+
+{
+	int x = 1;
+	int y = 3;
+	bool b = x <= y;
+	if (not b){
+		print "this will not happen" ;
+	} 
+	else {
+		print " hello again";
+	}
+
+}
+
+int y= 100 NIS;

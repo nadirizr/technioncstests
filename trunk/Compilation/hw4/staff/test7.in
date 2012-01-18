@@ -1,0 +1,14 @@
+int a;
+print a;
+	{
+		int b;
+		print a;
+		input b;
+		{
+			print b;
+			NIS c;
+			b = b+b;
+			a = b+b;
+		}
+	}
+break;

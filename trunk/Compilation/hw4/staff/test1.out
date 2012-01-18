@@ -1,0 +1,6 @@
+-- end scope --
+-- end scope --
+var:y:3:INT
+-- end scope --
+var:z:2:INT
+line 14: lexical error

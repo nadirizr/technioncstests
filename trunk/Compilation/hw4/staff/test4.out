@@ -1,0 +1,9 @@
+-- end scope --
+-- end scope --
+var:a:3:NIS
+var:i:4:INT
+-- end scope --
+var:y:2:AGORA
+-- end scope --
+var:b:1:NIS
+line 27: variable b is already defined

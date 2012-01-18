@@ -1,0 +1,29 @@
+AGORA x;
+input x; 
+if (x > 10 NIS){
+	NIS b; 
+	input b;
+	if (b <= 100 AGORA ){
+		AGORA y;
+		input y;
+		if ( y >= x) {
+			NIS a;
+			input a;
+			int i = 1; 
+			while ( a/i > b){
+				i = i +1 ; 
+			} 
+		} 
+	}
+}
+
+int a= 7;
+NIS y; 
+{
+	int y = 5;
+	NIS b;
+	{
+		int b;
+		int b;
+	}
+}

@@ -1,0 +1,25 @@
+if ( true or false ){
+	print " or ";
+}
+print "this is a test";
+{
+	int x = 2;
+	int y;
+	input y; 
+	if ( y > x or x < y ){
+		print "not equals";	
+	}
+	else 
+		print "exuals";
+}
+
+int a = 4;
+AGORA b = 200 AGORA;
+NIS c = 10 NIS;
+NIS x = a*c;
+AGORA y = a*b;
+x = c+b; 
+y = c+b;
+int w = a+a;
+y = c+c;
+x = a + c; 

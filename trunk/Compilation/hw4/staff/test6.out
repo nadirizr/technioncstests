@@ -1,0 +1,9 @@
+-- end scope --
+-- end scope --
+-- end scope --
+-- end scope --
+-- end scope --
+var:b:2:BOOL
+var:x:0:INT
+var:y:1:INT
+line 22: type mismatch

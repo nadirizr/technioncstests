@@ -1,0 +1,17 @@
+{
+	int a;
+	NIS b; 
+	AGORA c;	
+	int x = a/a;
+	x= a*a;
+
+	{ AGORA y = c/a;}
+	{ NIS w = b/2; }
+	
+	x= b/b;
+	x = c/c;
+	x = b/c;
+	x = c/b; 
+	x = a/c; 
+
+}

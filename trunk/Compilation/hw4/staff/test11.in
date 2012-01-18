@@ -1,0 +1,24 @@
+AGORA g; 
+while (true){
+	int x =1;
+	NIS y = 10 NIS;
+}
+
+while(true){
+	int x = 2; 
+	if (true or false){
+		int x = 4;
+		break;
+	}
+}
+
+while(true)
+	print g;
+
+if (false)
+	int f = 3; 
+else
+	int e = 3;
+
+if(true)
+	print g;
