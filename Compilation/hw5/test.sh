@@ -19,7 +19,7 @@ do
   do
     test="${test_file:0:${#test_file}-3}"
     echo -n "Running test ${test} ... "
-    ./hw5 < $test.in > $test.res
+    ./bvm.pl $test.in > $test.res
     diff $test.res $test.out > $test.diff
     if [ -s $test.diff ]; then
       echo "FAILED (see $test.diff)"
