@@ -1,0 +1,9 @@
+int a;
+a = 100;
+int b = 10;
+int c = a - b;
+print c;
+b = a - b;
+print b;
+a = a + 1;
+print a;
