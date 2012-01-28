@@ -1,0 +1,18 @@
+bool a = true;
+bool b = not a;
+a = a or b;
+if (a) {
+  print "good 1";
+}
+
+if (b) {
+  print "bad 1";
+}
+
+if (a or b) {
+  print "good 2";
+}
+
+if (a and b) {
+  print "bad 2";
+}
