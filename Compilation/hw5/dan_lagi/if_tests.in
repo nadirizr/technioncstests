@@ -1,0 +1,57 @@
+int a = 1;
+if (a > 0) {
+  print "a > 0";
+} else {
+  print "a <= 0";
+}
+
+a = 2;
+if (a < 2) {
+  print "NOT GOOD";
+}
+
+if (a >= 2) {
+  print "a >= 2";
+  a = 3;
+}
+print a;
+
+if (a < 3) {
+  print "NOT GOOD 2";
+} else {
+  print "a >= 3";
+}
+
+if (a >= 3) {
+  a = 4;
+  if (a >= 4) {
+    print "a >= 4";
+    a = 5;
+  } else {
+    print "NOT GOOD 3";
+  }
+  print "so far so good";
+  if (a <= 4) {
+    print "NOT GOOD 4";
+  } else {
+    print "a > 4";
+  }
+} else {
+  print "NOT GOOD AT ALL";
+}
+
+if (true) {
+  print "we're good";
+}
+
+if (false) {
+  print "oh oh";
+}
+
+if (not true) {
+  print "oh oh 2";
+}
+
+if (not false) {
+  print "we're good 2";
+}
