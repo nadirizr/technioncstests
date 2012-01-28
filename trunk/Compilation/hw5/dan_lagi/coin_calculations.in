@@ -19,6 +19,8 @@ a = 111 AGORA - 1 NIS;
 print a;
 a = 2 NIS - 101 AGORA;
 print a;
+a = 199 AGORA - 1 NIS;
+print a;
 a = 1 AGORA * 33;
 print a;
 a = 11 * 4 NIS;
