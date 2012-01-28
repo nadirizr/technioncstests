@@ -1,0 +1,54 @@
+AGORA a = 2 AGORA;
+print a;
+AGORA b = 1 NIS;
+print b;
+NIS c = 2 NIS;
+print c;
+NIS d = 133 AGORA;
+print d;
+// conversions AGORA = AGORA / NIS
+a = 10 AGORA + 12 AGORA;
+print a;
+c = a;
+print c;
+a = 1 AGORA + 4 NIS;
+print a;
+a = 1 NIS + 4 AGORA;
+print a;
+a = 111 AGORA - 1 NIS;
+print a;
+a = 2 NIS - 101 AGORA;
+print a;
+a = 1 AGORA * 33;
+print a;
+a = 11 * 4 NIS;
+print a;
+a = 12 AGORA / 4;
+print a;
+int e = 22 AGORA / 11 AGORA;
+print e;
+e = 1 NIS / 11 AGORA;
+print e;
+{
+// conversions NIS = AGORA / NIS
+c = 110 AGORA + 12 AGORA;
+print c;
+a = c + 16 AGORA;
+print a;
+c = 1 AGORA + 4 NIS;
+print c;
+c = 1 NIS + 4 AGORA;
+print c;
+c = 111 AGORA - 1 NIS;
+print c;
+c = 2 NIS - 101 AGORA;
+print c;
+c = 11 AGORA * 33;
+print c;
+c = 11 * 4 NIS;
+print c;
+c = 12 NIS / 4;
+print c;
+int e = 22 NIS / 11 NIS;
+print e;
+}
