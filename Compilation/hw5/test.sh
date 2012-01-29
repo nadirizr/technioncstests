@@ -9,7 +9,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the tests
-test_dirs=( #"tests/staff/"
+test_dirs=( "tests/staff/"
             "tests/dan_lagi/"
           )
 
