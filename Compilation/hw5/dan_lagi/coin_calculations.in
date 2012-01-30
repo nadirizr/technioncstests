@@ -29,7 +29,7 @@ a = 12 AGORA / 4;
 print a;
 int e = 22 AGORA / 11 AGORA;
 print e;
-e = 1 NIS / 11 AGORA;
+e = 10 NIS / 111 AGORA;
 print e;
 {
 // conversions NIS = AGORA / NIS
