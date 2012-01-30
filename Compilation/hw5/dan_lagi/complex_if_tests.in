@@ -1,0 +1,14 @@
+if (not true or not false)
+  print "ok1";
+else
+  print "bad1";
+
+if (not not true)
+  print "ok2";
+else
+  print "bad2";
+
+if (not not true and not false or not false and not true or not false)
+  print "ok3";
+else
+  print "bad3";
