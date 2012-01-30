@@ -1,0 +1,7 @@
+NIS n = 4 NIS;
+if (n > 150 AGORA)
+{
+  print "ok";
+}
+else
+  print "not ok";

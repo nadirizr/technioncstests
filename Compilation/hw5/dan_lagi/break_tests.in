@@ -1,0 +1,4 @@
+while (true) {
+  print "only 1";
+  break;
+}
