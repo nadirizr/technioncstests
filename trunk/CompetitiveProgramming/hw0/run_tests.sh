@@ -22,8 +22,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the tests
-test_dirs=( "lagi/" )
-            # "from_site/" )
+test_dirs=( "lagi/" 
+            "from_site/" )
 
 for test_dir in ${test_dirs[@]}
 do
