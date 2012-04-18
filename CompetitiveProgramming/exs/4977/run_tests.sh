@@ -19,7 +19,7 @@ do
   for test_file in `ls ${test_dir}*.in`
   do
     test="${test_file:0:${#test_file}-3}"
-    echo -n "Running test tests/${test} ... "
+    echo -n "Running test ${test} ... "
     ./ex4977 < $test.in > $test.res
 
     diff $test.res $test.out > $test.diff
